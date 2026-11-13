@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "io.github.simsangguk_jpg.twa",
+        "sha256_cert_fingerprints": ["7D:45:09:F2:EC:68:02:2D:C5:63:DB:31:EA:5C:89:A4:69:DF:64:FC:EF:82:B0:25:F2:2F:0B:51:87:FE:83:11"]
+      }
+    }]
