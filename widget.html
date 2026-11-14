@@ -4,63 +4,95 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow, noarchive">
-  <title>스마트 위젯</title>
+  <title>상국포털 스마트 위젯</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; background: #ffffff; color: #111827; padding: 10px; }
+    a { text-decoration: none; color: inherit; }
     .w-box { max-width: 480px; margin: 0 auto; }
     .w-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
     .w-title { font-size: 14px; font-weight: 900; color: #111827; }
     .w-time { font-size: 11px; font-weight: 700; color: #6b7280; }
     .w-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }
-    .w-tile { background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 12px; padding: 9px 10px; }
+    .w-tile { display: block; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 12px; padding: 9px 10px; }
+    .w-tile:active { opacity: 0.8; }
     .w-lbl { font-size: 10.5px; font-weight: 800; color: #6b7280; margin-bottom: 3px; }
-    .w-val { font-size: 13.5px; font-weight: 800; color: #111827; line-height: 1.25; }
+    .w-val { font-size: 13px; font-weight: 800; color: #111827; line-height: 1.25; }
     .w-sub { font-size: 11px; color: #4b5563; margin-top: 2px; line-height: 1.25; }
     .w-full { grid-column: 1 / -1; }
+    .w-tip { background: #eff6ff; border-color: #bfdbfe; }
+    .w-links { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; margin-top: 7px; }
+    .w-btn { display: block; text-align: center; background: #f3f4f6; border: 1px solid #e5e7eb; border-radius: 9px; padding: 6px 4px; font-size: 10.5px; font-weight: 800; color: #1f2937; }
+    .w-btn.green { background: #ecfdf5; border-color: #a7f3d0; color: #047857; }
+    .w-btn.red { background: #fef2f2; border-color: #fecaca; color: #b91c1c; }
   </style>
 </head>
 <body>
   <div class="w-box">
     <div class="w-head">
-      <div class="w-title">🟢 스마트 홈 위젯</div>
+      <div class="w-title">🟢 상국포털 스마트 위젯</div>
       <div id="wDate" class="w-time"></div>
     </div>
+
     <div class="w-grid">
-      <div id="wShiftTile" class="w-tile">
-        <div class="w-lbl">📅 오늘 교대근무</div>
+      <a id="wShiftTile" class="w-tile" href="https://simsangguk-jpg.github.io/" target="_blank" rel="noopener noreferrer">
+        <div class="w-lbl">📅 오늘 교대근무 (누르면 근무표)</div>
         <div id="wShiftVal" class="w-val">계산 중...</div>
         <div id="wShiftSub" class="w-sub"></div>
-      </div>
-      <div class="w-tile">
-        <div class="w-lbl">🌦️ 파주 날씨</div>
+      </a>
+
+      <a class="w-tile" href="https://weather.naver.com/today/02480580" target="_blank" rel="noopener noreferrer">
+        <div class="w-lbl">🌦️ 파주 다율동 날씨 ↗</div>
         <div class="w-val">🌧️ 10℃ (99%)</div>
         <div class="w-sub">내일(일) ☀️ 7~16℃ 맑음</div>
-      </div>
-      <div class="w-tile w-full" style="background:#fef2f2;border-color:#fecaca;">
-        <div class="w-lbl" style="color:#dc2626;">⏰ 핵심 D-Day 알림</div>
+      </a>
+
+      <a class="w-tile w-full" style="background:#fef2f2;border-color:#fecaca;" href="https://calendar.google.com/" target="_blank" rel="noopener noreferrer">
+        <div class="w-lbl" style="color:#dc2626;">⏰ 핵심 D-Day (누르면 캘린더)</div>
         <div class="w-val" style="font-size:12px;">• D-1 일요일 11:00 강남 특강 (09:10 출발)</div>
         <div class="w-sub" style="color:#b91c1c;font-weight:700;">• D-2 월요일 15:00 업비트 SOPH·ZIL 거래종료</div>
-      </div>
-      <div class="w-tile">
-        <div class="w-lbl">📈 증시 · 환율</div>
+      </a>
+
+      <a class="w-tile w-full w-tip" href="https://simsangguk-jpg.github.io/" target="_blank" rel="noopener noreferrer">
+        <div class="w-lbl" style="color:#1d4ed8;">💡 오늘의 실생활 꿀정보</div>
+        <div class="w-sub" style="margin-top:0;color:#1e3a8a;font-weight:700;">
+          오늘 종일 비+초미세 나쁨 → 실내 공기청정기 가동 &amp; 내일(일) 오전 강남 이동 전 테슬라 충전·와이퍼 점검 권장
+        </div>
+      </a>
+
+      <a class="w-tile" href="https://finance.naver.com/" target="_blank" rel="noopener noreferrer">
+        <div class="w-lbl">📈 증시 · 환율 ↗</div>
         <div class="w-val" style="font-size:12px;">코스피 5,290.53</div>
         <div class="w-sub">나스닥 25,136 · 1,332원</div>
-      </div>
-      <div class="w-tile">
-        <div class="w-lbl">🪙 비트코인</div>
+      </a>
+
+      <a class="w-tile" href="https://upbit.com/" target="_blank" rel="noopener noreferrer">
+        <div class="w-lbl">🪙 비트코인 ↗</div>
         <div class="w-val" style="font-size:12px;">$68,801 (▼4.18%)</div>
         <div class="w-sub">업비트 약 9,388만 원</div>
-      </div>
+      </a>
+
       <div class="w-tile w-full">
-        <div class="w-lbl">✍️ 최신 발행 콘텐츠</div>
-        <div class="w-sub" style="margin-top:0;color:#111827;font-weight:700;">
-          • 티스토리 #172 아이패드 미니 A20 프로<br>
-          • 네이버 4호 다이소 뽑아쓰는 키친타월
+        <div class="w-lbl">✍️ 최신 발행 콘텐츠 (터치 시 이동)</div>
+        <div class="w-sub" style="margin-top:0;color:#111827;font-weight:700;line-height:1.45;">
+          • <a href="https://feelyour15.tistory.com/172" target="_blank" rel="noopener noreferrer">티스토리 #172 아이패드 미니 A20 프로 ↗</a><br>
+          • <a href="https://blog.naver.com/simsangguk/224476547933" target="_blank" rel="noopener noreferrer">네이버 4호 다이소 뽑아쓰는 키친타월 ↗</a>
         </div>
       </div>
     </div>
+
+    <div class="w-links">
+      <a class="w-btn green" href="https://feelyour15.tistory.com" target="_blank" rel="noopener noreferrer">📝 티스토리</a>
+      <a class="w-btn green" href="https://blog.naver.com/simsangguk" target="_blank" rel="noopener noreferrer">🧹 네이버</a>
+      <a class="w-btn red" href="https://www.youtube.com/@%EB%AF%B8%EC%81%A0-f2x" target="_blank" rel="noopener noreferrer">📺 유튜브</a>
+      <a class="w-btn" href="https://cshop.naver.com/sim0369" target="_blank" rel="noopener noreferrer">🛍️ 크샵</a>
+      <a class="w-btn red" href="https://www.yna.co.kr/news?site=navi_latest" target="_blank" rel="noopener noreferrer">🚨 속보</a>
+      <a class="w-btn" href="https://news.naver.com/" target="_blank" rel="noopener noreferrer">📰 뉴스</a>
+      <a class="w-btn" href="https://keep.google.com/" target="_blank" rel="noopener noreferrer">🗒️ 메모장</a>
+      <a class="w-btn" href="https://simsangguk-jpg.github.io/" target="_blank" rel="noopener noreferrer">🔐 포털전체</a>
+    </div>
   </div>
+
   <script>
     const SHIFT_ANCHOR = new Date(2026, 10, 16);
     function getShiftState(d) {
