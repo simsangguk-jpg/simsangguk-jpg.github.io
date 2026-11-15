@@ -1,13 +1,30 @@
-/* 상국수향지섭지율포털 Service Worker · v4 (2026-11-15 · V3 3D 가족 놀이터(play3d.js))
+/* 상국수향지섭지율포털 Service Worker · v5 (2026-11-15 · V4 가족 게임·생활 확장)
    - /family/ 범위만 담당한다(상국포털 본체 캐시와 섞이지 않게 별도 캐시 이름 사용)
+   - install 단계에서 V4 모듈(extra4.js·game4.js·play3d.js)까지 모두 프리캐시한다
    - 화면(HTML)은 네트워크 우선: 새로 배포한 내용이 앱에서도 바로 뜨도록
    - 그 밖의 정적 파일은 네트워크 우선, 실패 시 캐시
 */
-const SW_VERSION = 'family-portal-v4-2026-11-15';
+const SW_VERSION = 'family-portal-v5-2026-11-15';
 const OFFLINE_HTML = new URL('index.html', self.registration.scope).href;
+const PRECACHE = [
+  './',
+  './index.html',
+  './extra4.js',
+  './game4.js',
+  './play3d.js',
+  './manifest.webmanifest',
+  './icon-192.png',
+  './icon-512.png',
+  './apple-touch-icon.png'
+];
 
-self.addEventListener('install', () => {
-  self.skipWaiting();
+self.addEventListener('install', (event) => {
+  event.waitUntil(
+    caches.open(SW_VERSION)
+      .then((c) => Promise.all(PRECACHE.map((u) => c.add(new Request(u, { cache: 'reload' })).catch(() => {}))))
+      .catch(() => {})
+      .then(() => self.skipWaiting())
+  );
 });
 
 self.addEventListener('activate', (event) => {

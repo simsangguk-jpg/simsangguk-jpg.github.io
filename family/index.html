@@ -818,9 +818,10 @@ body.pg-lock{overflow:hidden}
       </div>
     </section>
 
-    <!-- ===== 🧸 가족 놀이터(3D) ===== -->
+    <!-- ===== 🧸 가족 놀이터(3D + V4 게임) ===== -->
     <section id="view-play" class="hidden">
-      <div class="card" style="padding:12px 12px 14px">
+      <div id="pgNav" class="pg-nav"></div>
+      <div class="card" id="pg3dCard" style="padding:12px 12px 14px">
         <div class="card-head" style="margin-bottom:9px">
           <h2>🧸 우리 가족 놀이터</h2>
           <span class="sub" id="pgSub">걷고·뛰고·던지면 구르고</span>
@@ -854,6 +855,9 @@ body.pg-lock{overflow:hidden}
         <div class="hint">속초 바닷가 가족사진을 보고 만든 4명이에요 — 아빠 안경·남색 패딩, 엄마 긴 머리, 지섭 검정 코트, 지율 아이보리 패딩. 집어 던지면 중력을 받아 날아가 구르고, 아프면 울고, 툴툴 털고 일어나요. 이 화면은 사진·기록과 따로 움직이고 저장되는 자료는 없어요.</div>
       </div>
     </section>
+
+    <!-- ===== V4 · 전체(카테고리 목차 + 생활 업그레이드) ===== -->
+    <section id="view-all" class="hidden"></section>
   </main>
 
   <nav class="tabbar" id="tabbar">
@@ -861,8 +865,9 @@ body.pg-lock{overflow:hidden}
     <button type="button" data-view="chat"><span class="ico">💬</span>채팅<span class="badge-dot hidden" id="tabChatDot">0</span></button>
     <button type="button" data-view="photos"><span class="ico">📷</span>사진</button>
     <button type="button" data-view="map"><span class="ico">📍</span>위치</button>
-    <button type="button" data-view="play"><span class="ico">🧸</span>놀이터</button>
+    <button type="button" data-view="play"><span class="ico">🎮</span>놀이</button>
     <button type="button" data-view="life"><span class="ico">📋</span>생활<span class="badge-dot hidden" id="tabLifeDot">0</span></button>
+    <button type="button" data-view="all"><span class="ico">🗂️</span>전체<span class="badge-dot hidden" id="tabAllDot">0</span></button>
   </nav>
 </div>
 
@@ -883,6 +888,8 @@ body.pg-lock{overflow:hidden}
 <input type="file" id="filePicker" accept="image/*" multiple class="hidden">
 <div class="sheet hidden" id="sheet"><div class="sheet-inner" id="sheetInner"></div></div>
 <div class="toast" id="toast"></div>
+<script src="./extra4.js?v=4a"></script>
+<script src="./game4.js?v=4a"></script>
 <script>
 (function () {
 'use strict';
@@ -1332,6 +1339,8 @@ function startApp() {
   autoShareUI();
   if (autoShare) startAutoShare();
   if (window._sgfDeferredPrompt) $('authInstall').style.display = 'none';
+  if (window.FAM4) { try { window.FAM4.mount(window.FAM); } catch (e) { console.warn('FAM4 mount', e); } }
+  if (window.GAME4) { try { window.GAME4.mount(window.FAM); } catch (e) { console.warn('GAME4 mount', e); } }
 }
 
 /* ============================================================
@@ -2571,7 +2580,7 @@ function mapRecenter() {
    ============================================================ */
 var lifeTab = 'letters';
 function paintLife() {
-  ['letters', 'notices', 'diary', 'money', 'reco'].forEach(function (t) {
+  ['letters', 'notices', 'diary', 'money', 'reco', 'todo', 'cal'].forEach(function (t) {
     var el = $('life-' + t);
     if (el) el.classList.toggle('hidden', t !== lifeTab);
     var b = document.querySelector('#lifeNav button[data-life="' + t + '"]');
@@ -2609,6 +2618,7 @@ function renderAll() {
   renderMap();
   autoShareUI();
   renderTabBadges();
+  if (window.__FAM_RENDER) { try { window.__FAM_RENDER(); } catch (e) { console.warn('v4 render', e); } }
 }
 
 /* ============================================================
@@ -3408,7 +3418,7 @@ function lateSheet() {
 }
 function switchView(v) {
   currentView = v;
-  ['home', 'chat', 'photos', 'map', 'life', 'play'].forEach(function (name) {
+  ['home', 'chat', 'photos', 'map', 'life', 'play', 'all'].forEach(function (name) {
     var el = $('view-' + name);
     if (el) el.classList.toggle('hidden', name !== v);
     var btn = document.querySelector('#tabbar button[data-view="' + name + '"]');
@@ -3431,6 +3441,7 @@ function switchView(v) {
     if (window.FamPlay) window.FamPlay.leave();
     if (pgFullOn) setPgFull(false);
   }
+  if (window.__FAM_VIEW) { try { window.__FAM_VIEW(v); } catch (e) { console.warn('v4 view', e); } }
   if (v === 'chat') window.scrollTo({ top: document.body.scrollHeight });
   else window.scrollTo({ top: 0, behavior: 'smooth' });
 }
@@ -3443,6 +3454,48 @@ function setDefaultPlanTime() {
 }
 
 /* ---------------- 시작 ---------------- */
+/* ============================================================
+   V4 · 확장 모듈(extra4.js = 생활·알림 / game4.js = 게임·꾸미기)에 넘기는 다리
+   - 본체 코드는 그대로 두고, 새 기능만 이 다리를 통해 붙는다
+   ============================================================ */
+window.FAM = {
+  ver: '4',
+  doc: function () { return DOC; },
+  me: function () { return ME; },
+  hasKey: function () { return !!K; },
+  members: memberList,
+  memOf: memOf,
+  save: function () { markDirty(); },
+  push: function () { return push(); },
+  pull: function (f) { return pull(f); },
+  toast: toast,
+  esc: esc,
+  newId: newId,
+  roleEmoji: roleEmoji,
+  ago: ago, hhmm: hhmm, dateLabel: dateLabel, dateKo: dateKo,
+  won: won, ymdOf: ymdOf, todayYmd: todayYmd, pad2: pad2,
+  openSheet: openSheet, closeSheet: closeSheet,
+  view: function (v) { switchView(v); },
+  curView: function () { return currentView; },
+  render: function () { renderAll(); },
+  saveMedia: saveMedia,
+  mediaUrl: mediaUrl,
+  pickImages: pickImages,
+  compressImage: compressImage,
+  live: function () { return (DOC && DOC.live) || {}; },
+  locate: function (cb) {
+    if (!navigator.geolocation) { if (cb) cb(null, { code: -1 }); return; }
+    navigator.geolocation.getCurrentPosition(function (pos) {
+      pushFromPos(pos);
+      if (cb) cb(pos, null);
+    }, function (err) {
+      if (cb) cb(null, err);
+    }, { enableHighAccuracy: true, timeout: 15000, maximumAge: 15000 });
+  },
+  onPull: function (fn) { pullHooks.push(fn); }
+};
+var pullHooks = [];
+
 function registerSW() {
   if (!('serviceWorker' in navigator)) return;
   if (location.protocol !== 'https:' && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') return;
