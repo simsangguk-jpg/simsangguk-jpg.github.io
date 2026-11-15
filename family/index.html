@@ -1125,7 +1125,11 @@ function mergeRecord(a, b) {
   var older = (newer === b) ? a : b;
   var out = {}, k;
   for (k in older) out[k] = older[k];
-  for (k in newer) out[k] = newer[k];
+  for (k in newer) {
+    /* 위치 레코드는 주소(addr)가 늦게 도착한다 — 빈 값이 이전에 받은 주소를 지우지 않게 */
+    if (k === 'addr' && !newer[k] && older[k]) out[k] = older[k];
+    else out[k] = newer[k];
+  }
   if (isObj(a.likes) || isObj(b.likes)) out.likes = mergeLikes(a.likes, b.likes);
   return out;
 }
@@ -1444,7 +1448,7 @@ function renderCheer() {
   } else {
     box.innerHTML = ids.map(function (k) {
       var c = DOC.cheer[k];
-      var m = DOC.members[k] || { name: k, emoji: '🧑' };
+      var m = memOf(k);
       return '<div style="display:flex;gap:8px;align-items:flex-start;background:#FBFDFC;border:1px solid #EDF2F0;border-radius:12px;padding:9px 10px">' +
         '<div style="font-size:15px">' + (m.emoji || '🧑') + '</div>' +
         '<div style="flex:1;min-width:0"><div style="font-size:11.5px;font-weight:800;color:#0A7D56">' + esc(m.name) + ' <span style="color:#9AA4AF;font-weight:600">' + ago(c.at) + '</span></div>' +
@@ -1465,7 +1469,7 @@ function rotateCheer() {
   var i = (window.__cheerIdx || 0) % ids.length;
   window.__cheerIdx = (i + 1) % ids.length;
   var c = DOC.cheer[ids[i]];
-  var m = DOC.members[ids[i]] || { name: '가족', emoji: '🧑' };
+  var m = memOf(ids[i]);
   var line = $('cheerLine');
   if (line) line.innerHTML = '<span class="who">' + (m.emoji || '💬') + ' ' + esc(m.name) + '</span><span class="txt">' + esc(c.text) + '</span>';
 }
@@ -1479,7 +1483,7 @@ function renderPlans() {
   if (!ids.length) { box.innerHTML = '<div class="empty">예정된 가족 약속이 없어요. 아래에서 장소와 시간을 정해 보세요.</div>'; return; }
   box.innerHTML = ids.map(function (k) {
     var p = DOC.plans[k];
-    var m = DOC.members[p.by] || { name: '가족', emoji: '🧑' };
+    var m = memOf(p.by);
     var when = p.when ? dateLabel(p.when) : '';
     return '<div class="live-item"><div class="av">📌</div><div class="body">' +
       '<div class="l1">' + esc(p.what || '약속') + '</div>' +
@@ -1501,7 +1505,7 @@ function renderLive() {
   }
   box.innerHTML = ids.map(function (k) {
     var l = DOC.live[k];
-    var m = DOC.members[k] || { name: k, emoji: '🧑' };
+    var m = memOf(k);
     var stale = (Date.now() - l.at) > 1000 * 3600 * 6;
     return '<div class="live-item"><div class="av">' + (m.emoji || '🧑') + '</div><div class="body">' +
       '<div class="l1">' + esc(m.name) + ' <span class="pill">' + ago(l.at) + '</span>' +
@@ -1559,7 +1563,7 @@ function renderReco() {
   }
   box.innerHTML = ids.map(function (k) {
     var r = bucket[k];
-    var m = DOC.members[r.by] || { name: '가족', emoji: '🧑' };
+    var m = memOf(r.by);
     var likeMap = r.likes || {}, cnt = 0, mineOn = false;
     Object.keys(likeMap).forEach(function (mid) {
       if (likeMap[mid] && likeMap[mid].v) { cnt++; if (ME && mid === ME.id) mineOn = true; }
@@ -1627,8 +1631,8 @@ function renderFeedback() {
   var show = list.slice(0, fbShow);
   box.innerHTML = show.map(function (k) {
     var f = b[k];
-    var m = DOC.members[f.by] || { name: '가족', emoji: '🧑' };
-    var dname = (f.done && f.doneBy && DOC.members[f.doneBy]) ? DOC.members[f.doneBy].name : '';
+    var m = memOf(f.by);
+    var dname = (f.done && f.doneBy) ? memOf(f.doneBy).name : '';
     return '<div class="fb-item' + (f.done ? ' done' : '') + '">' +
       '<div class="fb-top-row">' +
         '<span class="fb-who">' + esc((m.emoji || '🧑') + ' ' + m.name) + '</span>' +
@@ -2172,8 +2176,16 @@ function diaryAll() {
   var b = (DOC && DOC.diary) || {};
   return Object.keys(b).filter(function (k) { var d = b[k]; return d && !d.d; }).map(function (k) {
     var d = b[k];
-    return { _k: k, by: d.by, at: d.at || 0, date: d.date || ymdOf(d.at || Date.now()), mood: d.mood || '😊', text: d.text || '', imgs: d.imgs || [], likes: d.likes || {}, comments: (DOC.dyc && DOC.dyc[k]) || d.comments || {} };
+    return { _k: k, by: d.by, at: d.at || 0, date: d.date || ymdOf(d.at || Date.now()), mood: d.mood || '😊', text: d.text || '', imgs: d.imgs || [], likes: d.likes || {}, comments: diaryCmMerge((DOC.dyc && DOC.dyc[k]) || {}, d.comments || {}) };
   }).sort(function (a, c) { if (a.date !== c.date) return a.date < c.date ? 1 : -1; return c.at - a.at; });
+}
+function diaryCmMerge(a, b) {
+  var out = {}, k;
+  [b, a].forEach(function (n) {
+    if (!n || typeof n !== 'object') return;
+    Object.keys(n).forEach(function (x) { out[x] = n[x]; });
+  });
+  return out;
 }
 function diaryLikeCount(d) { var n = 0; Object.keys(d.likes || {}).forEach(function (k) { if (d.likes[k] && d.likes[k].v) n++; }); return n; }
 function diaryComments(d) {
@@ -2947,7 +2959,7 @@ async function openPhoto(pid) {
   $('photoModal').classList.remove('hidden');
   $('pmImg').classList.add('hidden');
   $('pmSpin').classList.remove('hidden');
-  var m = DOC.members[p.by] || { name: '가족', emoji: '🧑' };
+  var m = memOf(p.by);
   $('pmBy').textContent = m.emoji + ' ' + m.name + ' · ' + dateLabel(p.at);
   paintCaption(p);
   $('pmWhen').textContent = ago(p.at);
