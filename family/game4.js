@@ -275,7 +275,7 @@
     var log = $('g4Log');
     if (log && !log.__sig) {
       log.__sig = 1;
-      log.innerHTML = '<div>· ' + esc(c.name) + '와(과) 함께 자라는 중이에요.</div>';
+      log.innerHTML = '<div>· ' + esc(c.name) + josa(c.name, '과', '와') + ' 함께 자라는 중이에요.</div>';
     }
     var fam = $('g4Fam');
     if (fam) {
