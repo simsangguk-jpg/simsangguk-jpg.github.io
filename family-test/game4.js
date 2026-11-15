@@ -135,7 +135,7 @@
       '.g4-yut .bd{position:absolute;inset:10%}',
       '.g4-yut .node{position:absolute;width:9.5%;height:9.5%;margin:-4.75% 0 0 -4.75%;border-radius:50%;background:#F7E4C4;border:1.5px solid #E3C99C;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;color:#8A7250}',
       '.g4-yut .node.corner{background:#FFD79A;border-color:#E0B267}',
-      '.g4-yut .pc{position:absolute;width:12.5%;height:12.5%;margin:-6.25% 0 0 -6.25%;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:900;color:#fff;border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.2);transition:all .28s ease}',
+      '.g4-yut .pc{position:absolute;width:11%;height:11%;margin:-5.5% 0 0 -5.5%;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:900;color:#fff;border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.2);transition:all .28s ease}',
       '.g4-yut .pc .s{position:absolute;bottom:-3px;right:-3px;background:#fff;color:#14181D;border-radius:8px;font-size:8px;padding:0 2px;border:1px solid #E9EEF2}',
       '.g4-sticks{display:flex;gap:9px;justify-content:center;margin:9px 0 4px;min-height:52px}',
       '.g4-stick{width:16px;height:46px;border-radius:8px;background:linear-gradient(#EBD9B8,#D9BF95);border:1px solid #C9AE84;transition:transform .5s ease,background .3s;transform-origin:50% 90%}',
@@ -956,8 +956,11 @@
       occ[o.node] = k + 1;
       var p2 = NODES[o.node] || NODES[0];
       var tm = y.teams[o.t];
-      var dx = (k % 3) * 3.4, dy = Math.floor(k / 3) * 3.4;
-      html += '<div class="pc" style="left:' + (p2.x + dx) + '%;top:' + (p2.y - dy) + '%;background:' + tm.color + '" title="' + esc(F.memOf(tm.members[0]).name) + '">' +
+      var rad = k === 0 ? 0 : (3.0 + Math.floor(k / 6) * 2.6);
+      var ang = k * 1.05 + 0.4;
+      var dx = k === 0 ? 0 : Math.cos(ang) * rad;
+      var dy = k === 0 ? 0 : Math.sin(ang) * rad;
+      html += '<div class="pc" style="left:' + (p2.x + dx) + '%;top:' + (p2.y + dy) + '%;background:' + tm.color + '" title="' + esc(F.memOf(tm.members[0]).name) + '">' +
         (o.idx + 1) + (o.pc.st > 1 ? '<span class="s">×' + o.pc.st + '</span>' : '') + '</div>';
     });
     html += '</div></div>';
