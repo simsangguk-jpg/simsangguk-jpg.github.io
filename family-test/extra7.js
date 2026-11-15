@@ -167,7 +167,7 @@
   ];
 
   function cardHtml(p, i) {
-    var cap = p.cap ? esc(p.cap) : (p.by ? esc(nm(p.by)) + '가 올린 사진' : '우리 가족 사진');
+    var cap = p.cap ? esc(p.cap) : (p.by ? esc(nm(p.by)) + ' 님이 올린 사진' : '우리 가족 사진');
     var sub = p.at ? stamp(p.at) : '';
     return '<div class="p7-card">' +
       '<div class="p7-ph"><img src="' + esc(p.thumb) + '" alt="가족 사진" loading="lazy" data-p7open="' + esc(p.id) + '">' +
