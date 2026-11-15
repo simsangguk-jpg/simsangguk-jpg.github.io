@@ -1852,7 +1852,17 @@ var FamPlay = {
   act: act,
   setLook: function (map) {
     LOOK = map || {};
-    if (P.chars) P.chars.forEach(function (c) { try { applyLook(c, LOOK[c.key]); } catch (e) {} });
+    P.lookErr = null;
+    P.lookApplied = 0;
+    if (P.chars) P.chars.forEach(function (c) {
+      try { applyLook(c, LOOK[c.key]); if (c.lookHeadG || c.lookBodyG) P.lookApplied++; } catch (e) { P.lookErr = String((e && e.message) || e); console.warn('setLook', e); }
+    });
+  },
+  lookInfo: function () {
+    return {
+      look: LOOK, err: P.lookErr || null, applied: P.lookApplied || 0,
+      chars: (P.chars || []).map(function (c) { return c.key + ':' + (c.lookHeadG ? 'H' : '-') + (c.lookBodyG ? 'B' : '-') + (c.cfg && c.cfg.top ? ':' + c.cfg.top.toString(16) : ''); })
+    };
   },
   pose: function () {
     P.freeze = true;
