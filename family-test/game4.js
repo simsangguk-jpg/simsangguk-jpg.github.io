@@ -234,6 +234,7 @@
     if (dt < 10 * 60000) return false;
     var hours = Math.min(12, dt / 3600000);
     c.tick = now();
+    c.at = now();
     dec(c, 'full', -Math.round(hours * 5));
     dec(c, 'happy', -Math.round(hours * 4));
     dec(c, 'energy', -Math.round(hours * 3));
@@ -610,7 +611,7 @@
     var gl = $('g4GiftList'), gs = $('g4GiftSub');
     if (gl) {
       var es = [];
-      Object.keys(g.gift).forEach(function (k) { var v = g.gift[k]; if (v && v.to === me().id) { v._id = k; es.push(v); } });
+      Object.keys(g.gift).forEach(function (k) { var v = g.gift[k]; if (v && !v.d && v.to === me().id) { v._id = k; es.push(v); } });
       es.sort(function (a, b) { return (b.at || 0) - (a.at || 0); });
       if (gs) gs.textContent = es.length + '개';
       gl.innerHTML = es.length ? es.slice(0, 10).map(function (v) {
@@ -646,10 +647,12 @@
       '<button type="button" class="btn soft" id="g4BuyGift" style="padding:12px;font-size:13px">가족에게 선물</button></div>' +
       '<div id="g4GiftPick" style="margin-top:9px"></div>');
     $('g4BuyMe').onclick = function () {
-      if (c.gold < it.p) { toast('골드가 모자라요 (' + it.p + 'G 필요)'); return; }
-      c.gold -= it.p; c.items[id] = (c.items[id] || 0) + 1;
-      if (it.k) c.look[it.k] = id;
-      c.at = now(); save(); syncLook(true); F.closeSheet(); renderShop(); renderMine(); renderTama();
+      var cc = myChar();
+      if (!cc) return;
+      if (cc.gold < it.p) { toast('골드가 모자라요 (' + it.p + 'G 필요)'); return; }
+      cc.gold -= it.p; cc.items[id] = (cc.items[id] || 0) + 1;
+      if (it.k) cc.look[it.k] = id;
+      cc.at = now(); save(); syncLook(true); F.closeSheet(); renderShop(); renderMine(); renderTama();
       toast(it.n + '을(를) 샀어요!' + (it.k ? ' 바로 착용했어요' : ''));
     };
     $('g4BuyGift').onclick = function () {
@@ -660,8 +663,10 @@
       box.querySelectorAll('[data-gto]').forEach(function (b) {
         b.onclick = function () {
           var to = b.getAttribute('data-gto');
-          if (c.gold < it.p) { toast('골드가 모자라요 (' + it.p + 'G 필요)'); return; }
-          c.gold -= it.p; c.at = now();
+          var cc2 = myChar();
+          if (!cc2) return;
+          if (cc2.gold < it.p) { toast('골드가 모자라요 (' + it.p + 'G 필요)'); return; }
+          cc2.gold -= it.p; cc2.at = now();
           var gid = 'gf' + now().toString(36) + Math.random().toString(36).slice(2, 4);
           G().gift[gid] = { from: me().id, to: to, item: id, at: now() };
           save(); F.closeSheet(); renderShop(); renderTama();
@@ -676,7 +681,7 @@
     if (!v || v.to !== me().id) return;
     var c = myChar(), it = itemById(v.item);
     if (it) { c.items[v.item] = (c.items[v.item] || 0) + 1; }
-    delete g.gift[id];
+    v.d = 1; v.at = now();
     save(); renderShop(); toast('선물을 받았어요: ' + (it ? it.n : '선물'));
   }
   function wireShop() {
@@ -970,7 +975,7 @@
     var qb = $('g4YutQuit');
     if (qb) qb.onclick = function () {
       if (!confirm('윷놀이를 끝낼까요? 판이 사라져요.')) return;
-      G().yut = {}; save(); renderYut(); toast('윷놀이를 정리했어요');
+      var gy = G(); gy.yut = { at: now(), rev: ((gy.yut || {}).rev || 0) + 1, started: 0, winner: '' }; save(); renderYut(); toast('윷놀이를 정리했어요');
     };
     var mineBox = $('g4Mine');
     if (mineBox) mineBox.addEventListener('click', function (e) {

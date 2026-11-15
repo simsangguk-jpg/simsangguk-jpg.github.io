@@ -58,9 +58,15 @@
     var out = [];
     Object.keys(node || {}).forEach(function (k) {
       var it = node[k];
-      if (it && typeof it === 'object') { it._id = k; out.push(it); }
+      if (it && typeof it === 'object' && !it.d) { it._id = k; out.push(it); }
     });
     return out;
+  }
+  /* 지우기는 흔적(d:1)을 남긴다 — 다른 기기와 합칠 때 되살아나지 않게 */
+  function drop(node, id) {
+    var it = node && node[id];
+    if (!it) return;
+    it.d = 1; it.at = now();
   }
   function dv(x) { return x < 10 ? '0' + x : '' + x; }
 
@@ -428,8 +434,8 @@
           if (!l || typeof l.lat !== 'number') return '<div class="v4-row"><span class="e">' + (m.emoji || '🧑') + '</span><span class="tx"><b>' + esc(m.name) + '</b><small>위치 정보 없음</small></span><span class="v4-tag gray">–</span></div>';
           var z = zoneOf(l.lat, l.lon);
           var tag = z.z === 'home' ? '<span class="v4-tag">🏠 집</span>' : (z.z === 'school' ? '<span class="v4-tag">🏫 학교</span>' : '<span class="v4-tag gray">🚶 밖</span>');
-          var dst = z.g ? Math.round(dist(l.lat, l.lon, z.g.lat, z.g.lon)) + 'm' : F.ago(l.at || 0);
-          return '<div class="v4-row"><span class="e">' + (m.emoji || '🧑') + '</span><span class="tx"><b>' + esc(m.name) + '</b><small>' + esc(dst) + ' · ' + F.ago(l.at || 0) + '</small></span>' + tag + '</div>';
+          var sub2 = z.g ? ('집까지 ' + Math.round(dist(l.lat, l.lon, z.g.lat, z.g.lon)) + 'm · ' + F.ago(l.at || 0)) : ((l.addr || '위치 공유됨') + ' · ' + F.ago(l.at || 0));
+          return '<div class="v4-row"><span class="e">' + (m.emoji || '🧑') + '</span><span class="tx"><b>' + esc(m.name) + '</b><small>' + esc(sub2) + '</small></span>' + tag + '</div>';
         });
         return '<div class="v4-mini" style="margin-bottom:4px;font-weight:800;color:#3C4450">지금 위치 판정</div>' + lines.join('');
       });
@@ -614,10 +620,11 @@
       if (!it) return;
       var v = V4(), id = it.getAttribute('data-todo'), rec = v.todos[id];
       if (!rec) return;
-      if (e.target.closest('[data-tdel]')) { delete v.todos[id]; save(); renderTodo(); toast('할일을 지웠어요'); return; }
+      if (e.target.closest('[data-tdel]')) { drop(v.todos, id); save(); renderTodo(); toast('할일을 지웠어요'); return; }
       rec.done = rec.done ? 0 : 1;
       rec.doneAt = rec.done ? now() : 0;
       rec.doneBy = rec.done ? mid() : '';
+      rec.at = now();
       save(); renderTodo();
     });
   }
@@ -682,8 +689,9 @@
       if (!it) return;
       var v = V4(), id = it.getAttribute('data-cal'), rec = v.cal[id];
       if (!rec) return;
-      if (e.target.closest('[data-cdel]')) { delete v.cal[id]; save(); renderCal(); return; }
+      if (e.target.closest('[data-cdel]')) { drop(v.cal, id); save(); renderCal(); return; }
       rec.done = rec.done ? 0 : 1; rec.doneBy = rec.done ? mid() : ''; rec.doneAt = rec.done ? now() : 0;
+      rec.at = now();
       save(); renderCal();
     });
   }
@@ -890,7 +898,7 @@
     if (log) log.addEventListener('click', function (e) {
       var b = e.target.closest('[data-fdel]');
       if (!b) return;
-      var v = V4(); delete v.food[b.getAttribute('data-fdel')]; save(); renderFood();
+      var v = V4(); drop(v.food, b.getAttribute('data-fdel')); save(); renderFood();
     });
     document.addEventListener('click', function (e) {
       if (e.target && e.target.id === 'v4AiOn') {
@@ -1073,7 +1081,7 @@
     var list = $('v4WorryList');
     if (list) list.addEventListener('click', function (e) {
       var del = e.target.closest('[data-wdel]');
-      if (del) { var v = V4(); delete v.worry[del.getAttribute('data-wdel')]; save(); renderWorry(); return; }
+      if (del) { var v = V4(); drop(v.worry, del.getAttribute('data-wdel')); save(); renderWorry(); return; }
       var send = e.target.closest('[data-adv-send]');
       if (send) {
         var wid = send.getAttribute('data-adv-send');
@@ -1167,6 +1175,7 @@
         if (!rec) return;
         if (!rec.dibs) rec.dibs = {};
         if (rec.dibs[mid()]) delete rec.dibs[mid()]; else rec.dibs[mid()] = now();
+        rec.at = now();
         save(); renderWish(); return;
       }
       var d2 = e.target.closest('[data-wgot]');
@@ -1179,7 +1188,7 @@
         return;
       }
       var d3 = e.target.closest('[data-wdel2]');
-      if (d3) { delete v.wish[d3.getAttribute('data-wdel2')]; save(); renderWish(); }
+      if (d3) { drop(v.wish, d3.getAttribute('data-wdel2')); save(); renderWish(); }
     });
   }
 
