@@ -981,7 +981,7 @@ function emptyDB() {
     v: 1, g: Date.now(), members: {}, status: {}, cheer: {}, photos: {}, reco: { spot: {}, trip: {} },
     plans: {}, live: {}, feedback: {},
     /* V2 추가 노드 — 기존 노드는 그대로 두고 새 기능만 덧붙인다 */
-    chat: {}, letters: {}, letterRead: {}, notices: {}, noticeAck: {}, diary: {}, money: {}
+    chat: {}, letters: {}, letterRead: {}, notices: {}, noticeAck: {}, diary: {}, dyc: {}, money: {}
   };
 }
 function fetchDB() {
@@ -2056,7 +2056,7 @@ function diaryAll() {
   var b = (DOC && DOC.diary) || {};
   return Object.keys(b).filter(function (k) { var d = b[k]; return d && !d.d; }).map(function (k) {
     var d = b[k];
-    return { _k: k, by: d.by, at: d.at || 0, date: d.date || ymdOf(d.at || Date.now()), mood: d.mood || '😊', text: d.text || '', imgs: d.imgs || [], likes: d.likes || {}, comments: d.comments || {} };
+    return { _k: k, by: d.by, at: d.at || 0, date: d.date || ymdOf(d.at || Date.now()), mood: d.mood || '😊', text: d.text || '', imgs: d.imgs || [], likes: d.likes || {}, comments: (DOC.dyc && DOC.dyc[k]) || d.comments || {} };
   }).sort(function (a, c) { if (a.date !== c.date) return a.date < c.date ? 1 : -1; return c.at - a.at; });
 }
 function diaryLikeCount(d) { var n = 0; Object.keys(d.likes || {}).forEach(function (k) { if (d.likes[k] && d.likes[k].v) n++; }); return n; }
@@ -2123,8 +2123,10 @@ function addDiaryComment(id, text) {
   if (!d) return;
   text = String(text || '').trim();
   if (!text) { toast('댓글 내용을 적어 주세요'); return; }
-  if (!d.comments) d.comments = {};
-  d.comments[newId('cm')] = { by: ME.id, at: Date.now(), text: text.slice(0, 120) };
+  /* 댓글은 별도 노드에 둔다(여러 기기가 동시에 써도 사라지지 않게) */
+  if (!DOC.dyc) DOC.dyc = {};
+  if (!DOC.dyc[id]) DOC.dyc[id] = {};
+  DOC.dyc[id][newId('cm')] = { by: ME.id, at: Date.now(), text: text.slice(0, 120) };
   markDirty();
   dySig = '';
   renderDiary();
