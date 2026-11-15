@@ -403,8 +403,9 @@
       sel.value = String((home && home.r) || (school && school.r) || 300);
       sel.addEventListener('change', function () {
         var r = Number(sel.value) || 300;
-        if (v.geo.home) v.geo.home.r = r;
-        if (v.geo.school) v.geo.school.r = r;
+        var vv = V4();
+        if (vv.geo.home) vv.geo.home.r = r;
+        if (vv.geo.school) vv.geo.school.r = r;
         save(); renderGeo(); toast('도착 반경을 ' + r + 'm로 바꿨어요');
       });
     }

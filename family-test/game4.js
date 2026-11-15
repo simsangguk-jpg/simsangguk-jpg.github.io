@@ -125,10 +125,10 @@
       '.g4-slot.has{border-style:solid;background:rgba(255,255,255,.68)}',
       '.g4-room .ch{position:absolute;left:50%;bottom:6%;transform:translateX(-50%);font-size:44px;filter:drop-shadow(0 6px 6px rgba(0,0,0,.16))}',
       '.g4-yut{position:relative;width:100%;padding-top:100%;border-radius:18px;background:linear-gradient(160deg,#FFF9EC,#FFEFD8);border:1px solid #F0E2C8;overflow:hidden}',
-      '.g4-yut .bd{position:absolute;inset:8%}',
+      '.g4-yut .bd{position:absolute;inset:10%}',
       '.g4-yut .node{position:absolute;width:9.5%;height:9.5%;margin:-4.75% 0 0 -4.75%;border-radius:50%;background:#F7E4C4;border:1.5px solid #E3C99C;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;color:#8A7250}',
       '.g4-yut .node.corner{background:#FFD79A;border-color:#E0B267}',
-      '.g4-yut .pc{position:absolute;width:15%;height:15%;margin:-7.5% 0 0 -7.5%;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:900;color:#fff;border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.2);transition:all .28s ease}',
+      '.g4-yut .pc{position:absolute;width:12.5%;height:12.5%;margin:-6.25% 0 0 -6.25%;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:900;color:#fff;border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.2);transition:all .28s ease}',
       '.g4-yut .pc .s{position:absolute;bottom:-3px;right:-3px;background:#fff;color:#14181D;border-radius:8px;font-size:8px;padding:0 2px;border:1px solid #E9EEF2}',
       '.g4-sticks{display:flex;gap:9px;justify-content:center;margin:9px 0 4px;min-height:52px}',
       '.g4-stick{width:16px;height:46px;border-radius:8px;background:linear-gradient(#EBD9B8,#D9BF95);border:1px solid #C9AE84;transition:transform .5s ease,background .3s;transform-origin:50% 90%}',
@@ -204,6 +204,14 @@
     if (id === '3d') {
       if (global.FamPlay) global.FamPlay.enter();
       else if (global.ensurePlay) global.ensurePlay(function () {});
+      /* 3D 캐릭터가 만들어진 뒤 악세사리를 입힌다(준비 전 호출 대비 몇 번 더) */
+      var tries = 0;
+      if (pane.t) clearInterval(pane.t);
+      pane.t = setInterval(function () {
+        var P = global.FamPlay;
+        if (P && typeof P.ready === 'function' && P.ready()) syncLook(true);
+        if (++tries > 10) { clearInterval(pane.t); pane.t = null; }
+      }, 600);
     } else {
       if (global.FamPlay) global.FamPlay.leave();
     }
@@ -913,6 +921,7 @@
       return;
     }
     if (sub) sub.textContent = (y.mode === 'team' ? '2:2 팀전' : '개인전') + ' · ' + (y.winner ? '끝' : '진행 중');
+    start.innerHTML = '';
     /* 판 */
     var mine = myTeam(y);
     var html = '<div class="g4-yut"><div class="bd">';
@@ -921,22 +930,26 @@
       var corner = (n === 0 || n === 5 || n === 10 || n === 15);
       html += '<div class="node ' + (corner ? 'corner' : '') + '" style="left:' + p.x + '%;top:' + p.y + '%">' + (n === 0 ? '출' : (n === 20 ? '중' : '')) + '</div>';
     });
-    /* 말 그리기 */
+    /* 말 그리기 — 같은 칸에 모인 말은 조금씩 비켜 놓는다 */
     var occ = {};
+    var allPcs = [];
     Object.keys(y.teams).forEach(function (t) {
-      var tm = y.teams[t];
-      tm.pieces.forEach(function (pc, idx) {
-        if (pc.fin || pc.st < 1) return;
+      y.teams[t].pieces.forEach(function (pc, idx) {
+        if (pc.fin || pc.car || pc.st < 1) return;
         var route = ROUTES[pc.r] || R0;
         var node = route[Math.min(pc.i, route.length - 1)];
-        if (node === 0 && pc.i === 0) { /* 출발 대기 */ }
-        var p2 = NODES[node] || NODES[0];
-        var key = t + ':' + node;
-        var k = occ[key] || 0;
-        occ[key] = k + 1;
-        html += '<div class="pc" style="left:' + (p2.x + k * 4) + '%;top:' + (p2.y - k * 4) + '%;background:' + tm.color + '">' +
-          (tm.pieces.length === 4 ? (idx + 1) : '') + (pc.st > 1 ? '<span class="s">×' + pc.st + '</span>' : '') + '</div>';
+        allPcs.push({ t: t, pc: pc, node: node, idx: idx });
       });
+    });
+    allPcs.sort(function (a, b) { return a.idx - b.idx; });
+    allPcs.forEach(function (o) {
+      var k = occ[o.node] || 0;
+      occ[o.node] = k + 1;
+      var p2 = NODES[o.node] || NODES[0];
+      var tm = y.teams[o.t];
+      var dx = (k % 3) * 3.4, dy = Math.floor(k / 3) * 3.4;
+      html += '<div class="pc" style="left:' + (p2.x + dx) + '%;top:' + (p2.y - dy) + '%;background:' + tm.color + '" title="' + esc(F.memOf(tm.members[0]).name) + '">' +
+        (o.idx + 1) + (o.pc.st > 1 ? '<span class="s">×' + o.pc.st + '</span>' : '') + '</div>';
     });
     html += '</div></div>';
 
@@ -946,7 +959,7 @@
     html += '<div class="g4-turn"><span class="g4-tdot" style="background:' + tColor + '"></span>' +
       (y.winner ? '🏆 ' + y.winner : (curId(y) === me().id ? '내 차례예요!' : turnName + ' 님 차례')) + '</div>';
     html += '<div class="g4-sticks" id="g4Sticks">' + [0, 1, 2, 3].map(function () { return '<div class="g4-stick"></div>'; }).join('') + '</div>';
-    html += '<div class="g4-roll" id="g4Roll">' + (y.last ? (YUT_LABEL[y.last.v] + ' !') : '윷을 던져 주세요') + '</div>';
+    html += '<div class="g4-roll" id="g4Roll">' + (y.last ? (YUT_LABEL[y.last.v] + '!') : '윷을 던져 주세요') + '</div>';
     html += '<div class="v4-mini" id="g4YutMsg">' + esc(y.msg || '') + '</div>';
 
     /* 내 말 선택 */
@@ -981,7 +994,10 @@
     if (mineBox) mineBox.addEventListener('click', function (e) {
       var b = e.target.closest('[data-piece]');
       if (!b) return;
-      y.sel = Number(b.getAttribute('data-piece'));
+      var yy = G().yut;
+      if (!yy) return;
+      yy.sel = Number(b.getAttribute('data-piece'));
+      yy.rev = (yy.rev || 0) + 1;
       save(); renderYut();
     });
   }
