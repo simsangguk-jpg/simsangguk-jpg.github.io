@@ -250,7 +250,7 @@
       '.c7-bar i{display:block;height:100%;border-radius:20px;background:linear-gradient(90deg,#FFF3C4,#FFD166);transition:width .45s ease}',
       '.c7-goal{display:flex;gap:6px;justify-content:space-between;font-size:10.5px;font-weight:800;margin-top:6px;opacity:.96}',
       '.c7-ms{display:flex;gap:4px;margin-top:9px}',
-      '.c7-ms .m{flex:1;background:rgba(255,255,255,.17);border-radius:10px;padding:5px 1px;text-align:center;font-size:9px;font-weight:800;line-height:1.3;opacity:.8}',
+      '.c7-ms .m{flex:1;background:rgba(255,255,255,.17);border-radius:10px;padding:6px 1px 5px;text-align:center;font-size:9px;font-weight:800;line-height:1.25;opacity:.8;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px}',
       '.c7-ms .m b{display:block;font-size:12px;line-height:1.2}',
       '.c7-ms .m.on{background:#FFF6D8;color:#8A6300;opacity:1}',
       '.c7-contrib{margin-top:9px;font-size:10.5px;font-weight:800;display:flex;flex-wrap:wrap;gap:4px 9px;opacity:.96}',
