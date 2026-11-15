@@ -27,7 +27,7 @@
   var ST = {
     plan: { k: 'plan', e: '⏳', n: '예정' },
     done: { k: 'done', e: '✅', n: '완료' },
-    post: { k: 'post', e: '⏭️', n: '연기' },
+    post: { k: 'post', e: '📅', n: '변경' },
     cancel: { k: 'cancel', e: '❌', n: '취소' }
   };
   var ST_ORDER = ['plan', 'done', 'post', 'cancel'];
@@ -109,6 +109,12 @@
     var t = today();
     if (date && (date === t || date === nextDay(t))) return { level: 'mid', why: '날짜 임박(오늘·내일) → 보통' };
     return { level: 'low', why: '급한 일 아님 → 낮음' };
+  }
+  function addDays(ds, n) {
+    if (!ds) return '';
+    var x = new Date(Number(ds.slice(0, 4)), Number(ds.slice(5, 7)) - 1, Number(ds.slice(8, 10)));
+    x.setDate(x.getDate() + n);
+    return x.getFullYear() + '-' + pad(x.getMonth() + 1) + '-' + pad(x.getDate());
   }
   function nextDay(ds) {
     if (!ds) return '';
@@ -594,6 +600,73 @@
     }
   }
 
+  /* ---------------- 📅 변경: 날짜 옮기기 ---------------- */
+  function openChangeDate(kind, id) {
+    var r = rawRec(kind, id);
+    if (!r) return;
+    var x = prep(r, id, kind);
+    var base = x.d || today();
+    var tomorrow = nextDay(base) || today();
+    F.openSheet(
+      '<h3>📅 일정 날짜 변경</h3>' +
+      '<div class="sdesc">‘' + esc(x.t) + '’ 의 날짜를 옮겨요. 바꾼 날짜와 바꾼 사람·시각이 이력에 그대로 남습니다.</div>' +
+      '<div style="font-size:12px;font-weight:800;color:#5C6673;margin-bottom:9px">지금 날짜: ' +
+        (x.d ? md(x.d) + ' (' + weekday(x.d) + ')' + (x.time ? ' ' + esc(x.time) : '') : '날짜 없음') + '</div>' +
+      '<div class="form-row"><label>새 날짜</label><input class="field" type="date" id="c7cdD" value="' + esc(tomorrow) + '"></div>' +
+      '<div style="display:flex;gap:6px;margin:-2px 0 11px">' +
+        '<button type="button" class="btn ghost" data-c7q="' + esc(addDays(today(), 1)) + '" style="flex:1;padding:9px;font-size:11.5px;border-radius:11px">내일</button>' +
+        '<button type="button" class="btn ghost" data-c7q="' + esc(addDays(today(), 2)) + '" style="flex:1;padding:9px;font-size:11.5px;border-radius:11px">모레</button>' +
+        '<button type="button" class="btn ghost" data-c7q="' + esc(addDays(today(), 7)) + '" style="flex:1;padding:9px;font-size:11.5px;border-radius:11px">일주일 뒤</button>' +
+      '</div>' +
+      '<div id="c7cdHint" style="font-size:11px;font-weight:800;color:#0A7D56;background:#E7F8F1;border-radius:10px;padding:7px 10px;margin-bottom:10px;line-height:1.5"></div>' +
+      '<div style="display:flex;gap:8px"><button type="button" class="btn ghost" id="c7cdX" style="flex:1">취소</button>' +
+      '<button type="button" class="btn" id="c7cdS" style="flex:1.6">이 날짜로 변경</button></div>'
+    );
+    function hint() {
+      var el = $('c7cdHint');
+      var nd = val('c7cdD');
+      if (!el) return;
+      if (!nd) { el.textContent = '새 날짜를 골라 주세요'; return; }
+      var diff = 0;
+      try {
+        diff = Math.round((new Date(nd + 'T00:00:00') - new Date((x.d || today()) + 'T00:00:00')) / 86400000);
+      } catch (e) { diff = 0; }
+      el.innerHTML = '📅 ' + esc(md(nd)) + ' (' + esc(weekday(nd)) + ') 로 옮겨요' +
+        (x.d ? ' · ' + esc(md(x.d)) + ' → ' + esc(md(nd)) + (diff ? ' (' + (diff > 0 ? '+' : '') + diff + '일)' : '') : '');
+    }
+    hint();
+    var dd = $('c7cdD');
+    if (dd) { dd.addEventListener('input', hint); dd.addEventListener('change', hint); }
+    var qs = document.querySelectorAll('#sheetInner [data-c7q]');
+    for (var qi = 0; qi < qs.length; qi++) {
+      qs[qi].addEventListener('click', function () {
+        var d2 = this.getAttribute('data-c7q');
+        if ($('c7cdD')) $('c7cdD').value = d2;
+        hint();
+      });
+    }
+    if ($('c7cdX')) $('c7cdX').onclick = function () { F.closeSheet(); };
+    if ($('c7cdS')) $('c7cdS').onclick = function () {
+      var nd = val('c7cdD');
+      if (!nd) { toast('새 날짜를 골라 주세요'); return; }
+      var rr = rawRec(kind, id);
+      if (!rr) { toast('일정을 찾을 수 없어요 · 새로고침해 주세요'); return; }
+      ensureMeta(rr);
+      var oldD = rr.d || '';
+      if (oldD === nd) { toast('지금과 같은 날짜예요'); return; }
+      var n = now();
+      rr.d = nd; rr.st = 'post'; rr.done = 0; rr.doneBy = ''; rr.doneAt = 0;
+      rr.at = n; rr.stAt = n;
+      pushHist(rr, '변경', (oldD ? md(oldD) : '날짜 없음') + ' → ' + md(nd) + ' (' + weekday(nd) + ') 로 날짜 변경', n);
+      save();
+      F.closeSheet();
+      selDay = nd; viewMonth = nd.slice(0, 7);
+      lsSet(LS_SEL, selDay); lsSet(LS_MONTH, viewMonth);
+      render();
+      toast('📅 ' + md(nd) + ' (' + weekday(nd) + ')로 옮겼어요 · 이력에 남겼습니다');
+    };
+  }
+
   /* ---------------- 삭제 ---------------- */
   function removeItem(kind, id) {
     var r = rawRec(kind, id);
@@ -796,7 +869,13 @@
       if ((el = e.target.closest('[data-c7it]'))) {
         var parts = el.getAttribute('data-c7it').split('|');
         var kind = parts[0], id = parts[1];
-        if (e.target.closest('[data-c7st]')) { setStatus(kind, id, e.target.closest('[data-c7st]').getAttribute('data-c7st')); return; }
+        var stBtn = e.target.closest('[data-c7st]');
+        if (stBtn) {
+          var want = stBtn.getAttribute('data-c7st');
+          if (want === 'post') { openChangeDate(kind, id); return; }   /* 📅 변경 = 새 날짜 고르기 */
+          setStatus(kind, id, want);
+          return;
+        }
         if (e.target.closest('[data-c7edit]')) { openEdit(kind, id); return; }
         if (e.target.closest('[data-c7del]')) { confirmDelete(kind, id); return; }
         if (e.target.closest('[data-c7hist]')) { histOpen[kind + '|' + id] = !histOpen[kind + '|' + id]; render(); return; }

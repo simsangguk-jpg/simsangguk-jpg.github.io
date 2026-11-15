@@ -584,6 +584,16 @@ body.pg-lock{overflow:hidden}
   <main>
     <!-- ===== 홈 ===== -->
     <section id="view-home">
+      <div class="card" id="cheerCardTop" style="border:1.5px solid #DCEFE5;background:linear-gradient(180deg,#F6FCF9,#FFFFFF)">
+        <div class="card-head"><h2>💬 가족 응원 한마디</h2><span class="sub" id="cheerCount">0마디</span></div>
+        <div id="cheerRank"></div>
+        <div id="cheerList" style="display:flex;flex-direction:column;gap:7px"></div>
+        <div style="display:flex;gap:7px;margin-top:10px">
+          <input class="field" id="cheerInput" placeholder="예: 오늘도 안전하게! 사랑해요" maxlength="60" style="margin-bottom:0;flex:1">
+          <button class="btn" id="btnCheer" style="width:auto;padding:0 16px;border-radius:13px">보내기</button>
+        </div>
+      </div>
+
       <button type="button" class="nt-banner" id="ntBanner">
         <span class="ico">📢</span>
         <span class="tx"><b id="ntBannerTitle">우리 가족 공지</b><em id="ntBannerText">가족에게 꼭 알려야 할 소식을 올려 보세요</em></span>
@@ -606,6 +616,8 @@ body.pg-lock{overflow:hidden}
         <span class="go">놀러 가기 ›</span>
       </button>
 
+      <div id="p7strip1" class="p7"></div>
+
       <div class="card">
         <div class="card-head"><h2>📍 가족 위치</h2><span class="sub" id="locSumAt">–</span></div>
         <div id="locMineBox" style="display:none"></div>
@@ -618,6 +630,8 @@ body.pg-lock{overflow:hidden}
 
       <!-- ===== V7 · 우리가족 대형 달력 + 가족 경험치 배너 (cal7.js 가 채운다) ===== -->
       <div id="famCalBanner"></div>
+
+      <div id="p7strip2" class="p7"></div>
 
       <button type="button" class="fb-top" id="fbTopBtn">
         <span class="ico">💡</span>
@@ -660,14 +674,7 @@ body.pg-lock{overflow:hidden}
         <button class="chip-btn" id="btnEtaDetail" style="margin-top:10px;width:100%;padding:9px;text-align:center">＋ 시간·메모 직접 입력</button>
       </div>
 
-      <div class="card">
-        <div class="card-head"><h2>💬 오늘의 응원 한마디</h2><span class="sub">가족에게</span></div>
-        <div id="cheerList" style="display:flex;flex-direction:column;gap:7px"></div>
-        <div style="display:flex;gap:7px;margin-top:10px">
-          <input class="field" id="cheerInput" placeholder="예: 오늘도 안전하게! 사랑해요" maxlength="60" style="margin-bottom:0;flex:1">
-          <button class="btn" id="btnCheer" style="width:auto;padding:0 16px;border-radius:13px">보내기</button>
-        </div>
-      </div>
+      <div id="p7strip3" class="p7"></div>
 
       <div class="card">
         <div class="card-head"><h2>📅 가족 약속·만남</h2><span class="sub" id="planCount">0개</span></div>
@@ -898,6 +905,7 @@ body.pg-lock{overflow:hidden}
 <script src="./game4.js?v=7a"></script>
 <script src="./mind5.js?v=7a"></script>
 <script src="./cal7.js?v=7a"></script>
+<script src="./extra7.js?v=7a"></script>
 <script>
 (function () {
 'use strict';
@@ -1474,6 +1482,12 @@ function renderEta() {
     qb[i].classList.toggle('on', !!(mine && mine.s === act));
   }
 }
+function cheerStamp(ts) {
+  if (!ts) return '';
+  var x = new Date(ts);
+  var p2 = function (n) { return n < 10 ? '0' + n : '' + n; };
+  return (x.getMonth() + 1) + '/' + x.getDate() + ' ' + p2(x.getHours()) + ':' + p2(x.getMinutes());
+}
 function renderCheer() {
   var box = $('cheerList');
   var ids = Object.keys(DOC.cheer || {}).filter(function (k) { return DOC.cheer[k] && !DOC.cheer[k].d && DOC.cheer[k].text; });
@@ -1486,7 +1500,7 @@ function renderCheer() {
       var m = memOf(k);
       return '<div style="display:flex;gap:8px;align-items:flex-start;background:#FBFDFC;border:1px solid #EDF2F0;border-radius:12px;padding:9px 10px">' +
         '<div style="font-size:15px">' + (m.emoji || '🧑') + '</div>' +
-        '<div style="flex:1;min-width:0"><div style="font-size:11.5px;font-weight:800;color:#0A7D56">' + esc(m.name) + ' <span style="color:#9AA4AF;font-weight:600">' + ago(c.at) + '</span></div>' +
+        '<div style="flex:1;min-width:0"><div style="font-size:11.5px;font-weight:800;color:#0A7D56">' + esc(m.name) + ' <span style="color:#9AA4AF;font-weight:600">' + cheerStamp(c.at) + '</span></div>' +
         '<div style="font-size:12.5px;line-height:1.45;word-break:keep-all">' + esc(c.text) + '</div></div>' +
         (ME && k === ME.id ? '<button type="button" class="del-x" data-cheer-del="' + esc(k) + '" style="color:#B8C1CA;font-size:15px">✕</button>' : '') +
         '</div>';
@@ -3747,6 +3761,8 @@ window.FAM = {
       if (cb) cb(null, err);
     }, { timeout: 8000, maximumAge: 15000 });
   },
+  openPhoto: function (pid) { return openPhoto(pid); },
+  download: function (du, name) { return downloadDataUrl(du, name); },
   onPull: function (fn) { pullHooks.push(fn); }
 };
 var pullHooks = [];

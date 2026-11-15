@@ -1,6 +1,6 @@
 /* 상국수향지섭지율포털 Service Worker · v9 (2026-11-15 · 대형 달력·수정이력·자동 중요도·가족 XP)
    - /family/ 범위만 담당한다(상국포털 본체 캐시와 섞이지 않게 별도 캐시 이름 사용)
-   - install 단계에서 확장 모듈(extra4.js·game4.js·play3d.js·mind5.js)까지 모두 프리캐시한다
+   - install 단계에서 확장 모듈(extra4.js·game4.js·play3d.js·mind5.js·cal7.js·extra7.js)까지 모두 프리캐시한다
    - 화면(HTML)은 네트워크 우선: 새로 배포한 내용이 앱에서도 바로 뜨도록
    - 그 밖의 정적 파일은 네트워크 우선, 실패 시 캐시
 */
@@ -14,6 +14,7 @@ const PRECACHE = [
   './play3d.js',
   './mind5.js',
   './cal7.js',
+  './extra7.js',
   './manifest.webmanifest',
   './icon-192.png',
   './icon-512.png',
