@@ -1175,6 +1175,7 @@
     if (latest > (c.lastDiary || 0)) {
       c.lastDiary = latest;
       c.lastCard = now();
+      c.at = now();
       save();
       awardCard('diary');
     }
