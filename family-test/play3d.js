@@ -281,14 +281,14 @@ function buildWorld(scene) {
 
   /* 모래섬 */
   var island = new THREE.Mesh(
-    geo('island', function () { return new THREE.CylinderGeometry(5.06, 5.4, 1.0, 56, 1); }),
+    geo('island', function () { return new THREE.CylinderGeometry(4.28, 4.62, 1.0, 56, 1); }),
     [mat(0xE0C38F), mat(0xF2DDAF), mat(0xDDBF8D)]
   );
   island.position.y = -0.5;
   root.add(island);
 
   var sandTop = new THREE.Mesh(
-    geo('sandTop', function () { return new THREE.CircleGeometry(5.04, 56); }),
+    geo('sandTop', function () { return new THREE.CircleGeometry(4.26, 56); }),
     mat(0xF2DEB0)
   );
   sandTop.rotation.x = -Math.PI / 2;
@@ -296,7 +296,7 @@ function buildWorld(scene) {
   root.add(sandTop);
 
   var inner = new THREE.Mesh(
-    geo('inner', function () { return new THREE.CircleGeometry(3.75, 48); }),
+    geo('inner', function () { return new THREE.CircleGeometry(3.2, 48); }),
     mat(0xF9E8C2, { transparent: true, opacity: 0.92 })
   );
   inner.rotation.x = -Math.PI / 2;
@@ -305,7 +305,7 @@ function buildWorld(scene) {
 
   /* 파도(흰 테두리) */
   var foam = new THREE.Mesh(
-    geo('foam', function () { return new THREE.TorusGeometry(5.2, 0.075, 8, 64); }),
+    geo('foam', function () { return new THREE.TorusGeometry(4.42, 0.07, 8, 64); }),
     mat(0xFFFFFF, { transparent: true, opacity: 0.9 })
   );
   foam.rotation.x = -Math.PI / 2;
@@ -314,7 +314,7 @@ function buildWorld(scene) {
   P.foam = foam;
 
   var foam2 = new THREE.Mesh(
-    geo('foam2', function () { return new THREE.TorusGeometry(6.3, 0.05, 8, 64); }),
+    geo('foam2', function () { return new THREE.TorusGeometry(5.4, 0.05, 8, 64); }),
     mat(0xFFFFFF, { transparent: true, opacity: 0.55 })
   );
   foam2.rotation.x = -Math.PI / 2;
@@ -323,7 +323,7 @@ function buildWorld(scene) {
   P.foam2 = foam2;
 
   var foam3 = new THREE.Mesh(
-    geo('foam3', function () { return new THREE.TorusGeometry(8.2, 0.045, 8, 72); }),
+    geo('foam3', function () { return new THREE.TorusGeometry(7.2, 0.045, 8, 72); }),
     mat(0xFFFFFF, { transparent: true, opacity: 0.32 })
   );
   foam3.rotation.x = -Math.PI / 2;
@@ -334,7 +334,7 @@ function buildWorld(scene) {
   /* 바위 */
   var rockM = mat(0x9AA3A8);
   var rockM2 = mat(0x87919A);
-  var ROCK_SPOTS = [[-4.45, 2.35, 0.42], [-4.7, 0.8, 0.3], [4.25, 2.6, 0.38], [4.55, -2.7, 0.3], [-3.0, -4.0, 0.34]];
+  var ROCK_SPOTS = [[-3.72, 1.95, 0.38], [-3.95, 0.65, 0.26], [3.55, 2.2, 0.32], [3.8, -2.25, 0.26], [-2.5, -3.35, 0.3]];
   ROCK_SPOTS.forEach(function (r, i) {
     var m = new THREE.Mesh(geo('rock', function () { return new THREE.IcosahedronGeometry(1, 0); }), i % 2 ? rockM2 : rockM);
     m.position.set(r[0], 0.05, r[1]);
@@ -354,7 +354,7 @@ function buildWorld(scene) {
   var capTop = new THREE.Mesh(geo('ucapTop', function () { return new THREE.SphereGeometry(0.07, 10, 8); }), mat(0xFFFFFF));
   capTop.position.y = 1.66;
   uGrp.add(capTop);
-  uGrp.position.set(-3.55, 0, -1.6);
+  uGrp.position.set(-2.95, 0, -1.45);
   uGrp.rotation.z = 0.12;
   root.add(uGrp);
 
@@ -369,7 +369,7 @@ function buildWorld(scene) {
   );
   board.position.y = 1.0;
   signGrp.add(board);
-  signGrp.position.set(3.35, 0, -2.05);
+  signGrp.position.set(2.85, 0, -1.75);
   signGrp.rotation.y = -0.35;
   root.add(signGrp);
 
@@ -378,7 +378,7 @@ function buildWorld(scene) {
     geo('ball', function () { return new THREE.SphereGeometry(0.26, 20, 14); }),
     new THREE.MeshLambertMaterial({ map: spriteTex('ball'), color: 0xffffff })
   );
-  ball.position.set(2.3, 0.26, 1.85);
+  ball.position.set(1.95, 0.26, 1.55);
   root.add(ball);
   P.ball = ball;
   P.ballBase = 0.26;
@@ -515,9 +515,9 @@ function buildCharacter(cfg) {
   }
   if (cfg.style === 'puffer') {
     [0.18, 0.28, 0.38].forEach(function (y) {
-      var rr = bodyR(y, G) + 0.005;
+      var rr = bodyR(y, G) - 0.004;
       var ring = new THREE.Mesh(
-        geo('pf' + y + rr.toFixed(3), function () { return new THREE.TorusGeometry(rr, 0.011, 6, 26); }),
+        geo('pf' + y + rr.toFixed(3), function () { return new THREE.TorusGeometry(rr, 0.009, 6, 26); }),
         mat(cfg.topAlt)
       );
       ring.rotation.x = Math.PI / 2;
@@ -547,9 +547,9 @@ function buildCharacter(cfg) {
     tail.rotation.z = 0.16;
     torso.add(tail);
     [0.2, 0.31, 0.42].forEach(function (y) {
-      var rr = bodyR(y, G) + 0.004;
+      var rr = bodyR(y, G) - 0.004;
       var rib = new THREE.Mesh(
-        geo('kn' + y + rr.toFixed(3), function () { return new THREE.TorusGeometry(rr, 0.008, 6, 24); }),
+        geo('kn' + y + rr.toFixed(3), function () { return new THREE.TorusGeometry(rr, 0.007, 6, 24); }),
         mat(cfg.topAlt)
       );
       rib.rotation.x = Math.PI / 2;
@@ -558,8 +558,12 @@ function buildCharacter(cfg) {
       torso.add(rib);
     });
   } else if (cfg.style === 'coat') {
-    var hoodie = new THREE.Mesh(geo('hd', function () { return new THREE.BoxGeometry(0.2, 0.19, 0.045); }), mat(cfg.inner));
-    hoodie.position.set(0, 0.40, bodyR(0.40, G) * 0.78 + 0.004);
+    var hoodie = new THREE.Mesh(
+      geo('hd', function () { return new THREE.CylinderGeometry(0.283 * G, 0.283 * G, 0.2, 20, 1, true, -0.62, 1.24); }),
+      mat(cfg.inner, { side: THREE.DoubleSide })
+    );
+    hoodie.position.y = 0.40;
+    hoodie.scale.z = 0.8;
     torso.add(hoodie);
     var hood = new THREE.Mesh(geo('hood', function () { return new THREE.SphereGeometry(0.17, 14, 10); }), mat(cfg.inner));
     hood.scale.set(1, 0.62, 0.8);
