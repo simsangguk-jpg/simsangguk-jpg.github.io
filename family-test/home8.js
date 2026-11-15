@@ -17,8 +17,7 @@
   var TTL = 15 * 60 * 1000;          /* 15분 캐시 */
   var CELL = 0.01;                   /* 약 1km 격자 캐시 */
   var NOM_GAP = 1150;                /* Nominatim 예절: 1초에 1회 이하 */
-  var BOX_LAT = 0.009, BOX_LON = 0.012;   /* 반경 약 1km 상자 */
-  var nomChain = Promise.resolve(), nomLast = 0;
+  var BOX_LAT = 0.009, BOX_LON = 0.012;   /* 반경 약 1km 상자 */  var nomChain = Promise.resolve(), nomLast = 0;
 
   function $(id) { return document.getElementById(id); }
   function d() { return F && F.doc(); }
@@ -180,8 +179,10 @@
   var waiting = {};      /* 회원id -> 1 (조회 중) */
 
   function cellKey(lat, lon) { return (Math.round(lat / CELL) * CELL).toFixed(2) + ',' + (Math.round(lon / CELL) * CELL).toFixed(2); }
-  function viewbox(lat, lon) {
-    return [lon - BOX_LON, lat + BOX_LAT, lon + BOX_LON, lat - BOX_LAT].map(function (v) { return v.toFixed(5); }).join(',');
+  function viewbox(lat, lon, km) {
+    var f = km === 2.5 ? 2.5 : 1;
+    return [lon - BOX_LON * f, lat + BOX_LAT * f, lon + BOX_LON * f, lat - BOX_LAT * f]
+      .map(function (v) { return v.toFixed(5); }).join(',');
   }
   function nomRun(url, ms) {
     var p = nomChain.then(function () {
@@ -228,7 +229,7 @@
         .filter(function (x) { return x.name && isFinite(x.lat) && isFinite(x.lon); });
     });
   }
-  var WIKI_BAD = /(초등학교|중학교|고등학교|학교|묘역|묘$|사업소|차량기지|정류장|아파트|터널|교량|저수지|빗물펌프장|변전소)/;
+  var WIKI_BAD = /(초등학교|중학교|고등학교|학교|묘역|묘$|사업소|차량기지|정류장|아파트|터널|교량|저수지|빗물펌프장|변전소|사무소|청사|주민센터|파출소|우체국|보건소|복지관|터미널|기지|창고|본부)/;
   function wikiSpot(lat, lon) {
     var url = WIKI + '?action=query&list=geosearch&gscoord=' + lat + '%7C' + lon +
       '&gsradius=3000&gslimit=12&format=json&origin=*';
@@ -262,23 +263,41 @@
     }
     return best;
   }
+  function sortNear(list, lat, lon) {
+    return (list || []).map(function (x) {
+      var y = {};
+      for (var k in x) y[k] = x[k];
+      y.d0 = meters(lat, lon, x.lat, x.lon);
+      return y;
+    }).sort(function (a, b) { return a.d0 - b.d0; });
+  }
   function loadCell(lat, lon) {
     var k = cellKey(lat, lon), c = cells[k];
     if (c && c.list && c.at && (Date.now() - c.at) < TTL) return Promise.resolve(c.list);
     if (c && c.p) return c.p;
-    var box = viewbox(lat, lon);
+    var box1 = viewbox(lat, lon, 1), box2 = viewbox(lat, lon, 2.5);
+    /* 1km 안에 없으면 2.5km까지 넓혀 한 번 더 찾아본다(외곽·교하 지역 배려) */
+    function fill(term, cat) {
+      return nomList(term, box1, cat).catch(function () { return []; }).then(function (list) {
+        if (list.length) return list;
+        return nomList(term, box2, cat).catch(function () { return []; });
+      });
+    }
     var p = Promise.all([
-      nomList('restaurant', box, 'food').catch(function () { return []; }),
-      nomList('cafe', box, 'cafe').catch(function () { return []; }),
+      fill('restaurant', 'food'),
+      fill('cafe', 'cafe'),
       wikiSpot(lat, lon).catch(function () { return []; })
     ]).then(function (r) {
-      var food = nearest(r[0], lat, lon);
-      var cafe = nearest(r[1], lat, lon);
-      var spot = r[2] && r[2].length ? r[2][0] : null;
-      if (spot) return pack([food, cafe, spot], lat, lon);
-      /* 위키에서 가볼만한 곳을 못 찾으면 공원으로 대신한다 */
-      return nomList('park', box, 'spot').catch(function () { return []; }).then(function (ps) {
-        return pack([food, cafe, nearest(ps, lat, lon) || null], lat, lon);
+      var foods = sortNear(r[0], lat, lon), cafes = sortNear(r[1], lat, lon);
+      var wiki = r[2] && r[2].length ? r[2][0] : null;
+      var wd = wiki ? meters(lat, lon, wiki.lat, wiki.lon) : 1e9;
+      if (wiki && wd <= 1500) return pack([foods[0], cafes[0], wiki, foods[1], cafes[1]], lat, lon);
+      /* 위키에 마땅한 곳이 없거나 멀면 가까운 공원을 가볼만한 곳으로 쓴다 */
+      return nomList('park', box1, 'spot').catch(function () { return []; }).then(function (ps) {
+        var park = nearest(ps, lat, lon);
+        var pd = park ? meters(lat, lon, park.lat, park.lon) : 1e9;
+        var spot = (wiki && wd <= pd) ? wiki : park;
+        return pack([foods[0], cafes[0], spot, foods[1], cafes[1]], lat, lon);
       });
     }).then(function (list) {
       cells[k] = { at: Date.now(), list: list };
@@ -303,8 +322,7 @@
     });
     out.sort(function (a, b) { return a.d0 - b.d0; });
     return out.slice(0, 3);
-  }
-  function ensureMember(m) {
+  }  function ensureMember(m) {
     var live = (F.live && F.live()) || {};
     var l = live[m.id];
     if (!l || typeof l.lat !== 'number' || typeof l.lon !== 'number') return;
