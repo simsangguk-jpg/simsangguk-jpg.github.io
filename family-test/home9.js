@@ -792,7 +792,7 @@
         '<div class="sc9-flow">' + step('🏠 출발 ' + (day.depart ? '✅ ' + F.hhmm(day.depart) : '–'), day.depart) +
         step('🏫 등교 ' + (day.arrive ? '✅ ' + F.hhmm(day.arrive) : '–'), day.arrive) +
         step('🏡 하교 도착 ' + (day.home ? '✅ ' + F.hhmm(day.home) : '–'), day.home) + '</div>' +
-        (kidId() === k.id ? '<div class="sc9-btns">' +
+        (kidId() === k.id || isParent() ? '<div class="sc9-btns">' +
           '<button type="button" class="btn soft" data-v9sch="' + k.id + ':depart" style="padding:7px 10px;font-size:11.5px">🚶 출발</button>' +
           '<button type="button" class="btn soft" data-v9sch="' + k.id + ':arrive" style="padding:7px 10px;font-size:11.5px">🏫 도착</button>' +
           '<button type="button" class="btn soft" data-v9sch="' + k.id + ':home" style="padding:7px 10px;font-size:11.5px">🏡 집 도착</button></div>' : '') +
@@ -1242,7 +1242,7 @@
     };
   }
   function sbApprove(id, withMoney) {
-    var sb = sbOf(), v = V9();
+    var sb = sbOf();
     var r = sb.rec[id];
     if (!r || r.st !== 'pending') return;
     if (withMoney) {
@@ -1253,23 +1253,26 @@
       $('sb9MoneyOk').onclick = function () {
         var amt = Math.round(Number($('sb9MoneyAmt').value || 0));
         var v2 = V9();
-        r.st = 'ok';
-        r.done = { amt: amt, by: mid(), at: now() };
-        r.at = now();
+        var sb2 = sbOf();
+        var r2 = sb2.rec[id];
+        if (!r2 || r2.st !== 'pending') { F.closeSheet(); toast('이미 처리된 건의예요'); return; }
+        r2.st = 'ok';
+        r2.done = { amt: amt, by: mid(), at: now() };
+        r2.at = now();
         if (amt > 0) {
           var yk = todayYmd();
-          if (!v2.moneyD[r.to]) v2.moneyD[r.to] = {};
-          if (!v2.moneyD[r.to][yk]) v2.moneyD[r.to][yk] = { items: [] };
-          if (!v2.moneyD[r.to][yk].items) v2.moneyD[r.to][yk].items = [];
-          v2.moneyD[r.to][yk].items.push({ k: 'got', amt: amt, t: '🏅 상점 리워드 · ' + catName(sb, r.cat), at: now() });
-          v2.moneyD[r.to][yk].at = now();
+          if (!v2.moneyD[r2.to]) v2.moneyD[r2.to] = {};
+          if (!v2.moneyD[r2.to][yk]) v2.moneyD[r2.to][yk] = { items: [] };
+          if (!v2.moneyD[r2.to][yk].items) v2.moneyD[r2.to][yk].items = [];
+          v2.moneyD[r2.to][yk].items.push({ k: 'got', amt: amt, t: '🏅 상점 리워드 · ' + catName(sb2, r2.cat), at: now() });
+          v2.moneyD[r2.to][yk].at = now();
         }
         save();
-        logEdit('건의 승인 + 상점·용돈 지급', memName(r.to) + ' +' + r.pts + '점' + (amt ? ' · ' + amt + '원' : ''));
+        logEdit('건의 승인 + 상점·용돈 지급', memName(r2.to) + ' +' + r2.pts + '점' + (amt ? ' · ' + amt + '원' : ''));
         F.closeSheet();
         $('v9SbBody').__sig = null;
         renderSb();
-        toast('🎉 칭찬 승인! +' + r.pts + '점' + (amt ? ' · ' + amt + '원 지급' : ''));
+        toast('🎉 칭찬 승인! +' + r2.pts + '점' + (amt ? ' · ' + amt + '원 지급' : ''));
       };
       return;
     }
@@ -1366,7 +1369,8 @@
           '우리 가족 상벌점 기록이야:\n' + (lines || '(아직 기록 없음)') + '\n' +
           '반복된 벌점과 잘한 일을 분석해, 아이들이 상처받지 않게 따뜻한 조언 2~3문장으로 해줘. 이모지 1개 이하. 조언 본문만.'
         ).then(function (txt) {
-          sb2.advice = { text: txt.slice(0, 400), at: now(), ymd: todayYmd() };
+          var sb3 = sbOf();
+          sb3.advice = { text: txt.slice(0, 400), at: now(), ymd: todayYmd() };
           save();
           $('v9SbBody').__sig = null;
           renderSb();
