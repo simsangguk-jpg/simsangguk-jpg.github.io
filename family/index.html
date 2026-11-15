@@ -276,6 +276,194 @@ main{padding:14px 14px 6px}
 .fb-send{width:auto;padding:10px 18px;border-radius:12px;font-size:13px;background:var(--violet);flex:none}
 .fb-empty{text-align:center;color:var(--muted);font-size:12px;padding:14px 8px;line-height:1.6;border:1.5px dashed #E7E2F6;border-radius:13px;background:#FCFBFF}
 
+/* ============================================================
+   V2 · 공지 배너 / 채팅 배너 / 위치 요약 / 생활 허브
+   ============================================================ */
+/* 공지 배너 */
+.nt-banner{display:flex;gap:9px;align-items:flex-start;width:100%;text-align:left;background:linear-gradient(100deg,#FFF7E6 0%,#FFFDF8 72%);border:1px solid #F6E3BB;border-radius:16px;padding:11px 12px;margin-bottom:10px;box-shadow:0 6px 18px rgba(240,190,80,.13)}
+.nt-banner:active{transform:scale(.994)}
+.nt-banner .ico{font-size:18px;line-height:1.15;flex:none}
+.nt-banner .tx{flex:1;min-width:0}
+.nt-banner .tx b{font-size:12.5px;font-weight:800;display:block;letter-spacing:-.2px;color:#7A5410}
+.nt-banner .tx em{font-size:12px;color:#5C4A25;display:-webkit-box;margin-top:2px;line-height:1.45;word-break:keep-all;overflow:hidden;-webkit-line-clamp:2;-webkit-box-orient:vertical;font-style:normal}
+.nt-banner .go{font-size:10.5px;font-weight:800;color:#8A6A00;background:rgba(255,222,150,.6);border-radius:20px;padding:5px 9px;white-space:nowrap;flex:none}
+.nt-pin{display:inline-block;font-size:9.5px;font-weight:800;color:#B23A00;background:#FFE7DA;border-radius:6px;padding:1px 5px;margin-right:4px;vertical-align:1px}
+
+/* 채팅 배너 */
+.chat-top{display:flex;align-items:center;gap:9px;width:100%;text-align:left;background:linear-gradient(100deg,#4C8DFF 0%,#6E8CF7 58%,#8B7CF6 100%);color:#fff;border-radius:16px;padding:11px 13px;margin-bottom:10px;box-shadow:0 8px 20px rgba(76,141,255,.22)}
+.chat-top:active{transform:scale(.994)}
+.chat-top .ico{font-size:19px;line-height:1;flex:none}
+.chat-top .tx{flex:1;min-width:0}
+.chat-top .tx b{display:block;font-size:12.5px;font-weight:800;letter-spacing:-.3px;line-height:1.3}
+.chat-top .tx small{display:block;font-size:10.5px;opacity:.94;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chat-top .go{flex:none;font-size:10.5px;font-weight:800;background:rgba(255,255,255,.22);border-radius:20px;padding:5px 9px;white-space:nowrap}
+.chat-inline{display:flex;gap:6px;margin-top:9px}
+.chat-inline input{flex:1;min-width:0;padding:10px 12px;border-radius:12px;border:1.5px solid #E3E9EF;background:#fff;font-size:13.5px;outline:none}
+.chat-inline input:focus{border-color:#6E8CF7;box-shadow:0 0 0 3px rgba(110,140,247,.1)}
+.chat-inline button{flex:none;padding:0 14px;border-radius:12px;background:#4C8DFF;color:#fff;font-size:13px;font-weight:800}
+
+/* 위치 요약 */
+.loc-row{display:flex;gap:8px;align-items:center;padding:8px 2px;border-bottom:1px dashed #EEF2F5}
+.loc-row:last-child{border-bottom:none}
+.loc-row .av{width:28px;height:28px;border-radius:9px;background:#F1F4F5;display:flex;align-items:center;justify-content:center;font-size:14px;flex:none}
+.loc-row .bd{flex:1;min-width:0}
+.loc-row .n1{font-size:12.5px;font-weight:800;letter-spacing:-.2px;display:flex;align-items:center;gap:5px}
+.loc-row .n2{font-size:11px;color:var(--muted);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.loc-row .ag{font-size:10px;font-weight:700;color:var(--mint-d);background:var(--mint-l);border-radius:20px;padding:3px 7px;white-space:nowrap;flex:none}
+.loc-row .ag.old{color:#8A6A00;background:#FFF8E7}
+.loc-row a.mini{font-size:10.5px;font-weight:800;color:#2F6FD0;background:#EEF5FF;border-radius:9px;padding:5px 8px;text-decoration:none;white-space:nowrap;flex:none}
+
+/* ---------- 지도 ---------- */
+.map-box{position:relative;width:100%;height:230px;border-radius:14px;overflow:hidden;background:#E9EFF2;border:1px solid #E1E8EC;margin-bottom:10px;touch-action:pan-y}
+.map-box .tile{position:absolute;width:256px;height:256px;left:0;top:0;user-select:none;-webkit-user-drag:none;background:#E9EFF2}
+.map-grid-bg{position:absolute;inset:0;background-image:linear-gradient(#DDE5EA 1px,transparent 1px),linear-gradient(90deg,#DDE5EA 1px,transparent 1px);background-size:40px 40px}
+.map-pin{position:absolute;transform:translate(-50%,-100%);text-align:center;z-index:3}
+.map-pin .bub{width:30px;height:30px;border-radius:50% 50% 50% 6px;background:#fff;border:2px solid var(--mint);display:flex;align-items:center;justify-content:center;font-size:15px;box-shadow:0 4px 10px rgba(20,24,29,.18);transform:rotate(-45deg)}
+.map-pin .bub span{transform:rotate(45deg)}
+.map-pin .tag{font-size:9.5px;font-weight:800;color:#fff;background:rgba(20,24,29,.72);border-radius:20px;padding:1px 6px;margin-top:3px;white-space:nowrap;display:inline-block}
+.map-pin.me .bub{border-color:#4C8DFF}
+.map-pin.me .tag{background:#2F6FD0}
+.map-ctr{position:absolute;right:8px;bottom:8px;display:flex;flex-direction:column;gap:5px;z-index:4}
+.map-ctr button{width:30px;height:30px;border-radius:9px;background:rgba(255,255,255,.94);box-shadow:0 2px 7px rgba(20,24,29,.18);font-size:14px;font-weight:800;color:var(--ink2);display:flex;align-items:center;justify-content:center}
+.map-attr{position:absolute;left:0;bottom:0;font-size:8px;color:#5B6470;background:rgba(255,255,255,.75);padding:1px 4px;border-radius:0 6px 0 0;z-index:4}
+.map-empty{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;font-size:11.5px;color:#5B6470;padding:16px;line-height:1.6;z-index:2;background:rgba(255,255,255,.55)}
+
+/* 자동 공유 토글 */
+.sw-row{display:flex;align-items:center;gap:10px;border:1.5px solid #E7EEF0;border-radius:14px;padding:10px 12px;background:#FBFDFC;margin-bottom:9px}
+.sw-row .bd{flex:1;min-width:0}
+.sw-row .t1{font-size:12.5px;font-weight:800;letter-spacing:-.2px}
+.sw-row .t2{font-size:10.5px;color:var(--muted);margin-top:2px;line-height:1.45}
+.sw{width:46px;height:27px;border-radius:20px;background:#D6DEE3;position:relative;flex:none;transition:.18s}
+.sw:after{content:'';position:absolute;left:3px;top:3px;width:21px;height:21px;border-radius:50%;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.22);transition:.18s}
+.sw.on{background:var(--mint)}
+.sw.on:after{left:22px}
+
+/* ---------- 채팅 ---------- */
+.chat-list{display:flex;flex-direction:column;gap:9px;padding:2px 0 6px;min-height:120px}
+.msg{display:flex;gap:7px;align-items:flex-end}
+.msg.me{flex-direction:row-reverse}
+.msg .av{width:27px;height:27px;border-radius:9px;background:#F1F4F5;display:flex;align-items:center;justify-content:center;font-size:13px;flex:none}
+.msg .col{max-width:76%;min-width:0}
+.msg .mwho{font-size:10px;font-weight:800;color:#6B7580;margin:0 0 2px 2px;display:flex;gap:4px;align-items:center}
+.msg.me .mwho{justify-content:flex-end;margin:0 2px 2px 0}
+.msg .mwho .rl{font-weight:700;color:#98A2AD}
+.bubble{background:#F1F4F5;border-radius:14px;padding:8px 11px;font-size:13.5px;line-height:1.45;color:var(--ink);word-break:break-word;white-space:pre-wrap;box-shadow:0 1px 2px rgba(20,24,29,.04)}
+.msg.me .bubble{background:var(--mint);color:#fff}
+.bubble .mtime{display:block;font-size:9.5px;opacity:.62;margin-top:3px;text-align:right;white-space:nowrap}
+.msg.me .bubble .mtime{color:rgba(255,255,255,.85);opacity:.9}
+.bubble img.chimg{display:block;border-radius:9px;margin:3px 0 1px;max-width:100%;max-height:210px;object-fit:cover;background:#E3E9EC}
+.chat-day{text-align:center;font-size:10.5px;font-weight:800;color:var(--muted);background:#EEF2F4;border-radius:20px;padding:3px 10px;width:fit-content;margin:6px auto}
+.chat-foot{position:sticky;bottom:calc(68px + var(--safe-b));z-index:6;background:linear-gradient(rgba(245,247,248,0),rgba(245,247,248,.97) 30%);padding:8px 0 3px}
+.chat-composer{display:flex;gap:6px;align-items:flex-end}
+.chat-composer .cpick{width:38px;height:38px;border-radius:12px;background:#EEF5FF;color:#2F6FD0;font-size:17px;flex:none;display:flex;align-items:center;justify-content:center}
+.chat-composer textarea{flex:1;min-width:0;height:38px;max-height:96px;resize:none;padding:9px 12px;border-radius:13px;border:1.5px solid #E3E9EF;background:#fff;font-size:14px;line-height:1.35;outline:none}
+.chat-composer textarea:focus{border-color:var(--mint);box-shadow:0 0 0 3px rgba(14,159,110,.08)}
+.chat-composer .csend{width:auto;padding:0 15px;height:38px;border-radius:13px;background:var(--mint);color:#fff;font-size:13.5px;font-weight:800;flex:none}
+.chat-attach{display:flex;align-items:center;gap:8px;background:#F4F8FF;border:1px solid #DCE7FA;border-radius:11px;padding:6px 8px;margin:0 0 7px;font-size:11px;font-weight:700;color:#2F6FD0}
+.chat-attach img{width:38px;height:38px;border-radius:8px;object-fit:cover}
+.chat-attach button{margin-left:auto;color:#9AA4AF;font-size:14px;padding:0 3px}
+
+/* ---------- 편지 ---------- */
+.lt-item{display:flex;gap:9px;align-items:flex-start;width:100%;text-align:left;border:1.5px solid var(--line);border-radius:13px;padding:10px 11px;background:#FCFDFD;margin-bottom:7px}
+.lt-item.unread{border-color:#CFE0FB;background:#F7FAFF}
+.lt-item .av{width:28px;height:28px;border-radius:9px;background:#F1F4F5;display:flex;align-items:center;justify-content:center;font-size:14px;flex:none}
+.lt-item .bd{flex:1;min-width:0}
+.lt-item .t1{font-size:12.5px;font-weight:800;letter-spacing:-.2px;display:flex;align-items:center;gap:5px}
+.lt-item .t1 .ttl{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lt-item .t2{font-size:11px;color:var(--ink2);margin-top:2px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;line-height:1.45;word-break:keep-all}
+.lt-item .t3{font-size:10px;color:var(--muted);margin-top:3px}
+.lt-new{font-size:9.5px;font-weight:800;color:#fff;background:var(--coral);border-radius:20px;padding:1px 6px;flex:none}
+.lt-body{font-size:14px;line-height:1.72;white-space:pre-wrap;word-break:break-word;color:var(--ink);border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:13px 0;margin:10px 0;max-height:46vh;overflow-y:auto}
+.lt-meta{font-size:10.5px;color:var(--muted);line-height:1.7}
+.lt-meta b{color:var(--ink2)}
+.lt-photos{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}
+.lt-photos img{width:74px;height:74px;border-radius:9px;object-fit:cover;background:#EDF1F2}
+
+/* ---------- 공지 ---------- */
+.nt-item{border:1.5px solid var(--line);border-radius:13px;padding:10px 11px;background:#FCFDFD;margin-bottom:7px}
+.nt-item.pin{border-color:#F6DFB2;background:linear-gradient(180deg,#FFFCF3,#FFFFFF)}
+.nt-item .h{display:flex;align-items:center;gap:5px;font-size:10.5px;color:var(--muted);font-weight:700}
+.nt-item .h .who{color:#7A5410;font-weight:800;font-size:11.5px}
+.nt-item .h .sp{flex:1}
+.nt-item .txt{font-size:13px;line-height:1.55;margin:5px 0 7px;word-break:keep-all;white-space:pre-wrap}
+.nt-item .f{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.nt-ack{font-size:10.5px;font-weight:800;padding:5px 9px;border-radius:20px;background:#FFF8E7;color:#8A6A00;border:1px solid #FCEBC0}
+.nt-ack.done{background:#E7F8F1;color:var(--mint-d);border-color:#BFEBD8}
+.nt-mini{font-size:10.5px;font-weight:800;padding:5px 9px;border-radius:20px;background:#F1F4F5;color:var(--ink2)}
+.nt-mini.pin{background:#FFF1D6;color:#8A6A00}
+
+/* ---------- 일기 ---------- */
+.dy-item{border:1.5px solid var(--line);border-radius:14px;padding:11px;background:#FCFDFD;margin-bottom:9px}
+.dy-h{display:flex;align-items:center;gap:7px;margin-bottom:6px}
+.dy-h .mo{font-size:20px;line-height:1;flex:none}
+.dy-h .nm{font-size:12.5px;font-weight:800}
+.dy-h .dt{font-size:10px;color:var(--muted);font-weight:700}
+.dy-h .sp{flex:1}
+.dy-txt{font-size:13px;line-height:1.6;white-space:pre-wrap;word-break:break-word;color:var(--ink2)}
+.dy-ph{display:flex;gap:5px;flex-wrap:wrap;margin-top:7px}
+.dy-ph img{width:76px;height:76px;border-radius:9px;object-fit:cover;background:#EDF1F2}
+.dy-f{display:flex;align-items:center;gap:7px;margin-top:8px;padding-top:8px;border-top:1px dashed #EDF1F3}
+.dy-f .lk{font-size:11px;font-weight:800;color:var(--coral);background:var(--coral-l);border-radius:20px;padding:5px 9px}
+.dy-f .lk.off{color:#98A2AD;background:#F1F4F5}
+.dy-cm{font-size:11.5px;font-weight:700;color:var(--mint-d);background:var(--mint-l);border-radius:20px;padding:5px 9px}
+.dy-comments{margin-top:7px;display:flex;flex-direction:column;gap:5px}
+.dy-cm-row{font-size:11.5px;line-height:1.45;background:#F6F9FA;border-radius:10px;padding:6px 9px;word-break:keep-all}
+.dy-cm-row b{font-weight:800;color:var(--mint-d);margin-right:4px}
+.dy-cm-in{display:flex;gap:5px;margin-top:6px}
+.dy-cm-in input{flex:1;min-width:0;padding:8px 10px;border-radius:10px;border:1px solid #E3E9EF;background:#fff;font-size:12px;outline:none}
+.dy-cm-in button{flex:none;padding:0 11px;border-radius:10px;background:var(--mint-l);color:var(--mint-d);font-size:11.5px;font-weight:800}
+.mood-row{display:flex;gap:5px;flex-wrap:wrap}
+.mood-row button{width:38px;height:38px;border-radius:11px;background:#F4F7F8;font-size:20px;line-height:1;display:flex;align-items:center;justify-content:center;border:1.5px solid transparent}
+.mood-row button.on{background:#E7F8F1;border-color:#9DE0C4}
+
+/* ---------- 용돈기입장 ---------- */
+.mn-sum{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:10px}
+.mn-tile{border-radius:13px;padding:9px 10px;background:#F7FAFA;border:1px solid #E9F0EE}
+.mn-tile .l{font-size:10.5px;font-weight:800;color:var(--muted)}
+.mn-tile .v{font-size:15px;font-weight:800;letter-spacing:-.4px;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mn-tile.in .v{color:var(--mint-d)}
+.mn-tile.out .v{color:#C2410C}
+.mn-tile.due .v{color:#B45309}
+.mn-tile.bal .v{color:var(--ink)}
+.mn-month{display:flex;align-items:center;gap:8px;margin-bottom:9px}
+.mn-month .lb{flex:1;text-align:center;font-size:13px;font-weight:800}
+.mn-month button{width:30px;height:30px;border-radius:9px;background:#F1F4F5;font-size:14px;font-weight:800;color:var(--ink2)}
+.mn-row{display:flex;gap:8px;align-items:flex-start;border-bottom:1px dashed #EDF1F3;padding:8px 1px}
+.mn-row:last-child{border-bottom:none}
+.mn-row .bd{flex:1;min-width:0}
+.mn-row .t1{font-size:12.5px;font-weight:800;display:flex;align-items:center;gap:5px}
+.mn-row .t2{font-size:10.5px;color:var(--muted);margin-top:2px}
+.mn-row .amt{font-size:13.5px;font-weight:800;white-space:nowrap;flex:none}
+.mn-row .amt.in{color:var(--mint-d)}
+.mn-row .amt.out{color:#C2410C}
+.mn-row .amt.due{color:#B45309}
+.meth{font-size:9.5px;font-weight:800;border-radius:6px;padding:1px 5px;background:#EEF5FF;color:#2F6FD0}
+.meth.cash{background:#E7F8F1;color:#0A7D56}
+.meth.card{background:#F3EEFE;color:#5B4CC4}
+.meth.transfer{background:#EEF5FF;color:#2F6FD0}
+.pay-btn{font-size:10.5px;font-weight:800;padding:5px 9px;border-radius:20px;background:#FFF8E7;color:#8A6A00;border:1px solid #FCEBC0;margin-top:5px}
+.pay-btn.done{background:#E7F8F1;color:var(--mint-d);border-color:#BFEBD8}
+.mn-who{display:flex;gap:5px;overflow-x:auto;padding-bottom:2px;margin-bottom:9px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.mn-who::-webkit-scrollbar{display:none}
+.mn-who button{flex:none;padding:7px 11px;border-radius:20px;background:#F1F4F5;font-size:11.5px;font-weight:800;color:var(--muted);white-space:nowrap}
+.mn-who button.on{background:var(--mint);color:#fff}
+
+/* ---------- 생활 허브 ---------- */
+.life-nav{display:flex;gap:5px;overflow-x:auto;margin-bottom:11px;padding-bottom:2px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.life-nav::-webkit-scrollbar{display:none}
+.life-nav button{flex:none;padding:8px 12px;border-radius:11px;background:#F1F4F5;font-size:12px;font-weight:800;color:var(--muted);white-space:nowrap}
+.life-nav button.on{background:var(--ink);color:#fff}
+.hub-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:11px}
+.hub-btn{display:flex;flex-direction:column;gap:3px;align-items:flex-start;text-align:left;border-radius:14px;padding:11px;border:1px solid #E9EEF2;background:#FBFDFC}
+.hub-btn .ic{font-size:19px;line-height:1}
+.hub-btn .t{font-size:12.5px;font-weight:800;letter-spacing:-.2px;margin-top:2px}
+.hub-btn .d{font-size:10px;color:var(--muted);line-height:1.4;word-break:keep-all}
+.hub-btn .n{font-size:9.5px;font-weight:800;color:#fff;background:var(--coral);border-radius:20px;padding:1px 6px;margin-top:3px;width:fit-content}
+
+/* 하단 탭 배지 */
+.tabbar button{position:relative}
+.tabbar .badge-dot{position:absolute;top:3px;left:50%;margin-left:3px;min-width:15px;height:15px;border-radius:20px;background:var(--coral);color:#fff;font-size:9px;font-weight:800;line-height:15px;text-align:center;padding:0 4px}
+
 @media (min-width:640px){
   main{max-width:520px;margin:0 auto;padding:16px 0 6px}
   .appbar{max-width:520px;margin:0 auto;border-radius:0 0 22px 22px}
@@ -366,6 +554,31 @@ main{padding:14px 14px 6px}
   <main>
     <!-- ===== 홈 ===== -->
     <section id="view-home">
+      <button type="button" class="nt-banner" id="ntBanner">
+        <span class="ico">📢</span>
+        <span class="tx"><b id="ntBannerTitle">우리 가족 공지</b><em id="ntBannerText">가족에게 꼭 알려야 할 소식을 올려 보세요</em></span>
+        <span class="go">공지 ›</span>
+      </button>
+
+      <div class="chat-top" id="chatTopBtn" role="button" tabindex="0">
+        <span class="ico">💬</span>
+        <span class="tx"><b>가족 실시간 채팅 <span class="lt-new hidden" id="chatTopBadge">새 메시지</span></b><small id="chatTopSub">첫 메시지를 남겨 보세요</small></span>
+        <span class="go">열기 ›</span>
+      </div>
+      <div class="chat-inline" style="margin-top:-4px;margin-bottom:11px">
+        <input id="homeChatInput" maxlength="500" placeholder="가족에게 한마디…" autocomplete="off">
+        <button type="button" id="homeChatSend">보내기</button>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><h2>📍 가족 위치</h2><span class="sub" id="locSumAt">–</span></div>
+        <div id="locSumList" class="loc-list"></div>
+        <div style="display:flex;gap:7px;margin-top:9px">
+          <button type="button" class="btn soft" id="locGoMap" style="flex:1;padding:11px;font-size:13px">🗺️ 지도로 보기</button>
+          <button type="button" class="btn" id="locRefreshHome" style="flex:1;padding:11px;font-size:13px">📍 내 위치 갱신</button>
+        </div>
+      </div>
+
       <button type="button" class="fb-top" id="fbTopBtn">
         <span class="ico">💡</span>
         <span class="tx"><b>가족포털 개선사항 의견 받아요</b><small id="fbTopSub">아직 의견이 없어요 · 첫 번째로 남겨 주세요</small></span>
@@ -431,12 +644,50 @@ main{padding:14px 14px 6px}
       </div>
     </section>
 
+    <!-- ===== 실시간 채팅 ===== -->
+    <section id="view-chat" class="hidden">
+      <div class="card" style="padding-bottom:8px">
+        <div class="card-head"><h2>💬 가족 실시간 채팅</h2><span class="sub" id="chatCount">0개</span></div>
+        <div class="chat-list" id="chatList"></div>
+      </div>
+      <div class="chat-foot">
+        <div id="chatAttachBar"></div>
+        <div class="chat-composer">
+          <button type="button" class="cpick" id="chatPick" aria-label="사진 첨부">📷</button>
+          <textarea id="chatInput" placeholder="가족에게 메시지…" maxlength="500" rows="1"></textarea>
+          <button type="button" class="csend" id="chatSend">전송</button>
+        </div>
+      </div>
+    </section>
+
     <!-- ===== 위치 ===== -->
     <section id="view-map" class="hidden">
       <div class="card">
         <div class="card-head"><h2>📍 지금 우리 가족 위치</h2><span class="sub" id="liveUpdated">–</span></div>
-        <div class="notice">🌿 버튼을 누른 그 순간의 위치만 가족에게 보여요. 계속 따라다니지는 않아요.</div>
-        <button class="btn" id="btnShareLoc">📍 지금 내 위치 공유하기</button>
+        <div id="famMap" class="map-box">
+          <div class="map-grid-bg"></div>
+          <div id="mapTiles"></div>
+          <div id="mapPins"></div>
+          <div class="map-ctr">
+            <button type="button" id="mapZoomIn" aria-label="확대">＋</button>
+            <button type="button" id="mapZoomOut" aria-label="축소">－</button>
+            <button type="button" id="mapRecenter" aria-label="내 위치로" style="font-size:12px">◎</button>
+          </div>
+          <div class="map-attr">© OpenStreetMap</div>
+          <div class="map-empty" id="mapEmpty">아직 위치를 공유한 가족이 없어요.<br>아래 버튼을 누르면 지도에 표시돼요.</div>
+        </div>
+        <div class="sw-row">
+          <div class="bd">
+            <div class="t1">🛰️ 자동 위치 공유</div>
+            <div class="t2" id="autoShareDesc">켜면 앱을 열어 둔 동안 20~30초마다 내 위치가 가족에게 갱신돼요.</div>
+          </div>
+          <div class="sw" id="autoShareSw" role="switch" aria-checked="false" tabindex="0"></div>
+        </div>
+        <div class="notice" id="locNotice">🌿 버튼을 누른 순간의 위치가 가족에게 보여요. 자동 공유를 켜면 앱을 열어 둔 동안 20~30초마다 갱신되고, 앱을 닫으면 멈춰요(휴대폰 정책).</div>
+        <div style="display:flex;gap:7px">
+          <button class="btn" id="btnShareLoc" style="flex:1.3">📍 지금 내 위치 바로 갱신</button>
+          <button class="btn ghost" id="btnLocHow" style="flex:.7;font-size:12.5px">권한 안내</button>
+        </div>
         <div id="liveList" class="live-list" style="margin-top:11px"></div>
       </div>
 
@@ -452,25 +703,94 @@ main{padding:14px 14px 6px}
       </div>
     </section>
 
-    <!-- ===== 추천 ===== -->
-    <section id="view-reco" class="hidden">
-      <div class="card">
-        <div class="card-head"><h2>🍽️ 우리 가족 추천</h2><span class="sub" id="recoCount">0개</span></div>
-        <div class="seg" id="recoSeg">
-          <button type="button" data-cat="spot" class="on">🍽️ 맛집</button>
-          <button type="button" data-cat="trip">✈️ 여행장소</button>
+    <!-- ===== 생활: 편지·공지·일기·용돈·추천 ===== -->
+    <section id="view-life" class="hidden">
+      <div class="hub-grid" id="lifeQuick">
+        <button type="button" class="hub-btn" data-life="letters"><span class="ic">✉️</span><span class="t">가족 편지함</span><span class="d">받는 사람을 정해 편지·사진 보내기</span><span class="n hidden" id="hubLtN">0</span></button>
+        <button type="button" class="hub-btn" data-life="notices"><span class="ic">📢</span><span class="t">우리 가족 공지</span><span class="d">꼭 알려야 할 소식·중요 공지 고정</span><span class="n hidden" id="hubNtN">0</span></button>
+        <button type="button" class="hub-btn" data-life="diary"><span class="ic">📔</span><span class="t">우리 가족 일기</span><span class="d">기분·사진과 함께 하루 기록·댓글</span><span class="n hidden" id="hubDyN">0</span></button>
+        <button type="button" class="hub-btn" data-life="money"><span class="ic">💰</span><span class="t">용돈기입장</span><span class="d">받을 용돈·미지급·현금/카드 구분</span><span class="n hidden" id="hubMnN">0</span></button>
+      </div>
+
+      <div class="life-nav" id="lifeNav">
+        <button type="button" data-life="letters" class="on">✉️ 편지</button>
+        <button type="button" data-life="notices">📢 공지</button>
+        <button type="button" data-life="diary">📔 일기</button>
+        <button type="button" data-life="money">💰 용돈기입장</button>
+        <button type="button" data-life="reco">🍽️ 추천</button>
+      </div>
+
+      <div id="life-letters">
+        <div class="card">
+          <div class="card-head"><h2>✉️ 가족 편지함</h2><span class="sub" id="ltCount">0통</span></div>
+          <div class="seg" id="ltSeg">
+            <button type="button" data-lt="in" class="on">받은 편지 <span id="ltUnreadN">0</span></button>
+            <button type="button" data-lt="out">보낸 편지</button>
+          </div>
+          <div id="ltList"></div>
+          <button class="btn" id="btnLetterNew" style="margin-top:9px">✍️ 편지 쓰기</button>
         </div>
-        <div class="reco" id="recoList"></div>
-        <button class="btn soft" id="btnRecoAdd" style="margin-top:11px">＋ 추천 장소 추가</button>
+      </div>
+
+      <div id="life-notices" class="hidden">
+        <div class="card">
+          <div class="card-head"><h2>📢 우리 가족 공지</h2><span class="sub" id="ntCount">0개</span></div>
+          <div class="fb-desc">가족 모두가 꼭 알아야 할 소식을 올려 주세요. 📌를 누르면 홈 화면 맨 위에 고정됩니다.</div>
+          <div id="ntList"></div>
+          <div class="fb-write">
+            <textarea class="field" id="ntInput" rows="2" maxlength="300" placeholder="예: 이번 주 토요일 오전 10시 병원 예약 — 다 같이 출발해요"></textarea>
+            <div class="fb-write-foot">
+              <span class="fb-as" id="ntAs">작성자 · 가족</span>
+              <button type="button" class="btn fb-send" id="btnNtSend" style="background:#E8A300">공지 올리기</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="life-diary" class="hidden">
+        <div class="card">
+          <div class="card-head"><h2>📔 우리 가족 일기</h2><span class="sub" id="dyCount">0편</span></div>
+          <div class="mn-who" id="dyWho"></div>
+          <div id="dyList"></div>
+          <button class="btn" id="btnDiaryNew" style="margin-top:9px">✍️ 오늘 일기 쓰기</button>
+        </div>
+      </div>
+
+      <div id="life-money" class="hidden">
+        <div class="card">
+          <div class="card-head"><h2>💰 용돈기입장</h2><span class="sub" id="mnCount">0건</span></div>
+          <div class="mn-month"><button type="button" data-mn-month="-1" aria-label="이전 달">‹</button><span class="lb" id="mnMonthLabel">–</span><button type="button" data-mn-month="1" aria-label="다음 달">›</button></div>
+          <div class="mn-who" id="mnWho"></div>
+          <div class="mn-sum" id="mnSum"></div>
+          <div id="mnList"></div>
+          <div style="display:flex;gap:7px;margin-top:10px">
+            <button class="btn soft" id="btnMnAdd" style="flex:1;padding:11px;font-size:13px">＋ 내역 추가</button>
+            <button class="btn" id="btnMnAsk" style="flex:1;padding:11px;font-size:13px">🙋 용돈 요청</button>
+          </div>
+          <div class="hint">지섭·지율이의 “받을 용돈”을 적어 두면 미받은 용돈이 한눈에 보여요. 받을 때 💵 지급완료를 누르면 잔액에 반영되고, 현금·카드·계좌이체도 함께 남습니다.</div>
+        </div>
+      </div>
+
+      <div id="life-reco" class="hidden">
+        <div class="card">
+          <div class="card-head"><h2>🍽️ 우리 가족 추천</h2><span class="sub" id="recoCount">0개</span></div>
+          <div class="seg" id="recoSeg">
+            <button type="button" data-cat="spot" class="on">🍽️ 맛집</button>
+            <button type="button" data-cat="trip">✈️ 여행장소</button>
+          </div>
+          <div class="reco" id="recoList"></div>
+          <button class="btn soft" id="btnRecoAdd" style="margin-top:11px">＋ 추천 장소 추가</button>
+        </div>
       </div>
     </section>
   </main>
 
   <nav class="tabbar" id="tabbar">
     <button type="button" data-view="home" class="on"><span class="ico">🏠</span>홈</button>
+    <button type="button" data-view="chat"><span class="ico">💬</span>채팅<span class="badge-dot hidden" id="tabChatDot">0</span></button>
     <button type="button" data-view="photos"><span class="ico">📷</span>사진</button>
     <button type="button" data-view="map"><span class="ico">📍</span>위치</button>
-    <button type="button" data-view="reco"><span class="ico">🍽️</span>추천</button>
+    <button type="button" data-view="life"><span class="ico">📋</span>생활<span class="badge-dot hidden" id="tabLifeDot">0</span></button>
   </nav>
 </div>
 
@@ -510,7 +830,7 @@ var CFG = {
 };
 var LS_SESS = 'sgf_session_v1';
 var LS_KEY = 'sgf_key_v1';
-var POLL_MS = 6000;
+var POLL_MS = 5000;
 var MAX_PHOTOS = 30;
 
 var $ = function (id) { return document.getElementById(id); };
@@ -657,7 +977,12 @@ function restoreKey() {
   return aesKeyFromRaw(RAW_KEY).then(function (key) { K = key; return true; }).catch(function () { return false; });
 }
 function emptyDB() {
-  return { v: 1, g: Date.now(), members: {}, status: {}, cheer: {}, photos: {}, reco: { spot: {}, trip: {} }, plans: {}, live: {}, feedback: {} };
+  return {
+    v: 1, g: Date.now(), members: {}, status: {}, cheer: {}, photos: {}, reco: { spot: {}, trip: {} },
+    plans: {}, live: {}, feedback: {},
+    /* V2 추가 노드 — 기존 노드는 그대로 두고 새 기능만 덧붙인다 */
+    chat: {}, letters: {}, letterRead: {}, notices: {}, noticeAck: {}, diary: {}, money: {}
+  };
 }
 function fetchDB() {
   return fetchText(CFG.db).then(function (t) {
@@ -930,6 +1255,10 @@ function startApp() {
   loadWeather();
   startSync();
   pull(false);
+  try { autoShare = localStorage.getItem(LS_AUTO) === '1'; } catch (e) { autoShare = false; }
+  try { if (!localStorage.getItem(LS_CHAT_SEEN)) localStorage.setItem(LS_CHAT_SEEN, String(Date.now())); } catch (e) {}
+  autoShareUI();
+  if (autoShare) startAutoShare();
   if (window._sgfDeferredPrompt) $('authInstall').style.display = 'none';
 }
 
@@ -1054,9 +1383,9 @@ function renderLive() {
   var ids = Object.keys(DOC.live || {}).filter(function (k) { return DOC.live[k] && DOC.live[k].at; });
   ids.sort(function (a, b) { return (DOC.live[b].at || 0) - (DOC.live[a].at || 0); });
   var newest = ids.length ? DOC.live[ids[0]].at : 0;
-  $('liveUpdated').textContent = newest ? ago(newest) : '공유한 위치 없음';
+  $('liveUpdated').textContent = newest ? ago(newest) + ' 갱신' : '공유한 위치 없음';
   if (!ids.length) {
-    box.innerHTML = '<div class="empty">아직 공유된 위치가 없어요.<br>“📍 지금 내 위치 공유하기”를 누르면 가족에게 보여요.</div>';
+    box.innerHTML = '<div class="empty">아직 공유된 위치가 없어요.<br>“📍 지금 내 위치 바로 갱신”을 누르면 지도에 표시돼요.</div>';
     return;
   }
   box.innerHTML = ids.map(function (k) {
@@ -1064,9 +1393,10 @@ function renderLive() {
     var m = DOC.members[k] || { name: k, emoji: '🧑' };
     var stale = (Date.now() - l.at) > 1000 * 3600 * 6;
     return '<div class="live-item"><div class="av">' + (m.emoji || '🧑') + '</div><div class="body">' +
-      '<div class="l1">' + esc(m.name) + ' <span class="pill">' + ago(l.at) + '</span></div>' +
-      '<div class="l2">' + esc(l.addr || (l.lat.toFixed(4) + ', ' + l.lon.toFixed(4))) + '</div>' +
-      (stale ? '<div class="l3">6시간 넘은 위치예요</div>' : '') +
+      '<div class="l1">' + esc(m.name) + ' <span class="pill">' + ago(l.at) + '</span>' +
+      (l.auto ? ' <span class="pill" style="background:#E7F8F1;color:#0A7D56">자동 공유</span>' : '') + '</div>' +
+      '<div class="l2">' + esc(l.addr || (Number(l.lat).toFixed(4) + ', ' + Number(l.lon).toFixed(4))) + '</div>' +
+      (stale ? '<div class="l3">6시간 넘은 위치예요 · 지금 위치가 아닐 수 있어요</div>' : (l.acc ? '<div class="l3">오차 ±' + esc(l.acc) + 'm</div>' : '')) +
       '<div class="maplinks">' + mapLinks(null, l.lat, l.lon) + '</div>' +
       '</div></div>';
   }).join('');
@@ -1242,6 +1572,949 @@ function delFeedback(id) {
   toast('의견을 삭제했어요');
 }
 
+/* ============================================================
+   V2 · 공통 유틸 (아이디·이름·금액·미디어)
+   ============================================================ */
+function newId(pre) { return pre + Date.now().toString(36) + Math.random().toString(36).slice(2, 5); }
+function memOf(id) { return (DOC && DOC.members && DOC.members[id]) || { name: '가족', role: '가족', emoji: '🧑' }; }
+function won(n) { return Number(n || 0).toLocaleString('ko-KR') + '원'; }
+function ymdOf(ts) { var d = new Date(ts); return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate()); }
+function todayYmd() { return ymdOf(Date.now()); }
+function dayLabel(ts) {
+  var d = new Date(ts), t = new Date();
+  if (d.toDateString() === t.toDateString()) return '오늘';
+  var y = new Date(t.getTime() - 86400000);
+  if (d.toDateString() === y.toDateString()) return '어제';
+  var days = ['일', '월', '화', '수', '목', '금', '토'];
+  var base = (d.getFullYear() === t.getFullYear()) ? ((d.getMonth() + 1) + '월 ' + d.getDate() + '일') : ((d.getFullYear() + '년 ' + (d.getMonth() + 1) + '월 ' + d.getDate() + '일'));
+  return base + ' (' + days[d.getDay()] + ')';
+}
+function dateKo(s) {
+  if (!s) return '';
+  var p = String(s).split('-');
+  if (p.length !== 3) return s;
+  var d = new Date(Number(p[0]), Number(p[1]) - 1, Number(p[2]));
+  var days = ['일', '월', '화', '수', '목', '금', '토'];
+  return (Number(p[0]) === new Date().getFullYear() ? (Number(p[1]) + '월 ' + Number(p[2]) + '일') : s) + ' (' + days[d.getDay()] + ')';
+}
+/* 휴대폰 갤러리·구글 포토에서 고른 사진을 줄여서 암호화 저장한다 */
+async function saveMedia(file) {
+  var full = await compressImage(file, 1100, 0.72);
+  var thumb = await compressImage(file, 260, 0.55);
+  var id = newId('v');
+  await putText(CFG.ph + id, await encryptText({ v: 1, by: ME && ME.id, at: Date.now(), img: full }));
+  return { id: id, thumb: thumb };
+}
+async function mediaUrl(id) {
+  var raw = await fetchText(CFG.ph + id);
+  if (!(raw || '').trim()) throw new Error('empty');
+  var obj = await decryptText(raw);
+  return obj.img;
+}
+function mediaTargets() {
+  var out = [], b = DOC.chat || {};
+  Object.keys(b).forEach(function (k) { var m = b[k]; if (m && m.img && m.img.thumb) out.push({ at: m.at || 0, get: function () { return m.img; } }); });
+  ['letters', 'diary'].forEach(function (node) {
+    var n = DOC[node] || {};
+    Object.keys(n).forEach(function (k) {
+      var it = n[k];
+      if (!it || !it.imgs) return;
+      it.imgs.forEach(function (im) { if (im && im.thumb) out.push({ at: it.at || 0, get: function () { return im; } }); });
+    });
+  });
+  var ph = DOC.photos || {};
+  Object.keys(ph).forEach(function (k) { var p = ph[k]; if (p && p.thumb) out.push({ at: p.at || 0, get: function () { return p; } }); });
+  out.sort(function (a, b2) { return a.at - b2.at; });
+  return out;
+}
+/* 저장소가 너무 커지면 오래된 사진 미리보기부터 정리한다(본문·글은 그대로 보존) */
+function enforceSize(limit) {
+  limit = limit || 740000;
+  var guard = 0;
+  while (JSON.stringify(DOC).length > limit && guard++ < 500) {
+    var t = mediaTargets(), dropped = false;
+    for (var i = 0; i < t.length; i++) {
+      var o = t[i].get();
+      if (o && o.thumb) { o.thumb = ''; o.gone = 1; dropped = true; break; }
+    }
+    if (!dropped) break;
+  }
+}
+function setBadge(id, n) {
+  var el = $(id);
+  if (!el) return;
+  if (n > 0) { el.textContent = n > 9 ? '9+' : String(n); el.classList.remove('hidden'); }
+  else el.classList.add('hidden');
+}
+
+/* ============================================================
+   V2 · 💬 가족 실시간 채팅
+   ============================================================ */
+var chatSig = '', chatDraftImg = null;
+var LS_CHAT_SEEN = 'sgf_chat_seen_v1';
+
+function chatAll() {
+  var b = (DOC && DOC.chat) || {};
+  return Object.keys(b).filter(function (k) {
+    var m = b[k];
+    return m && !m.d && (String(m.text || '').trim() || (m.img && (m.img.thumb || m.img.id)));
+  }).map(function (k) {
+    var m = b[k];
+    return { _k: k, by: m.by, at: m.at || 0, text: m.text || '', img: m.img || null };
+  }).sort(function (a, b2) { return a.at - b2.at; });
+}
+function pruneChat() {
+  var list = chatAll();
+  if (list.length <= 300) return;
+  list.slice(0, list.length - 300).forEach(function (m) {
+    var r = DOC.chat[m._k];
+    if (r && !r.d) { r.d = 1; r.text = ''; r.img = null; r.at = Date.now(); }
+  });
+}
+function renderChat(force) {
+  if (!DOC || !ME) return;
+  var list = chatAll();
+  var sig = list.map(function (m) { return m._k; }).join(',') + '|' + list.length + '|' + list.map(function (m) { return (m.img && m.img.thumb ? 1 : 0); }).join('');
+  $('chatCount').textContent = list.length ? list.length + '개' : '0개';
+  if (force || sig !== chatSig) {
+    var box = $('chatList');
+    chatSig = sig;
+    if (!list.length) {
+      box.innerHTML = '<div class="empty">아직 대화가 없어요.<br>“안녕!” 첫 메시지를 남겨 보세요 💬</div>';
+    } else {
+      var html = '', lastDay = '';
+      list.slice(-200).forEach(function (m) {
+        var dk = new Date(m.at).toDateString();
+        if (dk !== lastDay) { html += '<div class="chat-day">' + esc(dayLabel(m.at)) + '</div>'; lastDay = dk; }
+        var mine = m.by === ME.id, mem = memOf(m.by);
+        html += '<div class="msg' + (mine ? ' me' : '') + '">' +
+          '<div class="av">' + esc(mem.emoji || '🧑') + '</div>' +
+          '<div class="col">' +
+          '<div class="mwho">' + esc(mem.name) + ' <span class="rl">' + esc(mem.role || '') + '</span></div>' +
+          '<div class="bubble">' + esc(m.text) +
+          (m.img && m.img.thumb ? '<img class="chimg" src="' + m.img.thumb + '" alt="사진" data-media="' + esc(m.img.id) + '">'
+            : (m.img ? '<span class="mtime">📷 사진 (불러오는 중)</span>' : '')) +
+          '<span class="mtime">' + hhmm(m.at) + '</span>' +
+          '</div></div></div>';
+      });
+      box.innerHTML = html;
+    }
+  }
+  var last = list.length ? list[list.length - 1] : null;
+  var sub = $('chatTopSub');
+  if (sub) {
+    if (!last) sub.textContent = '아직 대화가 없어요 · 첫 메시지를 남겨 보세요';
+    else {
+      var lm = memOf(last.by);
+      sub.textContent = lm.emoji + ' ' + lm.name + ' · ' + (last.text ? last.text.slice(0, 40) : '📷 사진') + ' · ' + ago(last.at);
+    }
+  }
+  if (currentView === 'chat' && !document.hidden) markChatSeen();
+  else renderTabBadges(list);
+}
+function markChatSeen() {
+  try { localStorage.setItem(LS_CHAT_SEEN, String(Date.now())); } catch (e) {}
+  renderTabBadges();
+}
+function renderTabBadges(list) {
+  if (!DOC || !ME) return;
+  list = list || chatAll();
+  var seen = 0;
+  try { seen = Number(localStorage.getItem(LS_CHAT_SEEN) || 0) || 0; } catch (e) { seen = 0; }
+  var newN = list.filter(function (m) { return m.by !== ME.id && m.at > seen; }).length;
+  setBadge('tabChatDot', newN);
+  var b = $('chatTopBadge');
+  if (b) { b.textContent = newN ? ('새 ' + newN) : ''; b.classList.toggle('hidden', !newN); }
+  var un = unreadLetters();
+  setBadge('tabLifeDot', un.length);
+  setBadge('hubLtN', un.length);
+  var hb = $('hubLtN');
+  if (hb) { hb.textContent = un.length; hb.classList.toggle('hidden', !un.length); }
+}
+function sendChat(text, img) {
+  if (!ME) return false;
+  text = String(text || '').trim();
+  if (!text && !img) return false;
+  if (!DOC.chat) DOC.chat = {};
+  DOC.chat[newId('c')] = { by: ME.id, at: Date.now(), text: text.slice(0, 500), img: img || null };
+  pruneChat();
+  enforceSize();
+  markDirty();
+  renderChat(true);
+  renderHomeChat();
+  return true;
+}
+function renderHomeChat() {
+  var list = chatAll();
+  var sub = $('chatTopSub');
+  if (!sub) return;
+  if (!list.length) sub.textContent = '아직 대화가 없어요 · 첫 메시지를 남겨 보세요';
+  else {
+    var last = list[list.length - 1], lm = memOf(last.by);
+    sub.textContent = lm.emoji + ' ' + lm.name + ' · ' + (last.text ? last.text.slice(0, 40) : '📷 사진') + ' · ' + ago(last.at);
+  }
+}
+function renderChatAttach() {
+  var bar = $('chatAttachBar');
+  if (!bar) return;
+  if (!chatDraftImg) { bar.innerHTML = ''; return; }
+  bar.innerHTML = '<div class="chat-attach"><img src="' + chatDraftImg.thumb + '" alt="첨부"><span>사진을 함께 보냅니다</span>' +
+    '<button type="button" id="chatAttachX" aria-label="첨부 취소">✕</button></div>';
+  $('chatAttachX').onclick = function () { chatDraftImg = null; renderChatAttach(); };
+}
+function scrollChatBottom() {
+  if (currentView !== 'chat') return;
+  setTimeout(function () { window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }); }, 80);
+}
+function openChatView() {
+  switchView('chat');
+  markChatSeen();
+  scrollChatBottom();
+}
+
+/* ============================================================
+   V2 · ✉️ 가족 편지함
+   ============================================================ */
+var letterTab = 'in';
+function letterAll() {
+  var b = (DOC && DOC.letters) || {};
+  return Object.keys(b).filter(function (k) { var l = b[k]; return l && !l.d; }).map(function (k) {
+    var l = b[k];
+    return { _k: k, by: l.by, to: l.to, title: l.title || '', body: l.body || '', imgs: l.imgs || [], at: l.at || 0, replyOf: l.replyOf || '' };
+  }).sort(function (a, b2) { return b2.at - a.at; });
+}
+function letterReadAt(id, mid) {
+  var r = (DOC && DOC.letterRead && DOC.letterRead[id]) || {};
+  return r[mid] || 0;
+}
+function isTo(l) { return l.to === 'all' ? l.by !== ME.id : l.to === ME.id; }
+function unreadLetters() {
+  if (!DOC || !ME) return [];
+  return letterAll().filter(function (l) { return isTo(l) && !letterReadAt(l._k, ME.id); });
+}
+function renderLetters() {
+  if (!DOC || !ME) return;
+  var all = letterAll();
+  var unread = unreadLetters();
+  $('ltCount').textContent = '받은 ' + all.filter(isTo).length + ' · 안 읽음 ' + unread.length;
+  var un = $('ltUnreadN');
+  if (un) un.textContent = unread.length ? String(unread.length) : '0';
+  var seg = $('ltSeg').querySelectorAll('button');
+  for (var i = 0; i < seg.length; i++) seg[i].classList.toggle('on', seg[i].getAttribute('data-lt') === letterTab);
+  var list = all.filter(letterTab === 'in' ? isTo : function (l) { return l.by === ME.id; });
+  var box = $('ltList');
+  if (!list.length) {
+    box.innerHTML = '<div class="fb-empty">' + (letterTab === 'in' ? '아직 받은 편지가 없어요.<br>가족에게 첫 편지를 써 보세요 ✉️' : '아직 보낸 편지가 없어요.') + '</div>';
+    return;
+  }
+  box.innerHTML = list.map(function (l) {
+    var mem = memOf(letterTab === 'in' ? l.by : (l.to === 'all' ? null : l.to));
+    var unreadOne = letterTab === 'in' && !letterReadAt(l._k, ME.id);
+    var toName = l.to === 'all' ? '가족 전체' : memOf(l.to).name;
+    var readCnt = 0, recips = (l.to === 'all' ? memberList().filter(function (m) { return m.id !== l.by; }) : [l.to]);
+    recips.forEach(function (r) { if (letterReadAt(l._k, typeof r === 'string' ? r : r.id)) readCnt++; });
+    return '<button type="button" class="lt-item' + (unreadOne ? ' unread' : '') + '" data-letter="' + esc(l._k) + '">' +
+      '<span class="av">' + esc((letterTab === 'in' ? memOf(l.by).emoji : '📤')) + '</span>' +
+      '<span class="bd">' +
+      '<span class="t1">' + (unreadOne ? '<span class="lt-new">새 편지</span>' : '') + '<span class="ttl">' + esc(l.title || '(제목 없음)') + '</span></span>' +
+      '<span class="t2">' + esc(String(l.body).slice(0, 90)) + '</span>' +
+      '<span class="t3">' + (letterTab === 'in' ? esc(memOf(l.by).name) : (l.to === 'all' ? '가족 전체' : esc(toName)) + ' · 읽음 ' + readCnt + '/' + recips.length) + ' · ' + esc(ago(l.at)) + '</span>' +
+      '</span></button>';
+  }).join('');
+}
+function openLetter(id) {
+  var l = (DOC.letters || {})[id];
+  if (!l) return;
+  var mine = l.by === ME.id;
+  if (isTo({ by: l.by, to: l.to }) && !letterReadAt(id, ME.id)) {
+    if (!DOC.letterRead) DOC.letterRead = {};
+    if (!DOC.letterRead[id]) DOC.letterRead[id] = {};
+    DOC.letterRead[id][ME.id] = Date.now();
+    markDirty();
+  }
+  var byM = memOf(l.by);
+  var recips = (l.to === 'all' ? memberList().filter(function (m) { return m.id !== l.by; }) : [l.to]);
+  var readNames = [], unreadNames = [];
+  recips.forEach(function (r) {
+    var rid = typeof r === 'string' ? r : r.id;
+    (letterReadAt(id, rid) ? readNames : unreadNames).push(memOf(rid).name);
+  });
+  openSheet(
+    '<h3>✉️ ' + esc(l.title || '(제목 없음)') + '</h3>' +
+    '<div class="sdesc">' + esc(byM.emoji + ' ' + byM.name) + ' → ' + esc(l.to === 'all' ? '가족 전체' : memOf(l.to).name) + ' · ' + esc(dateLabel(l.at)) + '</div>' +
+    (l.imgs && l.imgs.length ? '<div class="lt-photos">' + l.imgs.map(function (im, i) {
+      return '<img src="' + (im.thumb || '') + '" alt="편지 사진" data-media="' + esc(im.id) + '">';
+    }).join('') + '</div>' : '') +
+    '<div class="lt-body">' + esc(l.body) + '</div>' +
+    '<div class="lt-meta">' +
+    (mine ? ('읽은 사람 · <b>' + esc(readNames.join(', ') || '아직 없음') + '</b>' + (unreadNames.length ? ' / 아직 ' + esc(unreadNames.join(', ')) : '')) : '보낸 사람 · <b>' + esc(byM.name) + '</b>') +
+    '</div>' +
+    '<div style="display:flex;gap:7px;margin-top:12px">' +
+    '<button type="button" class="btn ghost" data-sheet-close style="flex:1">닫기</button>' +
+    (mine ? '' : '<button type="button" class="btn" id="shLtReply" style="flex:1.2">↩️ 답장하기</button>') +
+    '</div>'
+  );
+  var rp = $('shLtReply');
+  if (rp) rp.onclick = function () { closeSheet(); letterSheet({ to: l.by, title: 'Re: ' + (l.title || ''), replyOf: id }); };
+  renderLetters();
+  renderTabBadges();
+}
+function letterSheet(opts) {
+  opts = opts || {};
+  var others = memberList().filter(function (m) { return m.id !== ME.id; });
+  var to = opts.to || 'all';
+  var draftImgs = [];
+  openSheet(
+    '<h3>✍️ 가족에게 편지 쓰기</h3>' +
+    '<div class="sdesc">받는 사람을 고르고 편지를 남겨 보세요. 사진도 함께 보낼 수 있어요.</div>' +
+    '<div class="form-row"><label>받는 사람</label><select class="field" id="shLtTo">' +
+    '<option value="all"' + (to === 'all' ? ' selected' : '') + '>👨‍👩‍👧‍👦 가족 전체</option>' +
+    others.map(function (m) { return '<option value="' + esc(m.id) + '"' + (to === m.id ? ' selected' : '') + '>' + esc(m.emoji + ' ' + m.name) + '</option>'; }).join('') +
+    '</select></div>' +
+    '<div class="form-row"><label>제목</label><input class="field" id="shLtTitle" maxlength="40" placeholder="예: 지섭이에게" value="' + esc(opts.title || '') + '"></div>' +
+    '<div class="form-row"><label>편지 내용</label><textarea class="field" id="shLtBody" rows="6" maxlength="2000" style="resize:vertical;line-height:1.6" placeholder="하고 싶은 말을 적어 주세요"></textarea></div>' +
+    '<button type="button" class="btn ghost" id="shLtPhoto" style="padding:10px;font-size:13px">📷 사진 첨부 (갤러리·구글 포토)</button>' +
+    '<div class="lt-photos" id="shLtPhotos"></div>' +
+    '<div style="display:flex;gap:8px;margin-top:6px"><button type="button" class="btn ghost" data-sheet-close style="flex:1">취소</button><button type="button" class="btn" id="shLtSend" style="flex:1.4">✉️ 편지 보내기</button></div>'
+  );
+  function paint() {
+    $('shLtPhotos').innerHTML = draftImgs.map(function (im, i) {
+      return '<span style="position:relative;display:inline-block"><img src="' + im.thumb + '" alt="첨부">' +
+        '<button type="button" data-imgx="' + i + '" style="position:absolute;top:-5px;right:-5px;width:19px;height:19px;border-radius:50%;background:rgba(20,24,29,.75);color:#fff;font-size:11px;line-height:19px">✕</button></span>';
+    }).join('');
+  }
+  $('shLtPhoto').onclick = function () { pickImages(function (files) { addImages(files, draftImgs, paint, 3); }); };
+  $('shLtPhotos').onclick = function (e) {
+    var x = e.target.closest('[data-imgx]');
+    if (x) { draftImgs.splice(Number(x.getAttribute('data-imgx')), 1); paint(); }
+  };
+  $('shLtSend').onclick = function () {
+    var toV = $('shLtTo').value;
+    var title = ($('shLtTitle').value || '').trim();
+    var body = ($('shLtBody').value || '').trim();
+    if (!title) title = (toV === 'all' ? '가족에게' : memOf(toV).name + '에게') + ' 보내는 편지';
+    if (!body && !draftImgs.length) { toast('편지 내용을 적어 주세요'); return; }
+    if (!DOC.letters) DOC.letters = {};
+    var id = newId('l');
+    DOC.letters[id] = { by: ME.id, to: toV, title: title.slice(0, 40), body: body.slice(0, 2000), imgs: draftImgs.slice(0, 3), at: Date.now(), replyOf: opts.replyOf || '' };
+    enforceSize();
+    markDirty();
+    closeSheet();
+    letterTab = 'out';
+    renderLetters();
+    renderTabBadges();
+    toast('편지를 보냈어요 ✉️');
+  };
+}
+
+/* ---------------- 사진 고르기(채팅·편지·일기 공통) ---------------- */
+function pickImages(cb, single) {
+  var inp = document.createElement('input');
+  inp.type = 'file';
+  inp.accept = 'image/*';
+  inp.multiple = !single;
+  inp.style.display = 'none';
+  document.body.appendChild(inp);
+  inp.addEventListener('change', function () {
+    var files = inp.files ? Array.prototype.slice.call(inp.files) : [];
+    try { document.body.removeChild(inp); } catch (e) {}
+    if (files.length) cb(files);
+  });
+  inp.click();
+}
+async function addImages(files, arr, paint, max) {
+  max = max || 3;
+  toast('사진 올리는 중…');
+  var before = arr.length;
+  for (var i = 0; i < files.length && arr.length < max; i++) {
+    try { arr.push(await saveMedia(files[i])); } catch (e) { console.warn('media fail', e); }
+  }
+  paint();
+  toast(arr.length > before ? ('사진 ' + (arr.length - before) + '장을 붙였어요' + (arr.length >= max ? ' (최대 ' + max + '장)' : '')) : '사진을 붙이지 못했어요');
+}
+function openMedia(id, thumb) {
+  if (!id) return;
+  pmPhotoId = null; pmData = null;
+  $('photoModal').classList.remove('hidden');
+  $('pmImg').classList.add('hidden');
+  $('pmSpin').classList.remove('hidden');
+  $('pmBy').textContent = '가족 사진';
+  $('pmCap').textContent = '';
+  $('pmWhen').textContent = '';
+  $('pmLoveN').textContent = '0';
+  $('pmLove').style.display = 'none';
+  if (thumb) $('pmImg').src = thumb;
+  mediaUrl(id).then(function (url) {
+    pmData = url;
+    $('pmImg').src = url;
+    $('pmImg').classList.remove('hidden');
+    $('pmSpin').classList.add('hidden');
+  }).catch(function () {
+    $('pmSpin').classList.add('hidden');
+    if (thumb) { $('pmImg').classList.remove('hidden'); $('pmCap').textContent = '원본을 불러오지 못해 미리보기로 보여 드려요.'; }
+    else $('pmCap').textContent = '사진을 불러오지 못했어요.';
+  });
+}
+
+/* ============================================================
+   V2 · 📢 우리 가족 공지
+   ============================================================ */
+function noticeAll() {
+  var b = (DOC && DOC.notices) || {};
+  var ids = Object.keys(b).filter(function (k) { var n = b[k]; return n && !n.d && String(n.text || '').trim(); });
+  ids.sort(function (x, y) {
+    var a = b[x], c = b[y];
+    if ((a.pin ? 1 : 0) !== (c.pin ? 1 : 0)) return (c.pin ? 1 : 0) - (a.pin ? 1 : 0);
+    return (c.at || 0) - (a.at || 0);
+  });
+  return ids.map(function (k) { var n = b[k]; return { _k: k, by: n.by, text: n.text, at: n.at || 0, pin: n.pin ? 1 : 0 }; });
+}
+function noticeAckAt(id, mid) {
+  var a = (DOC && DOC.noticeAck && DOC.noticeAck[id]) || {};
+  return a[mid] || 0;
+}
+function renderNotices() {
+  if (!DOC || !ME) return;
+  var all = noticeAll();
+  $('ntCount').textContent = all.length + '개 · 고정 ' + all.filter(function (n) { return n.pin; }).length;
+  $('ntAs').textContent = '작성자 · ' + roleEmoji(ME.role) + ' ' + ME.name;
+  var box = $('ntList');
+  if (!all.length) {
+    box.innerHTML = '<div class="fb-empty">아직 공지가 없어요.<br>가족에게 꼭 알려야 할 소식을 올려 보세요 📢</div>';
+  } else {
+    var total = memberList().length;
+    box.innerHTML = all.map(function (n) {
+      var m = memOf(n.by);
+      var acks = Object.keys((DOC.noticeAck && DOC.noticeAck[n._k]) || {}).filter(function (k) { var t = noticeAckAt(n._k, k); return t; });
+      var mineAck = noticeAckAt(n._k, ME.id);
+      return '<div class="nt-item' + (n.pin ? ' pin' : '') + '">' +
+        '<div class="h">' + (n.pin ? '<span class="nt-pin">📌 고정</span>' : '') + '<span class="who">' + esc(m.emoji + ' ' + m.name) + '</span><span class="sp"></span><span>' + esc(ago(n.at)) + '</span>' +
+        (n.by === ME.id ? '<button type="button" data-nt-del="' + esc(n._k) + '" style="color:#B8C1CA;font-size:14px;padding:0 2px" aria-label="공지 삭제">✕</button>' : '') +
+        '</div>' +
+        '<div class="txt">' + esc(n.text) + '</div><div class="f">' +
+        '<button type="button" class="nt-ack' + (mineAck ? ' done' : '') + '" data-nt-ack="' + esc(n._k) + '">' + (mineAck ? '✅ 확인했어요' : '👀 확인') + ' <b>' + acks.length + '/' + total + '</b></button>' +
+        (n.by === ME.id ? '<button type="button" class="nt-mini' + (n.pin ? ' pin' : '') + '" data-nt-pin="' + esc(n._k) + '">' + (n.pin ? '📌 고정 해제' : '📌 위에 고정') + '</button>' : '') +
+        '</div></div>';
+    }).join('');
+  }
+  var top = all[0];
+  var bt = $('ntBannerTitle'), bx = $('ntBannerText');
+  if (!bt || !bx) return;
+  if (!top) {
+    bt.textContent = '우리 가족 공지';
+    bx.textContent = '가족에게 꼭 알려야 할 소식을 올려 보세요';
+  } else {
+    bt.textContent = '우리 가족 공지' + (top.pin ? ' · 📌 고정' : '');
+    bx.textContent = memOf(top.by).name + ' · ' + String(top.text).replace(/\s+/g, ' ').slice(0, 70) + (String(top.text).length > 70 ? '…' : '');
+  }
+}
+function addNotice() {
+  var el = $('ntInput');
+  var text = (el.value || '').trim();
+  if (!text) { toast('공지할 내용을 적어 주세요'); el.focus(); return; }
+  if (!DOC.notices) DOC.notices = {};
+  var id = newId('n');
+  DOC.notices[id] = { by: ME.id, at: Date.now(), text: text.slice(0, 300), pin: noticeAll().length === 0 ? 1 : 0 };
+  el.value = '';
+  markDirty();
+  renderNotices();
+  toast('가족 공지를 올렸어요 📢');
+}
+function toggleNoticeAck(id) {
+  if (!DOC.noticeAck) DOC.noticeAck = {};
+  if (!DOC.noticeAck[id]) DOC.noticeAck[id] = {};
+  if (DOC.noticeAck[id][ME.id]) delete DOC.noticeAck[id][ME.id];
+  else DOC.noticeAck[id][ME.id] = Date.now();
+  markDirty();
+  renderNotices();
+}
+function toggleNoticePin(id) {
+  var n = DOC.notices && DOC.notices[id];
+  if (!n || n.by !== ME.id) return;
+  n.pin = n.pin ? 0 : 1;
+  n.at = Date.now();
+  markDirty();
+  renderNotices();
+  toast(n.pin ? '홈 화면 맨 위에 고정했어요 📌' : '고정을 해제했어요');
+}
+function delNotice(id) {
+  var n = DOC.notices && DOC.notices[id];
+  if (!n || n.by !== ME.id) return;
+  if (!confirm('이 공지를 삭제할까요? 가족 화면에서도 사라져요.')) return;
+  n.d = 1; n.at = Date.now();
+  markDirty();
+  renderNotices();
+  toast('공지를 삭제했어요');
+}
+
+/* ============================================================
+   V2 · 📔 우리 가족 일기
+   ============================================================ */
+var dyFilter = 'all', dySig = '';
+var MOODS = ['😊', '😄', '🥳', '😌', '😐', '😔', '😢', '😡', '🤒', '🥰'];
+function diaryAll() {
+  var b = (DOC && DOC.diary) || {};
+  return Object.keys(b).filter(function (k) { var d = b[k]; return d && !d.d; }).map(function (k) {
+    var d = b[k];
+    return { _k: k, by: d.by, at: d.at || 0, date: d.date || ymdOf(d.at || Date.now()), mood: d.mood || '😊', text: d.text || '', imgs: d.imgs || [], likes: d.likes || {}, comments: d.comments || {} };
+  }).sort(function (a, c) { if (a.date !== c.date) return a.date < c.date ? 1 : -1; return c.at - a.at; });
+}
+function diaryLikeCount(d) { var n = 0; Object.keys(d.likes || {}).forEach(function (k) { if (d.likes[k] && d.likes[k].v) n++; }); return n; }
+function diaryComments(d) {
+  var c = d.comments || {};
+  return Object.keys(c).filter(function (k) { var x = c[k]; return x && !x.d && String(x.text || '').trim(); })
+    .map(function (k) { var x = c[k]; return { _k: k, by: x.by, at: x.at || 0, text: x.text }; })
+    .sort(function (a, b) { return a.at - b.at; });
+}
+function renderDiary() {
+  if (!DOC || !ME) return;
+  var all = diaryAll();
+  $('dyCount').textContent = all.length + '편';
+  var who = $('dyWho');
+  if (who) {
+    var chips = [{ id: 'all', name: '전체' }].concat(memberList());
+    who.innerHTML = chips.map(function (m) {
+      return '<button type="button" data-dy-who="' + esc(m.id) + '"' + (dyFilter === m.id ? ' class="on"' : '') + '>' + esc(m.id === 'all' ? '👨‍👩‍👧‍👦 전체' : (m.emoji + ' ' + m.name)) + '</button>';
+    }).join('');
+  }
+  var list = all.filter(function (d) { return dyFilter === 'all' || d.by === dyFilter; });
+  var sig = list.map(function (d) {
+    return d._k + ':' + diaryLikeCount(d) + ':' + diaryComments(d).length + ':' + (d.imgs ? d.imgs.length : 0) + ':' + d.text.length + ':' + d.mood + ':' + d.at;
+  }).join('|');
+  var box = $('dyList');
+  if (sig === dySig && box.dataset.filter === dyFilter) return;
+  dySig = sig; box.dataset.filter = dyFilter;
+  if (!list.length) {
+    box.innerHTML = '<div class="fb-empty">' + (dyFilter === 'all' ? '아직 가족 일기가 없어요.<br>오늘 하루를 첫 일기로 남겨 보세요 📔' : '이 가족의 일기가 아직 없어요.') + '</div>';
+    return;
+  }
+  box.innerHTML = list.map(function (d) {
+    var m = memOf(d.by);
+    var mineLike = d.likes && d.likes[ME.id] && d.likes[ME.id].v;
+    var cm = diaryComments(d);
+    return '<div class="dy-item">' +
+      '<div class="dy-h"><span class="mo">' + esc(d.mood) + '</span><span class="nm">' + esc(m.name) + '</span><span class="dt">' + esc(dateKo(d.date)) + '</span><span class="sp"></span>' +
+      (d.by === ME.id ? '<button type="button" data-dy-del="' + esc(d._k) + '" style="color:#B8C1CA;font-size:14px" aria-label="일기 삭제">✕</button>' : '') + '</div>' +
+      (d.text ? '<div class="dy-txt">' + esc(d.text) + '</div>' : '') +
+      (d.imgs && d.imgs.length ? '<div class="dy-ph">' + d.imgs.map(function (im) {
+        return '<img src="' + (im.thumb || '') + '" alt="일기 사진" data-media="' + esc(im.id) + '"' + (im.thumb ? '' : ' style="background:#E7EDF0"') + '>';
+      }).join('') + '</div>' : '') +
+      '<div class="dy-f">' +
+      '<button type="button" class="lk' + (mineLike ? '' : ' off') + '" data-dy-like="' + esc(d._k) + '">' + (mineLike ? '❤️' : '🤍') + ' 좋아요 <b>' + diaryLikeCount(d) + '</b></button>' +
+      '<span class="dy-cm">💬 ' + cm.length + '</span></div>' +
+      (cm.length ? '<div class="dy-comments">' + cm.map(function (c) {
+        return '<div class="dy-cm-row"><b>' + esc(memOf(c.by).name) + '</b>' + esc(c.text) + '</div>';
+      }).join('') + '</div>' : '') +
+      '<div class="dy-cm-in"><input id="dyCm_' + esc(d._k) + '" maxlength="120" placeholder="응원 댓글 남기기…"><button type="button" data-dy-cm="' + esc(d._k) + '">남기기</button></div>' +
+      '</div>';
+  }).join('');
+}
+function toggleDiaryLike(id) {
+  var d = DOC.diary && DOC.diary[id];
+  if (!d) return;
+  if (!d.likes) d.likes = {};
+  var cur = d.likes[ME.id] && d.likes[ME.id].v;
+  d.likes[ME.id] = { v: cur ? 0 : 1, at: Date.now() };
+  markDirty();
+  renderDiary();
+}
+function addDiaryComment(id, text) {
+  var d = DOC.diary && DOC.diary[id];
+  if (!d) return;
+  text = String(text || '').trim();
+  if (!text) { toast('댓글 내용을 적어 주세요'); return; }
+  if (!d.comments) d.comments = {};
+  d.comments[newId('cm')] = { by: ME.id, at: Date.now(), text: text.slice(0, 120) };
+  markDirty();
+  dySig = '';
+  renderDiary();
+}
+function diarySheet() {
+  var date = todayYmd();
+  var mood = '😊';
+  var imgs = [];
+  openSheet(
+    '<h3>✍️ 오늘 일기 쓰기</h3>' +
+    '<div class="sdesc">오늘 기분과 있었던 일을 남겨 보세요. 사진도 붙일 수 있어요.</div>' +
+    '<div class="form-row"><label>날짜</label><input class="field" type="date" id="shDyDate" value="' + date + '"></div>' +
+    '<div class="form-row"><label>오늘 기분</label><div class="mood-row" id="shDyMood">' +
+    MOODS.map(function (e, i) { return '<button type="button" data-mood="' + e + '"' + (i === 0 ? ' class="on"' : '') + '>' + e + '</button>'; }).join('') +
+    '</div></div>' +
+    '<div class="form-row"><label>일기 내용</label><textarea class="field" id="shDyText" rows="6" maxlength="2000" style="resize:vertical;line-height:1.65" placeholder="오늘 하루는 어땠나요?"></textarea></div>' +
+    '<button type="button" class="btn ghost" id="shDyPhoto" style="padding:10px;font-size:13px">📷 사진 붙이기 (갤러리·구글 포토)</button>' +
+    '<div class="lt-photos" id="shDyPhotos"></div>' +
+    '<div style="display:flex;gap:8px;margin-top:6px"><button type="button" class="btn ghost" data-sheet-close style="flex:1">취소</button><button type="button" class="btn" id="shDySave" style="flex:1.4">일기 저장</button></div>'
+  );
+  function paint() {
+    $('shDyPhotos').innerHTML = imgs.map(function (im, i) {
+      return '<span style="position:relative;display:inline-block"><img src="' + im.thumb + '" alt="첨부">' +
+        '<button type="button" data-imgx="' + i + '" style="position:absolute;top:-5px;right:-5px;width:19px;height:19px;border-radius:50%;background:rgba(20,24,29,.75);color:#fff;font-size:11px;line-height:19px">✕</button></span>';
+    }).join('');
+  }
+  $('shDyMood').onclick = function (e) {
+    var b = e.target.closest('[data-mood]');
+    if (!b) return;
+    mood = b.getAttribute('data-mood');
+    var all = $('shDyMood').querySelectorAll('button');
+    for (var i = 0; i < all.length; i++) all[i].classList.toggle('on', all[i].getAttribute('data-mood') === mood);
+  };
+  $('shDyPhoto').onclick = function () { pickImages(function (files) { addImages(files, imgs, paint, 4); }); };
+  $('shDyPhotos').onclick = function (e) {
+    var x = e.target.closest('[data-imgx]');
+    if (x) { imgs.splice(Number(x.getAttribute('data-imgx')), 1); paint(); }
+  };
+  $('shDySave').onclick = function () {
+    var text = ($('shDyText').value || '').trim();
+    var dateV = $('shDyDate').value || todayYmd();
+    if (!text && !imgs.length) { toast('일기 내용을 적어 주세요'); return; }
+    if (!DOC.diary) DOC.diary = {};
+    DOC.diary[newId('d')] = { by: ME.id, at: Date.now(), date: dateV, mood: mood, text: text.slice(0, 2000), imgs: imgs.slice(0, 4), likes: {}, comments: {} };
+    enforceSize();
+    markDirty();
+    dySig = '';
+    closeSheet();
+    renderDiary();
+    toast('오늘 일기를 남겼어요 📔');
+  };
+}
+
+/* ============================================================
+   V2 · 💰 용돈기입장
+   ============================================================ */
+var mnMonth = (function () { var d = new Date(); return d.getFullYear() + '-' + pad2(d.getMonth() + 1); })();
+var mnWho = 'all';
+var MN_METHOD = { cash: '현금', card: '카드', transfer: '계좌이체' };
+function moneyAll() {
+  var b = (DOC && DOC.money) || {};
+  return Object.keys(b).filter(function (k) { var m = b[k]; return m && !m.d; }).map(function (k) {
+    var m = b[k];
+    return { _k: k, by: m.by, owner: m.owner || m.by, kind: m.kind || 'expense', amount: Number(m.amount || 0), method: m.method || 'cash', memo: m.memo || '', date: m.date || ymdOf(m.at || Date.now()), status: m.status || 'paid', at: m.at || 0 };
+  });
+}
+function moneyInMonth(list, month) { return list.filter(function (m) { return String(m.date).slice(0, 7) === month; }); }
+function moneySum(list, owner) {
+  var s = { in: 0, out: 0, due: 0 };
+  list.forEach(function (m) {
+    if (owner !== 'all' && m.owner !== owner) return;
+    if (m.kind === 'expense') { s.out += m.amount; return; }
+    if (m.kind === 'allow' && m.status !== 'paid') { s.due += m.amount; return; }
+    s.in += m.amount;
+  });
+  s.bal = s.in - s.out;
+  return s;
+}
+function shiftMonth(n) {
+  var p = mnMonth.split('-');
+  var d = new Date(Number(p[0]), Number(p[1]) - 1 + n, 1);
+  mnMonth = d.getFullYear() + '-' + pad2(d.getMonth() + 1);
+  renderMoney();
+}
+function renderMoney() {
+  if (!DOC || !ME) return;
+  var p = mnMonth.split('-');
+  $('mnMonthLabel').textContent = p[0] + '년 ' + Number(p[1]) + '월';
+  var all = moneyAll();
+  var monthList = moneyInMonth(all, mnMonth);
+  $('mnCount').textContent = monthList.length + '건';
+  var chips = [{ id: 'all', name: '전체', emoji: '👨‍👩‍👧‍👦' }].concat(memberList());
+  $('mnWho').innerHTML = chips.map(function (m) {
+    return '<button type="button" data-mn-who="' + esc(m.id) + '"' + (mnWho === m.id ? ' class="on"' : '') + '>' + esc(m.id === 'all' ? '👨‍👩‍👧‍👦 전체' : (m.emoji + ' ' + m.name)) + '</button>';
+  }).join('');
+  var s = moneySum(monthList, mnWho);
+  var perHtml = '';
+  if (mnWho === 'all') {
+    var rows = memberList().map(function (m) {
+      var ms = moneySum(monthList, m.id);
+      if (!ms.in && !ms.out && !ms.due) return '';
+      return '<div class="mn-row" style="border-bottom:1px dashed #EDF1F3"><div class="bd"><div class="t1">' + esc(m.emoji + ' ' + m.name) + '</div>' +
+        '<div class="t2">받은 ' + won(ms.in) + ' · 쓴 ' + won(ms.out) + (ms.due ? ' · <b style="color:#B45309">미수령 ' + won(ms.due) + '</b>' : '') + '</div></div>' +
+        '<div class="amt ' + (ms.bal < 0 ? 'out' : 'in') + '">' + won(ms.bal) + '</div></div>';
+    }).filter(Boolean).join('');
+    if (rows) perHtml = '<div style="grid-column:1/-1;margin-top:4px">' + rows + '</div>';
+  }
+  $('mnSum').innerHTML =
+    '<div class="mn-tile in"><div class="l">💵 받은 돈</div><div class="v">' + won(s.in) + '</div></div>' +
+    '<div class="mn-tile out"><div class="l">🛒 쓴 돈</div><div class="v">' + won(s.out) + '</div></div>' +
+    '<div class="mn-tile bal"><div class="l">🏦 남은 돈</div><div class="v">' + won(s.bal) + '</div></div>' +
+    '<div class="mn-tile due"><div class="l">⏳ 미수령(받을 돈)</div><div class="v">' + won(s.due) + '</div></div>' + perHtml;
+  var list = monthList.filter(function (m) { return mnWho === 'all' || m.owner === mnWho; });
+  list.sort(function (a, b) { if (a.date !== b.date) return a.date < b.date ? 1 : -1; return b.at - a.at; });
+  var box = $('mnList');
+  if (!list.length) {
+    box.innerHTML = '<div class="fb-empty">' + mnMonth.split('-')[1] + '월에 남긴 내역이 없어요.<br>용돈·수입·지출을 적어 두면 달마다 한눈에 보여요.</div>';
+    return;
+  }
+  box.innerHTML = list.map(function (m) {
+    var label = m.kind === 'expense' ? '🛒 지출' : (m.kind === 'income' ? '💵 수입' : (m.status === 'paid' ? '💰 받은 용돈' : '🙋 받을 용돈'));
+    var due = m.kind === 'allow' && m.status !== 'paid';
+    var cls = m.kind === 'expense' ? 'out' : (due ? 'due' : 'in');
+    var sign = m.kind === 'expense' ? '-' : '+';
+    var mm = memOf(m.owner);
+    return '<div class="mn-row"><div class="bd">' +
+      '<div class="t1">' + esc(mm.emoji + ' ' + mm.name) + ' · ' + label + ' <span class="meth ' + esc(m.method) + '">' + esc(MN_METHOD[m.method] || '현금') + '</span></div>' +
+      '<div class="t2">' + esc(dateKo(m.date)) + (m.memo ? ' · ' + esc(m.memo) : '') + '</div>' +
+      (m.kind === 'allow' ? '<button type="button" class="pay-btn' + (due ? '' : ' done') + '" data-pay="' + esc(m._k) + '">' + (due ? '💵 받았어요 · 지급완료로' : '✅ 지급완료') + '</button>' : '') +
+      '</div>' +
+      '<div class="amt ' + cls + '">' + sign + won(m.amount) + '</div>' +
+      (m.by === ME.id ? '<button type="button" data-mn-del="' + esc(m._k) + '" style="color:#B8C1CA;font-size:14px;padding:0 1px" aria-label="내역 삭제">✕</button>' : '') +
+      '</div>';
+  }).join('');
+}
+function markPaid(id) {
+  var m = DOC.money && DOC.money[id];
+  if (!m) return;
+  if (m.status === 'paid') { m.status = 'unpaid'; m.paidAt = 0; m.paidBy = ''; }
+  else { m.status = 'paid'; m.paidAt = Date.now(); m.paidBy = ME.id; }
+  m.at = Date.now();
+  markDirty();
+  renderMoney();
+  toast(m.status === 'paid' ? '지급완료로 바꿨어요 · 미수령에서 빠집니다' : '다시 받을 돈으로 되돌렸어요');
+}
+function moneySheet(kindDefault) {
+  var others = memberList();
+  var meIdx = others.map(function (m) { return m.id; }).indexOf(ME.id);
+  openSheet(
+    '<h3>' + (kindDefault === 'allow' ? '🙋 용돈 요청하기' : '💰 용돈기입장 내역 추가') + '</h3>' +
+    '<div class="sdesc">누구의 돈인지, 현금·카드·계좌이체 중 어떻게 받았는지 함께 남겨 두면 미받은 돈이 정확히 보여요.</div>' +
+    '<div class="form-row"><label>누구의 내역인가요?</label><select class="field" id="shMnOwner">' +
+    others.map(function (m, i) { return '<option value="' + esc(m.id) + '"' + (i === meIdx ? ' selected' : '') + '>' + esc(m.emoji + ' ' + m.name) + '</option>'; }).join('') +
+    '</select></div>' +
+    '<div class="form-row"><label>종류</label><select class="field" id="shMnKind">' +
+    '<option value="allow"' + (kindDefault === 'allow' ? ' selected' : '') + '>🙋 받을 용돈 (요청·미지급)</option>' +
+    '<option value="income"' + (kindDefault !== 'allow' ? ' selected' : '') + '>💵 받은 돈 (수입)</option>' +
+    '<option value="expense">🛒 쓴 돈 (지출)</option></select></div>' +
+    '<div class="form-row"><label>금액</label><input class="field" id="shMnAmount" type="number" inputmode="numeric" min="0" step="100" placeholder="예: 10000"></div>' +
+    '<div class="form-row"><label>받는·쓰는 수단</label><select class="field" id="shMnMethod">' +
+    '<option value="cash">💵 현금</option><option value="card">💳 카드</option><option value="transfer">🏦 계좌이체</option></select></div>' +
+    '<div class="form-row"><label>날짜</label><input class="field" type="date" id="shMnDate" value="' + todayYmd() + '"></div>' +
+    '<div class="form-row"><label>메모 (선택)</label><input class="field" id="shMnMemo" maxlength="40" placeholder="예: 11월 첫째 주 용돈"></div>' +
+    '<div style="display:flex;gap:8px;margin-top:6px"><button type="button" class="btn ghost" data-sheet-close style="flex:1">취소</button><button type="button" class="btn" id="shMnSave" style="flex:1.4">저장</button></div>'
+  );
+  $('shMnSave').onclick = function () {
+    var owner = $('shMnOwner').value;
+    var kind = $('shMnKind').value;
+    var amt = Math.round(Number($('shMnAmount').value || 0));
+    var method = $('shMnMethod').value;
+    var date = $('shMnDate').value || todayYmd();
+    var memo = ($('shMnMemo').value || '').trim();
+    if (!amt || amt <= 0) { toast('금액을 적어 주세요'); return; }
+    if (!DOC.money) DOC.money = {};
+    DOC.money[newId('mn')] = {
+      by: ME.id, at: Date.now(), owner: owner, kind: kind, amount: amt, method: method,
+      memo: memo.slice(0, 40), date: date, status: kind === 'allow' ? 'unpaid' : 'paid'
+    };
+    mnMonth = date.slice(0, 7);
+    mnWho = owner;
+    markDirty();
+    closeSheet();
+    renderMoney();
+    toast(kind === 'allow' ? '받을 용돈으로 적어 뒀어요 · 받으면 지급완료를 눌러 주세요' : '내역을 저장했어요');
+  };
+}
+
+/* ============================================================
+   V2 · 📍 실시간 위치 공유 + 가족 지도
+   ============================================================ */
+var LS_AUTO = 'sgf_autoshare_v1';
+var autoShare = false, autoTimer = null, watchId = null, autoLastPush = 0, geoTried = 0;
+var mapZoom = 12, mapCenter = null, mapSig = '';
+
+function myLive() { return (DOC && DOC.live && DOC.live[ME.id]) || null; }
+function liveEntries() {
+  var b = (DOC && DOC.live) || {};
+  return Object.keys(b).filter(function (k) {
+    var l = b[k];
+    return l && typeof l.lat === 'number' && typeof l.lon === 'number';
+  }).map(function (k) {
+    var l = b[k];
+    return { id: k, lat: l.lat, lon: l.lon, at: l.at || 0, addr: l.addr || '', acc: l.acc || 0, auto: l.auto || 0 };
+  }).sort(function (a, b2) { return b2.at - a.at; });
+}
+function renderLocSummary() {
+  if (!DOC || !ME) return;
+  var box = $('locSumList');
+  if (!box) return;
+  var entries = liveEntries();
+  var newest = entries.length ? entries[0].at : 0;
+  $('locSumAt').textContent = newest ? ago(newest) + ' 갱신' : '아직 없음';
+  var list = memberList();
+  if (!list.length) { box.innerHTML = '<div class="empty" style="padding:12px 4px">아직 등록된 가족이 없어요.</div>'; return; }
+  box.innerHTML = list.map(function (m) {
+    var l = DOC.live && DOC.live[m.id];
+    if (!l || typeof l.lat !== 'number') {
+      return '<div class="loc-row"><div class="av">' + esc(m.emoji || '🧑') + '</div>' +
+        '<div class="bd"><div class="n1">' + esc(m.name) + '</div><div class="n2">위치를 아직 공유하지 않았어요</div></div>' +
+        '<span class="ag old">미공유</span></div>';
+    }
+    var stale = (Date.now() - (l.at || 0)) > 3600000;
+    var where = l.addr || (Number(l.lat).toFixed(4) + ', ' + Number(l.lon).toFixed(4));
+    return '<div class="loc-row"><div class="av">' + esc(m.emoji || '🧑') + '</div>' +
+      '<div class="bd"><div class="n1">' + esc(m.name) + (l.auto ? ' <span class="pill" style="font-size:9px;padding:1px 5px">자동</span>' : '') + '</div>' +
+      '<div class="n2">' + esc(where) + '</div></div>' +
+      '<span class="ag' + (stale ? ' old' : '') + '">' + esc(ago(l.at)) + '</span>' +
+      '<a class="mini" href="https://map.kakao.com/link/map/' + encodeURIComponent(m.name) + ',' + l.lat + ',' + l.lon + '" target="_blank" rel="noopener">지도</a></div>';
+  }).join('');
+}
+function autoShareUI() {
+  var sw = $('autoShareSw'), desc = $('autoShareDesc');
+  if (sw) { sw.classList.toggle('on', !!autoShare); sw.setAttribute('aria-checked', autoShare ? 'true' : 'false'); }
+  if (!desc) return;
+  if (!autoShare) {
+    desc.textContent = '켜면 앱을 열어 둔 동안 20~30초마다 내 위치가 가족에게 갱신돼요.';
+    return;
+  }
+  var l = myLive();
+  desc.textContent = '🟢 자동 공유 중 · ' + (l && l.at ? ('마지막 갱신 ' + ago(l.at)) : '곧 처음 위치를 보냅니다');
+}
+function setAutoShare(on) {
+  autoShare = !!on;
+  try { localStorage.setItem(LS_AUTO, autoShare ? '1' : '0'); } catch (e) {}
+  if (autoShare) startAutoShare(); else stopAutoShare();
+  autoShareUI();
+  toast(autoShare ? '자동 위치 공유를 켰어요 · 앱을 열어 둔 동안 갱신돼요' : '자동 위치 공유를 껐어요');
+}
+function startAutoShare() {
+  if (!navigator.geolocation) { toast('이 브라우저에서는 위치를 쓸 수 없어요'); autoShare = false; autoShareUI(); return; }
+  pushMyLocation(true);
+  if (autoTimer) clearInterval(autoTimer);
+  autoTimer = setInterval(function () { if (document.hidden) return; pushMyLocation(false); }, 30000);
+  if (watchId === null && navigator.geolocation.watchPosition) {
+    try {
+      watchId = navigator.geolocation.watchPosition(function (pos) {
+        if (Date.now() - autoLastPush < 20000) return;
+        pushFromPos(pos);
+      }, function () {}, { enableHighAccuracy: true, maximumAge: 20000, timeout: 20000 });
+    } catch (e) { watchId = null; }
+  }
+}
+function stopAutoShare() {
+  if (autoTimer) { clearInterval(autoTimer); autoTimer = null; }
+  if (watchId !== null && navigator.geolocation) {
+    try { navigator.geolocation.clearWatch(watchId); } catch (e) {}
+    watchId = null;
+  }
+  var l = myLive();
+  if (l) { l.auto = 0; markDirty(); }
+}
+function pushFromPos(pos) {
+  if (!ME || !DOC) return;
+  var lat = pos.coords.latitude, lon = pos.coords.longitude;
+  var prev = DOC.live[ME.id];
+  var now = Date.now();
+  var farEnough = !prev || !prev.addr || Math.abs((prev.lat || 0) - lat) > 0.002 || Math.abs((prev.lon || 0) - lon) > 0.002;
+  DOC.live[ME.id] = {
+    lat: lat, lon: lon, acc: Math.round(pos.coords.accuracy || 0),
+    addr: (prev && prev.addr) || '', at: now, auto: autoShare ? 1 : 0
+  };
+  autoLastPush = now;
+  renderLive();
+  renderLocSummary();
+  autoShareUI();
+  renderMap();
+  markDirty();
+  if (farEnough && now - geoTried > 8000) { geoTried = now; geocodeLive(lat, lon); }
+}
+function geocodeLive(lat, lon) {
+  reverseGeocode(lat, lon).then(function (addr) {
+    if (!addr) return;
+    var l = DOC.live[ME.id];
+    if (!l) return;
+    l.addr = addr;
+    renderLive();
+    renderLocSummary();
+    renderMap();
+    markDirty();
+  });
+}
+function pushMyLocation() {
+  if (!navigator.geolocation) { toast('이 브라우저에서는 위치를 쓸 수 없어요'); return; }
+  navigator.geolocation.getCurrentPosition(function (pos) {
+    pushFromPos(pos);
+  }, function (err) {
+    autoShareUI();
+    if (err && err.code === 1) toast('위치 권한을 허용해 주셔야 해요 (휴대폰 설정 → 위치 → 허용)');
+    else if (!autoShare) toast('위치를 가져오지 못했어요. 잠시 후 다시 눌러 주세요');
+  }, { enableHighAccuracy: true, timeout: 15000, maximumAge: 20000 });
+}
+
+/* 지도(OpenStreetMap) — 직접 그리는 가벼운 타일 지도 */
+function projPt(lat, lon, z) {
+  var size = 256 * Math.pow(2, z);
+  var x = (lon + 180) / 360 * size;
+  var s = Math.sin(lat * Math.PI / 180);
+  var y = (0.5 - Math.log((1 + s) / (1 - s)) / (4 * Math.PI)) * size;
+  return { x: x, y: y };
+}
+function renderMap(force) {
+  if (!DOC || !ME || currentView !== 'map') return;
+  var box = $('famMap');
+  if (!box) return;
+  var w = box.clientWidth || 352, h = box.clientHeight || 230;
+  var pts = liveEntries().filter(function (p) { return Date.now() - p.at < 86400000; });
+  var mine = myLive();
+  var center = mapCenter || (mine && typeof mine.lat === 'number' ? { lat: mine.lat, lon: mine.lon } : (pts.length ? { lat: pts[0].lat, lon: pts[0].lon } : { lat: 37.7251, lon: 126.766 }));
+  var sig = mapZoom + '|' + center.lat.toFixed(4) + '|' + center.lon.toFixed(4) + '|' + w + 'x' + h + '|' +
+    pts.map(function (p) { return p.id + ':' + p.lat.toFixed(4) + ':' + p.lon.toFixed(4); }).join(',');
+  var empty = $('mapEmpty');
+  if (empty) empty.style.display = pts.length ? 'none' : 'flex';
+  if (!force && sig === mapSig) return;
+  mapSig = sig;
+  var c = projPt(center.lat, center.lon, mapZoom);
+  var left = c.x - w / 2, top = c.y - h / 2;
+  var maxTile = Math.pow(2, mapZoom);
+  var html = '';
+  for (var tx = Math.floor(left / 256); tx <= Math.floor((left + w) / 256); tx++) {
+    for (var ty = Math.floor(top / 256); ty <= Math.floor((top + h) / 256); ty++) {
+      if (ty < 0 || ty >= maxTile) continue;
+      var wx = ((tx % maxTile) + maxTile) % maxTile;
+      html += '<img class="tile" alt="" loading="lazy" src="https://tile.openstreetmap.org/' + mapZoom + '/' + wx + '/' + ty + '.png" ' +
+        'style="left:' + Math.round(tx * 256 - left) + 'px;top:' + Math.round(ty * 256 - top) + 'px" ' +
+        'onerror="this.style.display=\'none\'">';
+    }
+  }
+  $('mapTiles').innerHTML = html;
+  $('mapPins').innerHTML = pts.map(function (p) {
+    var q = projPt(p.lat, p.lon, mapZoom), mem = memOf(p.id);
+    return '<div class="map-pin' + (p.id === ME.id ? ' me' : '') + '" style="left:' + Math.round(q.x - left) + 'px;top:' + Math.round(q.y - top) + 'px">' +
+      '<div class="bub"><span>' + esc(mem.emoji || '🧑') + '</span></div>' +
+      '<div class="tag">' + esc(mem.name) + ' · ' + esc(ago(p.at)) + '</div></div>';
+  }).join('');
+}
+function mapZoomBy(n) {
+  mapZoom = Math.max(6, Math.min(17, mapZoom + n));
+  renderMap(true);
+}
+function mapRecenter() {
+  var l = myLive();
+  mapCenter = (l && typeof l.lat === 'number') ? { lat: l.lat, lon: l.lon } : null;
+  mapZoom = 13;
+  renderMap(true);
+  if (!l) toast('아직 내 위치가 없어요. “지금 내 위치 바로 갱신”을 먼저 눌러 주세요');
+}
+
+/* ============================================================
+   V2 · 📋 생활 허브(편지·공지·일기·용돈·추천)
+   ============================================================ */
+var lifeTab = 'letters';
+function paintLife() {
+  ['letters', 'notices', 'diary', 'money', 'reco'].forEach(function (t) {
+    var el = $('life-' + t);
+    if (el) el.classList.toggle('hidden', t !== lifeTab);
+    var b = document.querySelector('#lifeNav button[data-life="' + t + '"]');
+    if (b) b.classList.toggle('on', t === lifeTab);
+  });
+}
+function openLife(tab) {
+  lifeTab = tab || 'letters';
+  switchView('life');
+  paintLife();
+  if (lifeTab === 'letters') renderLetters();
+  if (lifeTab === 'notices') renderNotices();
+  if (lifeTab === 'diary') renderDiary();
+  if (lifeTab === 'money') renderMoney();
+  if (lifeTab === 'reco') renderReco();
+}
+
 function renderAll() {
   if (!DOC || !ME) return;
   renderHeader();
@@ -1250,8 +2523,18 @@ function renderAll() {
   renderCheer();
   renderPlans();
   renderLive();
+  renderLocSummary();
   renderPhotos();
   renderReco();
+  renderChat();
+  renderHomeChat();
+  renderLetters();
+  renderNotices();
+  renderDiary();
+  renderMoney();
+  renderMap();
+  autoShareUI();
+  renderTabBadges();
 }
 
 /* ============================================================
@@ -1494,6 +2777,7 @@ async function openPhoto(pid) {
   Object.keys(likeMap).forEach(function (k) { if (likeMap[k] && likeMap[k].v) { cnt++; if (ME && k === ME.id) mine = true; } });
   $('pmLoveN').textContent = cnt;
   $('pmLove').className = 'love' + (mine ? '' : ' off');
+  $('pmLove').style.display = '';
   $('pmLove').innerHTML = (mine ? '❤️' : '🤍') + ' 좋아요 <b id="pmLoveN">' + cnt + '</b>';
   try {
     var raw = await fetchText(CFG.ph + pid);
@@ -1565,12 +2849,8 @@ function reverseGeocode(lat, lon) {
 function shareLocation() {
   if (!navigator.geolocation) { toast('이 브라우저에서는 위치를 쓸 수 없어요'); return; }
   toast('내 위치를 확인하는 중…');
-  navigator.geolocation.getCurrentPosition(async function (pos) {
-    var lat = pos.coords.latitude, lon = pos.coords.longitude;
-    var addr = await reverseGeocode(lat, lon);
-    DOC.live[ME.id] = { lat: lat, lon: lon, acc: Math.round(pos.coords.accuracy || 0), addr: addr, at: Date.now() };
-    renderLive();
-    markDirty();
+  navigator.geolocation.getCurrentPosition(function (pos) {
+    pushFromPos(pos);
     toast('가족에게 내 위치를 보냈어요');
     loadWeather();
   }, function (err) {
@@ -1718,6 +2998,7 @@ function triggerInstall() {
 
 /* ---------------- 이벤트 연결 ---------------- */
 function wire() {
+  wireV2();
   $('authTabs').addEventListener('click', function (e) {
     var b = e.target.closest('button[data-tab]');
     if (b) authTab(b.getAttribute('data-tab'));
@@ -1866,6 +3147,175 @@ function wire() {
     if (e.key === 'Escape') { closeSheet(); closePhoto(); }
   });
 }
+/* ============================================================
+   V2 · 이벤트 연결
+   ============================================================ */
+function locHowSheet() {
+  openSheet(
+    '<h3>📍 위치 공유 안내</h3>' +
+    '<div class="sdesc">가족 위치는 이렇게 움직여요.</div>' +
+    '<div class="sheet-item"><span class="ico">1️⃣</span>처음 한 번만 “허용”을 눌러 주세요</div>' +
+    '<div class="sheet-item"><span class="ico">2️⃣</span>“지금 내 위치 바로 갱신” = 지금 한 번만</div>' +
+    '<div class="sheet-item"><span class="ico">3️⃣</span>자동 공유 ON = 앱을 열어 둔 동안 30초마다</div>' +
+    '<div class="sheet-item"><span class="ico">4️⃣</span>앱을 닫으면 휴대폰 정책상 전송이 멈춰요</div>' +
+    '<div class="hint">다시 열면 그 순간 위치로 바로 갱신됩니다. 배터리를 아끼려면 자동 공유를 꺼 두세요. 위치는 가족 저장소에만 암호화되어 보관됩니다.</div>' +
+    '<button type="button" class="btn" data-sheet-close style="margin-top:9px">확인</button>'
+  );
+}
+function wireV2() {
+  $('ntBanner').addEventListener('click', function () { openLife('notices'); });
+  $('chatTopBtn').addEventListener('click', openChatView);
+  $('chatTopBtn').addEventListener('keydown', function (e) {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openChatView(); }
+  });
+  var hs = $('homeChatSend');
+  hs.addEventListener('click', function () {
+    var inp = $('homeChatInput');
+    if (sendChat(inp.value, null)) { inp.value = ''; toast('가족에게 메시지를 보냈어요'); }
+    else toast('메시지를 적어 주세요');
+  });
+  $('homeChatInput').addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') { e.preventDefault(); hs.click(); }
+  });
+
+  $('locGoMap').addEventListener('click', function () { switchView('map'); });
+  $('locRefreshHome').addEventListener('click', shareLocation);
+  $('btnShareLoc').addEventListener('click', shareLocation);
+  $('autoShareSw').addEventListener('click', function () { setAutoShare(!autoShare); });
+  $('autoShareSw').addEventListener('keydown', function (e) {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setAutoShare(!autoShare); }
+  });
+  $('mapZoomIn').addEventListener('click', function () { mapZoomBy(1); });
+  $('mapZoomOut').addEventListener('click', function () { mapZoomBy(-1); });
+  $('mapRecenter').addEventListener('click', mapRecenter);
+  $('btnLocHow').addEventListener('click', locHowSheet);
+
+  $('chatSend').addEventListener('click', function () {
+    var inp = $('chatInput');
+    if (!inp.value.trim() && !chatDraftImg) { toast('메시지를 적어 주세요'); inp.focus(); return; }
+    sendChat(inp.value, chatDraftImg);
+    inp.value = '';
+    inp.style.height = '38px';
+    chatDraftImg = null;
+    renderChatAttach();
+    scrollChatBottom();
+  });
+  $('chatInput').addEventListener('keydown', function (e) {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); $('chatSend').click(); }
+  });
+  $('chatInput').addEventListener('input', function () {
+    this.style.height = '38px';
+    this.style.height = Math.min(96, this.scrollHeight) + 'px';
+  });
+  $('chatPick').addEventListener('click', function () {
+    pickImages(async function (files) {
+      toast('사진 준비 중…');
+      try {
+        chatDraftImg = await saveMedia(files[0]);
+        renderChatAttach();
+        toast('사진을 붙였어요 · 전송을 누르면 같이 가요');
+      } catch (e) { toast('사진을 붙이지 못했어요'); }
+    }, true);
+  });
+  $('chatList').addEventListener('click', function (e) {
+    var im = e.target.closest('[data-media]');
+    if (im) openMedia(im.getAttribute('data-media'), im.getAttribute('src'));
+  });
+
+  $('ltSeg').addEventListener('click', function (e) {
+    var b = e.target.closest('button[data-lt]');
+    if (!b) return;
+    letterTab = b.getAttribute('data-lt');
+    renderLetters();
+  });
+  $('ltList').addEventListener('click', function (e) {
+    var b = e.target.closest('[data-letter]');
+    if (b) openLetter(b.getAttribute('data-letter'));
+  });
+  $('btnLetterNew').addEventListener('click', function () { letterSheet({}); });
+
+  $('lifeNav').addEventListener('click', function (e) {
+    var b = e.target.closest('button[data-life]');
+    if (b) openLife(b.getAttribute('data-life'));
+  });
+  $('lifeQuick').addEventListener('click', function (e) {
+    var b = e.target.closest('button[data-life]');
+    if (b) openLife(b.getAttribute('data-life'));
+  });
+
+  $('btnNtSend').addEventListener('click', addNotice);
+  $('ntList').addEventListener('click', function (e) {
+    var a = e.target.closest('[data-nt-ack]');
+    if (a) { toggleNoticeAck(a.getAttribute('data-nt-ack')); return; }
+    var p = e.target.closest('[data-nt-pin]');
+    if (p) { toggleNoticePin(p.getAttribute('data-nt-pin')); return; }
+    var d = e.target.closest('[data-nt-del]');
+    if (d) { delNotice(d.getAttribute('data-nt-del')); return; }
+  });
+
+  $('btnDiaryNew').addEventListener('click', diarySheet);
+  $('dyWho').addEventListener('click', function (e) {
+    var b = e.target.closest('button[data-dy-who]');
+    if (!b) return;
+    dyFilter = b.getAttribute('data-dy-who');
+    dySig = '';
+    renderDiary();
+  });
+  $('dyList').addEventListener('click', function (e) {
+    var lk = e.target.closest('[data-dy-like]');
+    if (lk) { toggleDiaryLike(lk.getAttribute('data-dy-like')); return; }
+    var cm = e.target.closest('[data-dy-cm]');
+    if (cm) {
+      var cid = cm.getAttribute('data-dy-cm');
+      var cin = $('dyCm_' + cid);
+      addDiaryComment(cid, cin ? cin.value : '');
+      if (cin) cin.value = '';
+      return;
+    }
+    var del = e.target.closest('[data-dy-del]');
+    if (del) {
+      var did = del.getAttribute('data-dy-del');
+      var d = DOC.diary[did];
+      if (d && d.by === ME.id && confirm('이 일기를 삭제할까요? 가족 화면에서도 사라져요.')) {
+        d.d = 1; d.at = Date.now(); markDirty(); dySig = ''; renderDiary();
+      }
+      return;
+    }
+    var im = e.target.closest('[data-media]');
+    if (im) openMedia(im.getAttribute('data-media'), im.getAttribute('src'));
+  });
+  $('dyList').addEventListener('keydown', function (e) {
+    if (e.key === 'Enter' && e.target.id && e.target.id.indexOf('dyCm_') === 0) {
+      e.preventDefault();
+      addDiaryComment(e.target.id.slice(5), e.target.value);
+      e.target.value = '';
+    }
+  });
+
+  $('mnWho').addEventListener('click', function (e) {
+    var b = e.target.closest('button[data-mn-who]');
+    if (!b) return;
+    mnWho = b.getAttribute('data-mn-who');
+    renderMoney();
+  });
+  document.querySelector('.mn-month').addEventListener('click', function (e) {
+    var b = e.target.closest('button[data-mn-month]');
+    if (b) shiftMonth(Number(b.getAttribute('data-mn-month')));
+  });
+  $('mnList').addEventListener('click', function (e) {
+    var p = e.target.closest('[data-pay]');
+    if (p) { markPaid(p.getAttribute('data-pay')); return; }
+    var d = e.target.closest('[data-mn-del]');
+    if (d) {
+      var id = d.getAttribute('data-mn-del');
+      var m = DOC.money[id];
+      if (m && m.by === ME.id && confirm('이 내역을 삭제할까요?')) { m.d = 1; m.at = Date.now(); markDirty(); renderMoney(); }
+    }
+  });
+  $('btnMnAdd').addEventListener('click', function () { moneySheet('income'); });
+  $('btnMnAsk').addEventListener('click', function () { moneySheet('allow'); });
+}
+
 function lateSheet() {
   var cur = DOC.status[ME.id] || {};
   openSheet(
@@ -1884,15 +3334,24 @@ function lateSheet() {
 }
 function switchView(v) {
   currentView = v;
-  ['home', 'photos', 'map', 'reco'].forEach(function (name) {
+  ['home', 'chat', 'photos', 'map', 'life'].forEach(function (name) {
     var el = $('view-' + name);
     if (el) el.classList.toggle('hidden', name !== v);
     var btn = document.querySelector('#tabbar button[data-view="' + name + '"]');
     if (btn) btn.classList.toggle('on', name === v);
   });
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-  if (v === 'map') renderLive();
+  if (v === 'map') {
+    var ml = myLive();
+    if (!mapCenter && ml && typeof ml.lat === 'number') mapCenter = { lat: ml.lat, lon: ml.lon };
+    renderMap(true);
+    renderLive();
+    renderLocSummary();
+  }
   if (v === 'photos') renderPhotos();
+  if (v === 'chat') { renderChat(true); markChatSeen(); }
+  if (v === 'life') openLife(lifeTab);
+  if (v === 'chat') window.scrollTo({ top: document.body.scrollHeight });
+  else window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 function setDefaultPlanTime() {
   var d = new Date(Date.now() + 2 * 3600 * 1000);
@@ -1948,6 +3407,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (Date.now() - wxAt > 1000 * 60 * 30) loadWeather();
     if ($('sheet').classList.contains('hidden') === false) return;
     renderEta(); renderFeedback(); renderLive(); renderPlans(); updateSyncLabel(); rotateCheer();
+    renderLocSummary(); renderHomeChat(); renderChat(); autoShareUI(); renderTabBadges();
   }, 30000);
 });
 })();

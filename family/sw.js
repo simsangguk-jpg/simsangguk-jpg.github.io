@@ -1,9 +1,9 @@
-/* 상국수향지섭지율포털 Service Worker · v2 (2026-11-15 · 개선사항 의견 게시판)
+/* 상국수향지섭지율포털 Service Worker · v3 (2026-11-15 · V2 실시간 위치·채팅·편지·공지·일기·용돈)
    - /family/ 범위만 담당한다(상국포털 본체 캐시와 섞이지 않게 별도 캐시 이름 사용)
    - 화면(HTML)은 네트워크 우선: 새로 배포한 내용이 앱에서도 바로 뜨도록
    - 그 밖의 정적 파일은 네트워크 우선, 실패 시 캐시
 */
-const SW_VERSION = 'family-portal-v2-2026-11-15';
+const SW_VERSION = 'family-portal-v3-2026-11-15';
 const OFFLINE_HTML = new URL('index.html', self.registration.scope).href;
 
 self.addEventListener('install', () => {
