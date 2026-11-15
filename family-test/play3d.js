@@ -266,14 +266,14 @@ function buildWorld(scene) {
   /* 바다 */
   var sea = new THREE.Mesh(
     geo('sea', function () { return new THREE.PlaneGeometry(180, 180); }),
-    mat(0x63C7E3)
+    mat(0x4FBEDD)
   );
   sea.rotation.x = -Math.PI / 2;
   sea.position.y = -0.52;
   root.add(sea);
   var sea2 = new THREE.Mesh(
     geo('sea2', function () { return new THREE.PlaneGeometry(180, 180); }),
-    mat(0x8DDCF0, { transparent: true, opacity: 0.45 })
+    mat(0x86D8EC, { transparent: true, opacity: 0.38 })
   );
   sea2.rotation.x = -Math.PI / 2;
   sea2.position.y = -0.5;
@@ -508,79 +508,88 @@ function buildCharacter(cfg) {
   parts.body = bodyMesh;
 
   /* 옷 디테일 */
+  var TOR_CY = TORSO_H * 0.44, TOR_RY = 0.306;
+  function bodyR(yLocal, g) {
+    var k = (yLocal - TOR_CY) / TOR_RY;
+    return 0.30 * 0.93 * g * Math.sqrt(Math.max(0.05, 1 - k * k));
+  }
   if (cfg.style === 'puffer') {
-    [0.24, 0.36, 0.48].forEach(function (y) {
+    [0.18, 0.28, 0.38].forEach(function (y) {
+      var rr = bodyR(y, G) + 0.005;
       var ring = new THREE.Mesh(
-        geo('pf' + y, function () { return new THREE.TorusGeometry(0.276 * G, 0.012, 6, 26); }),
+        geo('pf' + y + rr.toFixed(3), function () { return new THREE.TorusGeometry(rr, 0.011, 6, 26); }),
         mat(cfg.topAlt)
       );
       ring.rotation.x = Math.PI / 2;
       ring.position.y = y;
-      ring.scale.z = 0.74;
+      ring.scale.z = 0.78;
       torso.add(ring);
     });
-    var zip = new THREE.Mesh(geo('zip', function () { return new THREE.BoxGeometry(0.022, 0.44, 0.02); }), mat(cfg.topAlt));
-    zip.position.set(0, 0.28, 0.214 * G);
+    var zip = new THREE.Mesh(geo('zip', function () { return new THREE.BoxGeometry(0.022, 0.42, 0.02); }), mat(cfg.topAlt));
+    zip.position.set(0, 0.26, bodyR(0.26, G) * 0.79 + 0.008);
     torso.add(zip);
-    var collar = new THREE.Mesh(geo('col', function () { return new THREE.BoxGeometry(0.15, 0.11, 0.05); }), mat(cfg.inner));
-    collar.position.set(0, 0.52, 0.185 * G);
+    var collar = new THREE.Mesh(geo('col', function () { return new THREE.TorusGeometry(0.118, 0.027, 8, 18); }), mat(cfg.inner));
+    collar.rotation.x = Math.PI / 2;
+    collar.position.y = 0.55;
+    collar.scale.z = 0.86;
     torso.add(collar);
   } else if (cfg.style === 'knit') {
     var scarf = new THREE.Mesh(
-      geo('scarf', function () { return new THREE.TorusGeometry(0.19 * G, 0.045, 8, 22); }),
-      mat(0xF4DCC8)
+      geo('scarf', function () { return new THREE.TorusGeometry(0.152, 0.04, 8, 22); }),
+      mat(0xF6E1CE)
     );
     scarf.rotation.x = Math.PI / 2.1;
-    scarf.position.y = 0.52;
-    scarf.scale.z = 0.85;
+    scarf.position.y = 0.56;
+    scarf.scale.z = 0.88;
     torso.add(scarf);
-    var tail = new THREE.Mesh(geo('tail', function () { return new THREE.BoxGeometry(0.11, 0.22, 0.05); }), mat(0xF4DCC8));
-    tail.position.set(0.09, 0.4, 0.2 * G);
+    var tail = new THREE.Mesh(geo('tail', function () { return new THREE.BoxGeometry(0.1, 0.2, 0.05); }), mat(0xF6E1CE));
+    tail.position.set(0.08, 0.42, bodyR(0.42, G) * 0.8 + 0.01);
     tail.rotation.z = 0.16;
     torso.add(tail);
-    [0.2, 0.32, 0.44].forEach(function (y) {
+    [0.2, 0.31, 0.42].forEach(function (y) {
+      var rr = bodyR(y, G) + 0.004;
       var rib = new THREE.Mesh(
-        geo('kn' + y, function () { return new THREE.TorusGeometry(0.272 * G, 0.008, 6, 24); }),
+        geo('kn' + y + rr.toFixed(3), function () { return new THREE.TorusGeometry(rr, 0.008, 6, 24); }),
         mat(cfg.topAlt)
       );
       rib.rotation.x = Math.PI / 2;
       rib.position.y = y;
-      rib.scale.z = 0.76;
+      rib.scale.z = 0.78;
       torso.add(rib);
     });
   } else if (cfg.style === 'coat') {
-    var hoodie = new THREE.Mesh(geo('hd', function () { return new THREE.BoxGeometry(0.17, 0.2, 0.05); }), mat(cfg.inner));
-    hoodie.position.set(0, 0.42, 0.198 * G);
+    var hoodie = new THREE.Mesh(geo('hd', function () { return new THREE.BoxGeometry(0.17, 0.17, 0.05); }), mat(cfg.inner));
+    hoodie.position.set(0, 0.38, bodyR(0.38, G) * 0.78 + 0.006);
     torso.add(hoodie);
     var hood = new THREE.Mesh(geo('hood', function () { return new THREE.SphereGeometry(0.17, 14, 10); }), mat(cfg.inner));
     hood.scale.set(1, 0.62, 0.8);
     hood.position.set(0, 0.56, -0.13);
     torso.add(hood);
     var skirt = new THREE.Mesh(
-      geo('coatSkirt', function () { return new THREE.CylinderGeometry(0.26 * G, 0.29 * G, 0.26, 20, 1, true); }),
+      geo('coatSkirt', function () { return new THREE.CylinderGeometry(0.25 * G, 0.285 * G, 0.26, 20, 1, true); }),
       mat(cfg.top, { side: THREE.DoubleSide })
     );
     skirt.position.y = -0.02;
-    skirt.scale.z = 0.8;
+    skirt.scale.z = 0.82;
     torso.add(skirt);
     var draw = new THREE.Mesh(geo('draw', function () { return new THREE.BoxGeometry(0.012, 0.09, 0.012); }), mat(0xE9EDF2));
-    draw.position.set(-0.045, 0.34, 0.203 * G);
+    draw.position.set(-0.045, 0.30, bodyR(0.30, G) * 0.78 + 0.008);
     torso.add(draw);
     var draw2 = draw.clone(); draw2.position.x = 0.045; torso.add(draw2);
   } else if (cfg.style === 'vest') {
     var vest = new THREE.Mesh(
-      geo('vest', function () { return new THREE.CylinderGeometry(0.292 * G, 0.3 * G, 0.46, 24, 1, true, 0.42, Math.PI * 2 - 0.84); }),
+      geo('vest', function () { return new THREE.CylinderGeometry(0.285 * G, 0.295 * G, 0.44, 24, 1, true, 0.46, Math.PI * 2 - 0.92); }),
       mat(cfg.topAlt, { side: THREE.DoubleSide })
     );
-    vest.position.y = 0.28;
-    vest.scale.z = 0.78;
+    vest.position.y = 0.27;
+    vest.scale.z = 0.8;
     torso.add(vest);
-    var strap = new THREE.Mesh(geo('strap', function () { return new THREE.BoxGeometry(0.038, 0.52, 0.02); }), mat(cfg.topAlt));
-    strap.position.set(0.02, 0.30, 0.208 * G);
+    var strap = new THREE.Mesh(geo('strap', function () { return new THREE.BoxGeometry(0.036, 0.5, 0.02); }), mat(cfg.topAlt));
+    strap.position.set(0.02, 0.30, bodyR(0.30, G) * 0.78);
     strap.rotation.z = 0.62;
     torso.add(strap);
     var pouch = new THREE.Mesh(geo('pouch', function () { return new THREE.BoxGeometry(0.13, 0.1, 0.07); }), mat(0xF3EDE2));
-    pouch.position.set(0.16, 0.06, 0.13);
+    pouch.position.set(0.15, 0.08, 0.12);
     pouch.rotation.y = 0.3;
     torso.add(pouch);
     var hood2 = new THREE.Mesh(geo('hood2', function () { return new THREE.SphereGeometry(0.16, 12, 10); }), mat(cfg.top));
@@ -1459,7 +1468,7 @@ function stopLoop() {
 /* ---------------- 만들기 ---------------- */
 function buildScene() {
   P.scene = new THREE.Scene();
-  P.scene.fog = new THREE.Fog(0xDCF3FB, 26, 78);
+  P.scene.fog = new THREE.Fog(0xCFEAF6, 30, 82);
   P.camera = new THREE.PerspectiveCamera(46, 1, 0.1, 200);
   P.camera.position.set(0, 4.2, 9.4);
   P.camera.lookAt(0, 0.95, 0);
