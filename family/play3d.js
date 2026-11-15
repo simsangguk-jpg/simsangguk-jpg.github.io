@@ -431,13 +431,13 @@ var CAST = [
     style: 'knit', x: -0.5, z: -0.25
   },
   {
-    key: 'jiseop', name: '지섭', role: '아들', scale: 1.01, girth: 0.98,
+    key: 'jiseop', name: '지섭', role: '첫째아들', scale: 1.01, girth: 0.98,
     skin: 0xF3CBA8, hair: 0x201A18, hairStyle: 'neat',
     top: 0x1A1C21, topAlt: 0x101216, inner: 0xB9BEC6, bottom: 0x202227, shoe: 0x131417,
     style: 'coat', x: 0.6, z: 0.25
   },
   {
-    key: 'jiyul', name: '지율', role: '딸', scale: 0.84, girth: 1.04,
+    key: 'jiyul', name: '지율', role: '둘째아들', scale: 0.84, girth: 1.04,
     skin: 0xF8D7BD, hair: 0x4B3627, hairStyle: 'bowl',
     top: 0xF5F2EC, topAlt: 0x1C1F25, inner: 0xFFFFFF, bottom: 0xE6E6E3, shoe: 0xF8F8F6,
     style: 'vest', x: 1.7, z: -0.25
@@ -905,7 +905,7 @@ var SAY = {
   sangguk: { pet: ['하하, 좋아!', '아빠가 웃는다'], hello: ['어, 왔니?', '얘들아 안녕'], wave: ['아빠 왔다~'], fly: ['아빠가 난다!'], cry: ['허리야…'], cheer: ['우리 가족 최고!'], up: ['아빠는 튼튼해'] },
   suhyang: { pet: ['어머, 고마워~', '히히'], hello: ['얘들아 왔구나', '밥 먹자~'], wave: ['여기 있어요~'], fly: ['살랑살랑~'], cry: ['아이쿠야…'], cheer: ['우리 가족 사랑해!'], up: ['괜찮아요~'] },
   jiseop: { pet: ['ㅋㅋ 좋아', '또 해줘'], hello: ['어 왔어?', '뭐 해'], wave: ['안녕'], fly: ['날아간다!!'], cry: ['아 진짜…'], cheer: ['최고!'], up: ['ㅋㅋ 괜찮아'] },
-  jiyul: { pet: ['히히! 또! 또!', '간지러워~'], hello: ['언니~ 아빠~', '같이 놀자!'], wave: ['안녕안녕!'], fly: ['으아아~ 신난다!'], cry: ['엉엉 으앙'], cheer: ['최고야!!'], up: ['나는 씩씩해!'] }
+  jiyul: { pet: ['히히! 또! 또!', '간지러워~'], hello: ['형~ 아빠~', '엄마~ 같이 놀자!', '형아 놀자!'], wave: ['안녕안녕!'], fly: ['으아아~ 신난다!'], cry: ['엉엉 으앙'], cheer: ['최고야!!'], up: ['나는 씩씩해!'] }
 };
 function say(c, kind) {
   var pool = (SAY[c.key] && SAY[c.key][kind]) || SAY.common[kind] || ['!'];
@@ -1668,7 +1668,7 @@ function buildScene() {
     /* 이름표 */
     var tag = document.createElement('div');
     tag.className = 'pg-tag';
-    tag.textContent = c.name;
+    tag.textContent = c.name + ' · ' + c.role;
     P.ov.appendChild(tag);
     c.tag = tag;
 

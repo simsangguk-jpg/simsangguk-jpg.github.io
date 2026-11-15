@@ -829,6 +829,8 @@
     switch (m && m.role) {
       case '아빠': return 'sangguk';
       case '엄마': return 'suhyang';
+      case '첫째아들': return 'jiseop';
+      case '둘째아들': return 'jiyul';
       case '아들': return 'jiseop';
       case '딸': return 'jiyul';
     }

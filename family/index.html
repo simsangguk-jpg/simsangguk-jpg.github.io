@@ -542,8 +542,8 @@ body.pg-lock{overflow:hidden}
         <select class="field" id="joinRole">
           <option value="아빠">아빠</option>
           <option value="엄마">엄마</option>
-          <option value="아들">아들</option>
-          <option value="딸">딸</option>
+          <option value="첫째아들">첫째아들</option>
+          <option value="둘째아들">둘째아들</option>
           <option value="가족">가족</option>
         </select>
       </div>
@@ -888,9 +888,9 @@ body.pg-lock{overflow:hidden}
 <input type="file" id="filePicker" accept="image/*" multiple class="hidden">
 <div class="sheet hidden" id="sheet"><div class="sheet-inner" id="sheetInner"></div></div>
 <div class="toast" id="toast"></div>
-<script src="./extra4.js?v=5a"></script>
-<script src="./game4.js?v=5a"></script>
-<script src="./mind5.js?v=5a"></script>
+<script src="./extra4.js?v=7a"></script>
+<script src="./game4.js?v=7a"></script>
+<script src="./mind5.js?v=7a"></script>
 <script>
 (function () {
 'use strict';
@@ -972,8 +972,32 @@ function dateLabel(ts) {
   return (d.getMonth() + 1) + '월 ' + d.getDate() + '일 ' + hhmm(ts);
 }
 function roleEmoji(role) {
-  var m = { '아빠': '👨', '엄마': '👩', '아들': '👦', '딸': '👧', '가족': '🧑' };
+  var m = {
+    '아빠': '👨', '엄마': '👩',
+    '첫째아들': '👦', '둘째아들': '🧒',
+    /* 기존 가입자 호환 */
+    '아들': '👦', '딸': '👧', '가족': '🧑'
+  };
   return m[role] || '🧑';
+}
+/* 우리 가족 이름 → 확정 호칭(지섭 = 첫째아들, 지율 = 둘째아들)
+   - 예전에 '아들'/'딸'로 저장된 계정도 화면에서는 맞는 호칭으로 보이게 한다(DB는 건드리지 않음) */
+var FAM_ROLE_BY_NAME = { '상국': '아빠', '수향': '엄마', '지섭': '첫째아들', '지율': '둘째아들' };
+function roleOf(m) {
+  var role = (m && m.role) || '';
+  var name = String((m && m.name) || '').replace(/\s+/g, '');
+  if (name) {
+    for (var k in FAM_ROLE_BY_NAME) {
+      if (name.indexOf(k) !== -1) {
+        if (!role || role === '아들' || role === '딸' || role === '가족') return FAM_ROLE_BY_NAME[k];
+        return role;
+      }
+    }
+  }
+  return role || '가족';
+}
+function roleLabel(m) {
+  return roleOf(m) || '가족';
 }
 function safeId(s) {
   return String(s || '').toLowerCase().replace(/[^a-z0-9_]/g, '');
@@ -1274,7 +1298,7 @@ async function doLogin() {
     if (!m || m.d) { errEl.textContent = '등록된 아이디가 없어요. 회원가입을 먼저 해 주세요.'; return; }
     var h = await hashPassword(pw, m.salt, m.iter || 120000);
     if (h !== m.hash) { errEl.textContent = '비밀번호가 맞지 않아요.'; return; }
-    ME = { id: id, name: m.name, role: m.role || '가족' };
+    ME = { id: id, name: m.name, role: roleOf(m) };
     try { localStorage.setItem(LS_SESS, JSON.stringify({ id: id, at: Date.now() })); } catch (e) {}
     startApp();
   } catch (e) {
@@ -1348,10 +1372,15 @@ function startApp() {
    렌더링
    ============================================================ */
 function memberList() {
-  var order = { '아빠': 0, '엄마': 1, '아들': 2, '딸': 3, '가족': 4 };
+  var order = { '아빠': 0, '엄마': 1, '첫째아들': 2, '둘째아들': 3, '아들': 2, '딸': 3, '가족': 4 };
   return Object.keys(DOC.members)
     .filter(function (k) { return DOC.members[k] && !DOC.members[k].d; })
-    .map(function (k) { var m = DOC.members[k]; return { id: k, name: m.name, role: m.role || '가족', emoji: m.emoji || roleEmoji(m.role) }; })
+    .map(function (k) {
+      var m = DOC.members[k];
+      var role = roleOf(m);
+      var legacy = (m.role !== role);
+      return { id: k, name: m.name, role: role, emoji: (legacy || !m.emoji) ? roleEmoji(role) : m.emoji };
+    })
     .sort(function (a, b) {
       var oa = order[a.role] === undefined ? 5 : order[a.role];
       var ob = order[b.role] === undefined ? 5 : order[b.role];
@@ -1658,7 +1687,12 @@ function delFeedback(id) {
    V2 · 공통 유틸 (아이디·이름·금액·미디어)
    ============================================================ */
 function newId(pre) { return pre + Date.now().toString(36) + Math.random().toString(36).slice(2, 5); }
-function memOf(id) { return (DOC && DOC.members && DOC.members[id]) || { name: '가족', role: '가족', emoji: '🧑' }; }
+function memOf(id) {
+  var m = (DOC && DOC.members && DOC.members[id]) || { name: '가족', role: '가족', emoji: '🧑' };
+  var role = roleOf(m);
+  if (role === m.role && m.emoji) return m;
+  return { id: id, name: m.name, role: role, emoji: roleEmoji(role) };
+}
 function won(n) { return Number(n || 0).toLocaleString('ko-KR') + '원'; }
 function ymdOf(ts) { var d = new Date(ts); return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate()); }
 function todayYmd() { return ymdOf(Date.now()); }
@@ -2401,6 +2435,8 @@ function moneySheet(kindDefault) {
    ============================================================ */
 var LS_AUTO = 'sgf_autoshare_v1';
 var autoShare = false, autoTimer = null, watchId = null, autoLastPush = 0, geoTried = 0;
+var geoAutoAt = 0, geoPrompted = false;
+var LOC_NOTICE_DEFAULT = '🌿 버튼을 누른 순간의 위치가 가족에게 보여요. 자동 공유를 켜면 앱을 열어 둔 동안 20~30초마다 갱신되고, 앱을 닫으면 멈춰요(휴대폰 정책).';
 var mapZoom = 12, mapCenter = null, mapSig = '';
 
 function myLive() { return (DOC && DOC.live && DOC.live[ME.id]) || null; }
@@ -2461,13 +2497,24 @@ function startAutoShare() {
   if (!navigator.geolocation) { toast('이 브라우저에서는 위치를 쓸 수 없어요'); autoShare = false; autoShareUI(); return; }
   pushMyLocation(true);
   if (autoTimer) clearInterval(autoTimer);
-  autoTimer = setInterval(function () { if (document.hidden) return; pushMyLocation(false); }, 30000);
+  autoTimer = setInterval(function () { if (document.hidden) return; pushMyLocation(true); }, 30000);
   if (watchId === null && navigator.geolocation.watchPosition) {
     try {
       watchId = navigator.geolocation.watchPosition(function (pos) {
         if (Date.now() - autoLastPush < 20000) return;
         pushFromPos(pos);
-      }, function () {}, { enableHighAccuracy: true, maximumAge: 20000, timeout: 20000 });
+        setLocNotice('');
+      }, function (err) {
+        /* 고정밀 추적이 실패하면 저정밀 1회 폴백(1분에 한 번까지만) */
+        if (err && err.code === 1) { geoFailNote(err); return; }
+        if (Date.now() - geoAutoAt < 60000) return;
+        geoAutoAt = Date.now();
+        getGeoPos(function (pos) {
+          if (Date.now() - autoLastPush < 20000) return;
+          pushFromPos(pos);
+          setLocNotice('');
+        }, function (e2) { geoFailNote(e2); });
+      }, { enableHighAccuracy: true, maximumAge: 20000, timeout: 20000 });
     } catch (e) { watchId = null; }
   }
 }
@@ -2510,15 +2557,61 @@ function geocodeLive(lat, lon) {
     markDirty();
   });
 }
-function pushMyLocation() {
-  if (!navigator.geolocation) { toast('이 브라우저에서는 위치를 쓸 수 없어요'); return; }
-  navigator.geolocation.getCurrentPosition(function (pos) {
+/* 위치 오류 문구 — 원인별로 사용자가 바로 고칠 수 있게 나눈다 */
+function geoErrMessage(err) {
+  var c = err && err.code;
+  if (c === 1) return '위치 권한이 꺼져 있어요 · 휴대폰 설정 → 위치 → 허용으로 바꿔 주세요';
+  if (c === 2) return '휴대폰 위치 서비스가 꺼져 있어요 · 알림창을 내려 위치를 켜 주세요';
+  if (c === 3) return '위치 신호를 잡지 못했어요 · 창가나 밖에서 잠시 후 다시 눌러 주세요';
+  if (c === -1) return '이 브라우저에서는 위치를 쓸 수 없어요';
+  return '위치를 가져오지 못했어요 · 잠시 후 다시 눌러 주세요';
+}
+function setLocNotice(msg, tone) {
+  var el = $('locNotice');
+  if (!el) return;
+  el.textContent = msg || LOC_NOTICE_DEFAULT;
+  el.style.background = tone === 'bad' ? '#FFF1F0' : '';
+  el.style.color = tone === 'bad' ? '#B42318' : '';
+  el.style.borderColor = tone === 'bad' ? '#FFD3CE' : '';
+}
+/* 공용 위치 헬퍼: 고정밀(GPS) 실패 시 저정밀(네트워크·Wi-Fi·기지국)로 한 번 더 시도 */
+function getGeoPos(onOk, onErr, opts) {
+  opts = opts || {};
+  if (!navigator.geolocation) { if (onErr) onErr({ code: -1 }); return; }
+  var hi = {
+    enableHighAccuracy: true,
+    timeout: opts.timeout || 8000,
+    maximumAge: opts.maximumAge === undefined ? 20000 : opts.maximumAge
+  };
+  var lo = { enableHighAccuracy: false, timeout: 12000, maximumAge: 60000 };
+  var done = false;
+  function ok(pos) { if (done) return; done = true; if (onOk) onOk(pos); }
+  function fail(err) { if (done) return; done = true; if (onErr) onErr(err); }
+  function retryLow(err) {
+    if (done) return;
+    if (err && err.code === 1) { fail(err); return; }   /* 권한 거부는 재시도 무의미 */
+    try {
+      navigator.geolocation.getCurrentPosition(ok, function (e2) { fail(e2 || err); }, lo);
+    } catch (e) { fail(err); }
+  }
+  try { navigator.geolocation.getCurrentPosition(ok, retryLow, hi); }
+  catch (e) { retryLow({ code: -1 }); }
+}
+function geoFailNote(err) {
+  var msg = geoErrMessage(err);
+  setLocNotice(msg, 'bad');
+  return msg;
+}
+function pushMyLocation(quiet) {
+  if (!navigator.geolocation) { if (!quiet) toast(geoErrMessage({ code: -1 })); return; }
+  getGeoPos(function (pos) {
     pushFromPos(pos);
+    setLocNotice('');
   }, function (err) {
     autoShareUI();
-    if (err && err.code === 1) toast('위치 권한을 허용해 주셔야 해요 (휴대폰 설정 → 위치 → 허용)');
-    else if (!autoShare) toast('위치를 가져오지 못했어요. 잠시 후 다시 눌러 주세요');
-  }, { enableHighAccuracy: true, timeout: 15000, maximumAge: 20000 });
+    var msg = geoFailNote(err);
+    if (!quiet && !autoShare) toast(msg);
+  });
 }
 
 /* 지도(OpenStreetMap) — 직접 그리는 가벼운 타일 지도 */
@@ -2916,32 +3009,91 @@ function togglePhotoLike() {
 }
 
 /* ---------------- 위치 ---------------- */
+function fetchJson(url, ms) {
+  var ctrl = null, timer = null;
+  var opt = { headers: { 'Accept': 'application/json' }, cache: 'no-store' };
+  if (window.AbortController) {
+    ctrl = new AbortController();
+    timer = setTimeout(function () { try { ctrl.abort(); } catch (e) {} }, ms || 7000);
+    opt.signal = ctrl.signal;
+  }
+  return fetch(url, opt).then(function (r) {
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    return r.json();
+  }).then(function (j) {
+    if (timer) clearTimeout(timer);
+    return j;
+  }).catch(function (e) {
+    if (timer) clearTimeout(timer);
+    throw e;
+  });
+}
+function addrFromNominatim(j) {
+  if (!j) return '';
+  var a = j.address || {}, parts = [];
+  ['province', 'state', 'city', 'municipality', 'county', 'city_district', 'district', 'town', 'village', 'borough', 'suburb', 'quarter', 'neighbourhood', 'road', 'highway'].forEach(function (k) {
+    var v = a[k];
+    if (v && parts.indexOf(v) === -1) parts.push(v);
+  });
+  if (parts.length) return parts.slice(0, 5).join(' ');
+  return j.display_name ? String(j.display_name).split(', ').slice(0, 4).join(' ') : '';
+}
+function addrFromBdc(j) {
+  if (!j) return '';
+  var parts = [];
+  function push(v) {
+    v = String(v === undefined || v === null ? '' : v).trim();
+    if (v && parts.indexOf(v) === -1) parts.push(v);
+  }
+  push(j.principalSubdivision);
+  push(j.city);
+  push(j.locality);
+  if (!parts.length) push(j.countryName);
+  return parts.join(' ');
+}
+/* 1차 Nominatim(상세) → 실패·타임아웃이면 2차 BigDataCloud(한국어 시·군·구·동) */
 function reverseGeocode(lat, lon) {
-  var url = 'https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=' + lat + '&lon=' + lon + '&accept-language=ko&zoom=17';
-  return fetch(url, { headers: { 'Accept': 'application/json' } })
-    .then(function (r) { return r.json(); })
-    .then(function (j) {
-      if (!j || !j.display_name) return '';
-      var a = j.address || {};
-      var parts = [];
-      ['state', 'city', 'county', 'town', 'village', 'suburb', 'quarter', 'neighbourhood', 'road'].forEach(function (k) {
-        if (a[k] && parts.indexOf(a[k]) === -1) parts.push(a[k]);
-      });
-      return parts.length ? parts.join(' ') : j.display_name;
-    })
-    .catch(function () { return ''; });
+  var nUrl = 'https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=' + lat + '&lon=' + lon + '&accept-language=ko&zoom=18';
+  function viaBdc() {
+    var bUrl = 'https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=' + lat + '&longitude=' + lon + '&localityLanguage=ko';
+    return fetchJson(bUrl, 7000).then(addrFromBdc).catch(function () { return ''; });
+  }
+  return fetchJson(nUrl, 6000).then(function (j) {
+    var s = addrFromNominatim(j);
+    return s || viaBdc();
+  }).catch(viaBdc);
 }
 function shareLocation() {
-  if (!navigator.geolocation) { toast('이 브라우저에서는 위치를 쓸 수 없어요'); return; }
+  if (!navigator.geolocation) { toast(geoErrMessage({ code: -1 })); return; }
   toast('내 위치를 확인하는 중…');
-  navigator.geolocation.getCurrentPosition(function (pos) {
+  getGeoPos(function (pos) {
     pushFromPos(pos);
-    toast('가족에게 내 위치를 보냈어요');
+    setLocNotice('');
+    var acc = pos && pos.coords ? Math.round(pos.coords.accuracy || 0) : 0;
+    toast(acc > 800 ? '대략 위치로 가족에게 보냈어요 (±' + acc + 'm)' : '가족에게 내 위치를 보냈어요');
     loadWeather();
   }, function (err) {
-    if (err && err.code === 1) toast('위치 권한을 허용해 주셔야 해요 (설정 → 위치)');
-    else toast('위치를 가져오지 못했어요. 잠시 후 다시 눌러 주세요');
-  }, { enableHighAccuracy: true, timeout: 15000, maximumAge: 30000 });
+    toast(geoFailNote(err));
+  });
+}
+/* 지도 탭에 들어올 때: 내 위치가 없거나 오래됐으면 자동으로 한 번 갱신(팝업 남발 방지) */
+function autoRefreshMyLoc() {
+  if (!navigator.geolocation) return;
+  var l = myLive();
+  if (l && l.at && (Date.now() - l.at) < 180000) return;
+  if (Date.now() - geoAutoAt < 120000) return;
+  geoAutoAt = Date.now();
+  function tryNow(state) {
+    if (state === 'denied') { setLocNotice(geoErrMessage({ code: 1 }), 'bad'); return; }
+    if (state === 'prompt' && !autoShare && geoPrompted) return;
+    if (state === 'prompt') geoPrompted = true;
+    pushMyLocation(true);
+  }
+  if (navigator.permissions && navigator.permissions.query) {
+    navigator.permissions.query({ name: 'geolocation' }).then(function (st) {
+      tryNow(st && st.state);
+    }).catch(function () { tryNow(''); });
+  } else { tryNow(''); }
 }
 
 /* ---------------- 날씨 ---------------- */
@@ -3431,6 +3583,7 @@ function switchView(v) {
     renderMap(true);
     renderLive();
     renderLocSummary();
+    autoRefreshMyLoc();
   }
   if (v === 'photos') renderPhotos();
   if (v === 'chat') { renderChat(true); markChatSeen(); }
@@ -3486,12 +3639,12 @@ window.FAM = {
   live: function () { return (DOC && DOC.live) || {}; },
   locate: function (cb) {
     if (!navigator.geolocation) { if (cb) cb(null, { code: -1 }); return; }
-    navigator.geolocation.getCurrentPosition(function (pos) {
+    getGeoPos(function (pos) {
       pushFromPos(pos);
       if (cb) cb(pos, null);
     }, function (err) {
       if (cb) cb(null, err);
-    }, { enableHighAccuracy: true, timeout: 15000, maximumAge: 15000 });
+    }, { timeout: 8000, maximumAge: 15000 });
   },
   onPull: function (fn) { pullHooks.push(fn); }
 };
@@ -3517,7 +3670,7 @@ async function boot() {
         DOC = mergeDoc(emptyDB(), db);
         var m = DOC.members[sess.id];
         if (m && !m.d) {
-          ME = { id: sess.id, name: m.name, role: m.role || '가족' };
+          ME = { id: sess.id, name: m.name, role: roleOf(m) };
           startApp();
           return;
         }
@@ -3556,7 +3709,7 @@ function ensurePlay(cb) {
   if (pgLoading) return;
   pgLoading = true;
   var s = document.createElement('script');
-  s.src = './play3d.js?v=4c';
+  s.src = './play3d.js?v=7a';
   s.async = true;
   s.onload = function () { pgLoading = false; if (window.FamPlay) cb(); else toast('놀이터를 불러오지 못했어요'); };
   s.onerror = function () { pgLoading = false; toast('놀이터를 불러오지 못했어요. 잠시 후 다시 열어 주세요'); };
