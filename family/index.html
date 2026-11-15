@@ -616,6 +616,9 @@ body.pg-lock{overflow:hidden}
         </div>
       </div>
 
+      <!-- ===== V7 · 우리가족 대형 달력 + 가족 경험치 배너 (cal7.js 가 채운다) ===== -->
+      <div id="famCalBanner"></div>
+
       <button type="button" class="fb-top" id="fbTopBtn">
         <span class="ico">💡</span>
         <span class="tx"><b>가족포털 개선사항 의견 받아요</b><small id="fbTopSub">아직 의견이 없어요 · 첫 번째로 남겨 주세요</small></span>
@@ -894,6 +897,7 @@ body.pg-lock{overflow:hidden}
 <script src="./extra4.js?v=7a"></script>
 <script src="./game4.js?v=7a"></script>
 <script src="./mind5.js?v=7a"></script>
+<script src="./cal7.js?v=7a"></script>
 <script>
 (function () {
 'use strict';
@@ -1136,6 +1140,21 @@ function mergeRecord(a, b) {
     else out[k] = newer[k];
   }
   if (isObj(a.likes) || isObj(b.likes)) out.likes = mergeLikes(a.likes, b.likes);
+  /* 작성·수정 이력(V7)은 배열이라 최신 레코드만 남기면 다른 기기의 기록이 사라진다.
+     두 기기의 이력을 합쳐 시각 순으로 남긴다(같은 항목은 한 번만). */
+  var ha = a && a.history, hb = b && b.history;
+  if (Array.isArray(ha) || Array.isArray(hb)) {
+    var seenH = {}, allH = [];
+    (Array.isArray(ha) ? ha : []).concat(Array.isArray(hb) ? hb : []).forEach(function (e) {
+      if (!e || typeof e !== 'object') return;
+      var key = (e.at || 0) + '|' + (e.by || '') + '|' + (e.action || '') + '|' + (e.detail || '');
+      if (seenH[key]) return;
+      seenH[key] = 1; allH.push(e);
+    });
+    allH.sort(function (x, y) { return (x.at || 0) - (y.at || 0); });
+    if (allH.length > 60) allH = allH.slice(allH.length - 60);
+    out.history = allH;
+  }
   return out;
 }
 function mergeNode(a, b) {

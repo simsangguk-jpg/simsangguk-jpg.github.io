@@ -589,12 +589,14 @@
     if (sec && !$('life-todo')) {
       var t = document.createElement('div'); t.id = 'life-todo'; t.className = 'hidden';
       t.innerHTML = '<div class="card"><div class="card-head"><h2>✅ 가족 할일 목록</h2><span class="sub" id="v4TodoSum">0개</span></div>' +
+        '<button type="button" class="btn soft" class="btn soft v4bigcal" style="margin-bottom:10px;padding:11px;font-size:12.5px">📅 홈의 큰 가족 달력에서 보기 (중요도·이력·경험치)</button>' +
         '<div class="fb-desc">누구나 추가하고, 끝나면 <b>실시 완료</b>를 눌러요. 완료한 사람과 시각이 함께 남아요.</div>' +
         '<div style="display:flex;gap:7px;margin:9px 0"><input class="field" id="v4TodoIn" maxlength="60" placeholder="예: 지섭이 수학 숙제 확인" style="margin:0;flex:1"><button class="btn" id="v4TodoAdd" style="width:auto;padding:0 15px;border-radius:13px">추가</button></div>' +
         '<div class="seg" id="v4TodoSeg"><button type="button" data-ts="open" class="on">남은 일</button><button type="button" data-ts="done">완료</button></div>' +
         '<div id="v4TodoList" class="fb-list"></div></div>';
       var c = document.createElement('div'); c.id = 'life-cal'; c.className = 'hidden';
       c.innerHTML = '<div class="card"><div class="card-head"><h2>📅 가족 공유 캘린더</h2><span class="sub" id="v4CalSum">0개</span></div>' +
+        '<button type="button" class="btn soft" class="btn soft v4bigcal" style="margin-bottom:10px;padding:11px;font-size:12.5px">📅 홈의 큰 가족 달력에서 보기 (중요도·이력·경험치)</button>' +
         '<div class="mn-month"><button type="button" id="v4CalPrev" aria-label="이전 달">‹</button><span class="lb" id="v4CalLabel">–</span><button type="button" id="v4CalNext" aria-label="다음 달">›</button></div>' +
         '<div class="v4-cal" id="v4CalGrid"></div>' +
         '<div id="v4CalDay" style="margin-top:10px"></div>' +
@@ -602,6 +604,12 @@
         '<div class="hint">날짜를 누르면 그날 일정이 아래에 모여요. 즐겨찾는 날엔 점이 찍혀요.</div></div>';
       sec.appendChild(t); sec.appendChild(c);
       wireTodo(); wireCal();
+      var bigs = sec.querySelectorAll('.v4bigcal');
+      for (var bi = 0; bi < bigs.length; bi++) {
+        bigs[bi].addEventListener('click', function () {
+          if (global.CAL7 && global.CAL7.gotoHome) global.CAL7.gotoHome(); else if (F) F.view('home');
+        });
+      }
     }
   }
 
