@@ -198,7 +198,7 @@
   }
   function placeOsm(x, cat) {
     var a = x.address || {}, ex = x.extratags || {};
-    var name = x.name || String(x.display_name || '').split(',')[0];
+    var name = x.name || '';      /* 이름 없는 OSM 객체(동 이름으로 대신 나오는 공원 등)는 쓰지 않는다 */
     return {
       id: 'o' + (x.osm_type || '') + (x.osm_id || x.place_id || Math.random().toString(36).slice(2, 7)),
       name: name, lat: Number(x.lat), lon: Number(x.lon), cat: cat || 'food',
@@ -291,13 +291,12 @@
       var foods = sortNear(r[0], lat, lon), cafes = sortNear(r[1], lat, lon);
       var wiki = r[2] && r[2].length ? r[2][0] : null;
       var wd = wiki ? meters(lat, lon, wiki.lat, wiki.lon) : 1e9;
-      if (wiki && wd <= 1500) return pack([foods[0], cafes[0], wiki, foods[1], cafes[1]], lat, lon);
+      if (wiki && wd <= 1500) return pack(foods, cafes, [wiki], lat, lon);
       /* 위키에 마땅한 곳이 없거나 멀면 가까운 공원을 가볼만한 곳으로 쓴다 */
       return nomList('park', box1, 'spot').catch(function () { return []; }).then(function (ps) {
-        var park = nearest(ps, lat, lon);
-        var pd = park ? meters(lat, lon, park.lat, park.lon) : 1e9;
-        var spot = (wiki && wd <= pd) ? wiki : park;
-        return pack([foods[0], cafes[0], spot, foods[1], cafes[1]], lat, lon);
+        var parks = sortNear(ps, lat, lon);
+        var spot = (wiki && wd <= (parks[0] ? parks[0].d0 : 1e9)) ? wiki : parks[0];
+        return pack(foods, cafes, spot ? [spot] : [], lat, lon);
       });
     }).then(function (list) {
       cells[k] = { at: Date.now(), list: list };
@@ -311,17 +310,21 @@
     return p;
   }
   var CAT_LABEL = { food: '🍽️ 맛집', cafe: '☕ 카페', spot: '🌳 가볼만한곳' };
-  function pack(arr, lat, lon) {
-    var seen = {}, out = [];
-    arr.forEach(function (x) {
+  /* 맛집·카페·가볼만한곳을 각각 한 곳씩 담는다. 한 갈래가 비면 다른 갈래의 다음 곳으로 3곳을 채운다. */
+  function pack(foodL, cafeL, spotL, lat, lon) {
+    var seen = {}, picks = [];
+    function take(x) {
       if (!x || !x.name || seen[x.name]) return;
       seen[x.name] = 1;
       x.catLabel = CAT_LABEL[x.cat] || '📍 장소';
       x.d0 = meters(lat, lon, x.lat, x.lon);
-      out.push(x);
-    });
-    out.sort(function (a, b) { return a.d0 - b.d0; });
-    return out.slice(0, 3);
+      picks.push(x);
+    }
+    take(foodL[0]); take(cafeL[0]); take(spotL[0]);
+    var extra = [foodL[1], cafeL[1], spotL[1], foodL[2], cafeL[2]];
+    for (var i = 0; picks.length < 3 && i < extra.length; i++) take(extra[i]);
+    picks.sort(function (a, b) { return a.d0 - b.d0; });
+    return picks.slice(0, 3);
   }  function ensureMember(m) {
     var live = (F.live && F.live()) || {};
     var l = live[m.id];
