@@ -10,7 +10,7 @@
 (function (global) {
   'use strict';
 
-  var F = null, ON = false, geoPing = null, lastPing = 0, fullDone = false;
+  var F = null, ON = false, geoPing = null, lastPing = 0, fullDone = false, geoInit = false;
   var zoneState = {}, zoneMsgAt = {}, baseLine = null;
   var LS_SEEN = 'sgf4_seen_v1';
   var LS_GEO = 'sgf4_geofence_v1';
@@ -42,6 +42,14 @@
     return v;
   }
   function mid() { return me() ? me().id : ''; }
+  /* 받침에 따른 조사(을/를, 이/가) */
+  function josa(word, a, b) {
+    var w = String(word || '').trim();
+    if (!w) return b;
+    var c = w.charCodeAt(w.length - 1);
+    if (c < 0xAC00 || c > 0xD7A3) return b;
+    return ((c - 0xAC00) % 28 !== 0) ? a : b;
+  }
   function memName(id) { var m = F.memOf(id); return m && m.name ? m.name : '가족'; }
   function memEmoji(id) { var m = F.memOf(id); return (m && m.emoji) || '🧑'; }
 
@@ -488,6 +496,8 @@
     if (!v.geo.home && !v.geo.school) return;
     var live = F.live(), ms = F.members();
     var allHome = ms.length >= 2, anyKnown = false;
+    var firstCheck = !geoInit;
+    geoInit = true;
     ms.forEach(function (m) {
       var l = live[m.id];
       if (!l || typeof l.lat !== 'number') { allHome = false; return; }
@@ -498,6 +508,8 @@
       zoneState[m.id] = z.z;
       if (z.z !== 'home') allHome = false;
     });
+    /* 앱을 열었을 때 이미 다 모여 있으면 조용히 넘어가고, 앱을 열어 둔 사이에 모이면 축하한다 */
+    if (firstCheck && allHome) { fullDone = true; return; }
     if (allHome && anyKnown && !fullDone) {
       fullDone = true;
       notify('🎉', '우리가족 완전체!', '네 명 모두 집에 모였어요. 오늘 하루 수고 많았어요!', function () { F.view('home'); });

@@ -19,6 +19,13 @@
   function now() { return Date.now(); }
   function rnd(n) { return (Math.random() * n) | 0; }
   function pick(a) { return a[rnd(a.length)]; }
+  function josa(word, a, b) {
+    var w = String(word || '').trim();
+    if (!w) return b;
+    var c = w.charCodeAt(w.length - 1);
+    if (c < 0xAC00 || c > 0xD7A3) return b;
+    return ((c - 0xAC00) % 28 !== 0) ? a : b;
+  }
 
   /* ---------------- 데이터 ---------------- */
   function G() {
@@ -639,12 +646,12 @@
     if (own) {
       /* 이미 가진 아이템 → 착용/해제 */
       if (it.k) {
-        if (c.look[it.k] === id) { c.look[it.k] = ''; toast(it.n + '을(를) 벗었어요'); }
-        else { c.look[it.k] = id; toast(it.n + '을(를) 입었어요 — 3D 놀이터에도 반영!'); }
+        if (c.look[it.k] === id) { c.look[it.k] = ''; toast(it.n + josa(it.n, '을', '를') + ' 벗었어요'); }
+        else { c.look[it.k] = id; toast(it.n + josa(it.n, '을', '를') + ' 입었어요 — 3D 놀이터에도 반영!'); }
         syncLook(true);
       } else {
         roomSel = id;
-        toast(it.n + '을(를) 방에 배치하려면 마이룸에서 칸을 눌러 주세요');
+        toast(it.n + josa(it.n, '을', '를') + ' 방에 배치하려면 마이룸에서 칸을 눌러 주세요');
         pane('room');
       }
       c.at = now();
@@ -662,7 +669,7 @@
       cc.gold -= it.p; cc.items[id] = (cc.items[id] || 0) + 1;
       if (it.k) cc.look[it.k] = id;
       cc.at = now(); save(); syncLook(true); F.closeSheet(); renderShop(); renderMine(); renderTama();
-      toast(it.n + '을(를) 샀어요!' + (it.k ? ' 바로 착용했어요' : ''));
+      toast(it.n + josa(it.n, '을', '를') + ' 샀어요!' + (it.k ? ' 바로 착용했어요' : ''));
     };
     $('g4BuyGift').onclick = function () {
       var box = $('g4GiftPick');
@@ -679,7 +686,7 @@
           var gid = 'gf' + now().toString(36) + Math.random().toString(36).slice(2, 4);
           G().gift[gid] = { from: me().id, to: to, item: id, at: now() };
           save(); F.closeSheet(); renderShop(); renderTama();
-          toast(F.memOf(to).name + ' 님에게 ' + it.n + '을(를) 선물했어요');
+          toast(F.memOf(to).name + ' 님에게 ' + it.n + josa(it.n, '을', '를') + ' 선물했어요');
           if (global.FAM4) global.FAM4.notify('🎁', me().name + ' 님이 선물을 보냈어요', it.n + ' — 선물함에서 확인하세요');
         };
       });
@@ -771,7 +778,7 @@
         if ((c.items[roomSel] || 0) <= 0) { toast('가지고 있지 않은 가구예요'); return; }
         c.room.items[i] = roomSel;
         c.at = now();
-        toast(it.n + '을(를) 놓았어요');
+        toast(it.n + josa(it.n, '을', '를') + ' 놓았어요');
       } else { toast('아래에서 놓을 가구를 먼저 골라 주세요'); return; }
       save(); renderRoom();
     });
