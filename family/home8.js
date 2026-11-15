@@ -152,8 +152,9 @@
     if (!b) {
       sub = '내일 06:00 첫 게시';
       html = '<div class="w8-b-gate">🌙 아직 오늘 아침 브리핑이 올라오기 전이에요.<br>' +
-        '매일 <b>06:00</b>에 가족 4명(상국·수향·지섭·지율)의 오늘 날씨·옷차림·응원 한마디가 여기에 자동으로 올라와요.</div>' +
-        '<div class="w8-b-h">미리 보기 · 내일 ' + esc(mdLabel('2026-11-16')) + ' 파주 기준</div>' +
+        '매일 <b>06:00</b>에 가족 4명(상국·수향·지섭·지율)의 오늘 날씨·옷차림·응원 한마디가 여기에 자동으로 올라와요.<br>' +
+        '아래는 그 모습을 미리 보여 드리는 <b>예시</b>예요.</div>' +
+        '<div class="w8-b-h">예시 · ' + esc(mdLabel('2026-11-16')) + ' 파주 기준</div>' +
         FALLBACK_ITEMS.map(briefRow).join('');
       sig = 'fallback';
     } else {
@@ -302,7 +303,8 @@
       cells[k] = { at: Date.now(), list: list };
       return list;
     }).catch(function () {
-      cells[k] = { at: 0, list: [] };
+      /* 한 번 실패해도 1분 뒤에 다시 찾아본다(15분 동안 굳지 않게) */
+      cells[k] = { at: Date.now() - TTL + 60000, list: [] };
       return [];
     });
     cells[k] = cells[k] || {};
