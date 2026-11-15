@@ -355,12 +355,13 @@
     if (!n.list.length) {
       return '<span class="w8-ld">주변 추천을 불러오지 못했어요 · <button type="button" data-w8retry="' + esc(id) + '">다시 찾기</button></span>';
     }
-    var html = '<span class="w8-hd">🍽️ 주변 추천</span>';
+    var html = '<span class="w8-hd">🍽️ 주변 추천</span><div class="w8-grid">';
     n.list.forEach(function (x, i) {
       html += '<button type="button" class="w8-chip" data-w8open="' + esc(id) + '|' + i + '">' +
         '<b>' + esc(x.name) + '</b>' +
         '<span>' + esc(x.catLabel) + ' · ' + esc(distText(x.dist)) + '</span></button>';
     });
+    html += '</div>';
     return html;
   }
   function decorateAll() {
@@ -458,17 +459,17 @@
       '.w8-b-foot{font-size:9px;color:#AEB6BF;margin-top:9px;line-height:1.4}',
 
       /* 주변 추천 칩 */
-      '.w8-nearwrap{display:flex;gap:6px;align-items:stretch;overflow-x:auto;padding:5px 0 7px 36px;margin-top:-2px;-webkit-overflow-scrolling:touch}',
-      '.w8-nearwrap::-webkit-scrollbar{display:none}',
-      '.w8-hd{flex:none;align-self:center;font-size:9.5px;font-weight:900;color:#0A7D56;background:#E7F8F1;border-radius:20px;padding:5px 8px;white-space:nowrap}',
-      '.w8-ld{flex:none;align-self:center;font-size:10px;font-weight:700;color:#9AA4AF;white-space:nowrap;padding:4px 2px;display:flex;align-items:center;gap:5px}',
-      '.w8-ld button{font-size:10px;font-weight:900;color:#2F6FD0;background:#EEF5FF;border-radius:20px;padding:3px 8px}',
-      '.w8-sp{width:10px;height:10px;border-radius:50%;border:1.6px solid #D7E3DF;border-top-color:#0E9F6E;display:inline-block;animation:w8spin .9s linear infinite}',
+      '.w8-nearwrap{display:block;padding:6px 0 8px 36px}',
+      '.w8-hd{display:block;font-size:9px;font-weight:900;color:#8A97A2;letter-spacing:-.1px;margin:0 0 4px}',
+      '.w8-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}',
+      '.w8-ld{font-size:10px;font-weight:700;color:#9AA4AF;padding:2px 0;display:flex;align-items:center;gap:5px}',
+      '.w8-ld button{font-size:10px;font-weight:900;color:#2F6FD0;background:#EEF5FF;border-radius:20px;padding:3px 8px;flex:none}',
+      '.w8-sp{width:10px;height:10px;border-radius:50%;border:1.6px solid #D7E3DF;border-top-color:#0E9F6E;display:inline-block;animation:w8spin .9s linear infinite;flex:none}',
       '@keyframes w8spin{to{transform:rotate(360deg)}}',
-      '.w8-chip{flex:0 0 auto;max-width:150px;text-align:left;background:#fff;border:1.4px solid #E3EEF0;border-radius:12px;padding:6px 9px;box-shadow:0 2px 7px rgba(20,24,29,.05)}',
+      '.w8-chip{min-width:0;text-align:left;background:#fff;border:1.4px solid #E3EEF0;border-radius:11px;padding:5px 7px;box-shadow:0 2px 6px rgba(20,24,29,.05)}',
       '.w8-chip:active{transform:scale(.97);background:#F2FBF7}',
-      '.w8-chip b{display:block;font-size:11px;font-weight:900;color:#1B2B24;letter-spacing:-.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}',
-      '.w8-chip span{display:block;font-size:9.5px;font-weight:700;color:#79838F;margin-top:1px;white-space:nowrap}',
+      '.w8-chip b{display:block;font-size:10.5px;font-weight:900;color:#1B2B24;letter-spacing:-.3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}',
+      '.w8-chip span{display:block;font-size:8.5px;font-weight:700;color:#79838F;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}',
 
       /* 장소 모달 */
       '.w8-m{background:#F8FBFA;border:1px solid #EAF1EF;border-radius:13px;padding:4px 11px;margin:2px 0 8px}',
