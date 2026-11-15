@@ -1668,7 +1668,12 @@ function buildScene() {
     /* 이름표 */
     var tag = document.createElement('div');
     tag.className = 'pg-tag';
-    tag.textContent = c.name + ' · ' + c.role;
+    var tagN = document.createElement('b');
+    tagN.textContent = c.name;
+    var tagR = document.createElement('i');
+    tagR.textContent = c.role;
+    tag.appendChild(tagN);
+    tag.appendChild(tagR);
     P.ov.appendChild(tag);
     c.tag = tag;
 
