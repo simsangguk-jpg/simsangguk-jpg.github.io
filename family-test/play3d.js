@@ -764,11 +764,15 @@ function buildHat(kind, HR) {
     brim.position.set(0, top * 0.36, HR * 0.62);
     g.add(brim);
   } else if (kind === 'beanie') {
-    var b = new THREE.Mesh(geo('hbean', function () { return new THREE.SphereGeometry(HR * 1.07, 16, 12, 0, Math.PI * 2, 0, Math.PI * 0.62); }), mat(0xE4572E));
-    b.position.y = top * 0.28;
+    var b = new THREE.Mesh(geo('hbean', function () { return new THREE.SphereGeometry(HR * 1.05, 16, 12, 0, Math.PI * 2, 0, Math.PI * 0.42); }), mat(0xE4572E));
+    b.position.y = top * 0.30;
     g.add(b);
-    var pom = new THREE.Mesh(geo('hpom', function () { return new THREE.SphereGeometry(HR * 0.17, 10, 8); }), mat(0xFFF4E6));
-    pom.position.y = topsafe(top, HR);
+    var band = new THREE.Mesh(geo('hband', function () { return new THREE.TorusGeometry(HR * 0.93, HR * 0.075, 8, 22); }), mat(0xF0E3D2));
+    band.rotation.x = Math.PI / 2;
+    band.position.y = top * 0.30;
+    g.add(band);
+    var pom = new THREE.Mesh(geo('hpom', function () { return new THREE.SphereGeometry(HR * 0.15, 10, 8); }), mat(0xFFF4E6));
+    pom.position.y = top * 0.86;
     g.add(pom);
   } else if (kind === 'ribbon') {
     [-1, 1].forEach(function (sd) {
@@ -845,11 +849,11 @@ function buildBag(kind) {
       g.add(st);
     });
   } else {
-    var tb = new THREE.Mesh(geo('bagT', function () { return new THREE.BoxGeometry(0.22, 0.26, 0.10); }), mat(0xE8D5B7));
-    tb.position.set(0.30, 0.72, 0.02);
+    var tb = new THREE.Mesh(geo('bagT', function () { return new THREE.BoxGeometry(0.18, 0.22, 0.09); }), mat(0xE8D5B7));
+    tb.position.set(0.27, 0.72, 0.03);
     g.add(tb);
-    var hd = new THREE.Mesh(geo('bagH', function () { return new THREE.TorusGeometry(0.11, 0.014, 6, 14, Math.PI); }), mat(0xC9AE84));
-    hd.position.set(0.30, 0.86, 0.02);
+    var hd = new THREE.Mesh(geo('bagH', function () { return new THREE.TorusGeometry(0.085, 0.012, 6, 14, Math.PI); }), mat(0xC9AE84));
+    hd.position.set(0.27, 0.83, 0.03);
     hd.rotation.y = Math.PI / 2;
     g.add(hd);
   }

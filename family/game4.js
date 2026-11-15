@@ -639,7 +639,7 @@
     if (own) {
       /* 이미 가진 아이템 → 착용/해제 */
       if (it.k) {
-        if (c.look[it.k] === id) { delete c.look[it.k]; toast(it.n + '을(를) 벗었어요'); }
+        if (c.look[it.k] === id) { c.look[it.k] = ''; toast(it.n + '을(를) 벗었어요'); }
         else { c.look[it.k] = id; toast(it.n + '을(를) 입었어요 — 3D 놀이터에도 반영!'); }
         syncLook(true);
       } else {
@@ -647,6 +647,7 @@
         toast(it.n + '을(를) 방에 배치하려면 마이룸에서 칸을 눌러 주세요');
         pane('room');
       }
+      c.at = now();
       save(); renderShop(); renderTama(); return;
     }
     /* 선물 모드 */
@@ -688,7 +689,7 @@
     var g = G(), v = g.gift[id];
     if (!v || v.to !== me().id) return;
     var c = myChar(), it = itemById(v.item);
-    if (it) { c.items[v.item] = (c.items[v.item] || 0) + 1; }
+    if (it) { c.items[v.item] = (c.items[v.item] || 0) + 1; c.at = now(); }
     v.d = 1; v.at = now();
     save(); renderShop(); toast('선물을 받았어요: ' + (it ? it.n : '선물'));
   }
@@ -763,12 +764,13 @@
       var c = myChar(), i = Number(s.getAttribute('data-slot'));
       if (!c.room.items) c.room.items = [];
       var cur = c.room.items[i];
-      if (cur) { c.room.items[i] = ''; toast('가구를 치웠어요'); }
+      if (cur) { c.room.items[i] = ''; c.at = now(); toast('가구를 치웠어요'); }
       else if (roomSel) {
         var it = itemById(roomSel);
         if (!it) return;
         if ((c.items[roomSel] || 0) <= 0) { toast('가지고 있지 않은 가구예요'); return; }
         c.room.items[i] = roomSel;
+        c.at = now();
         toast(it.n + '을(를) 놓았어요');
       } else { toast('아래에서 놓을 가구를 먼저 골라 주세요'); return; }
       save(); renderRoom();
@@ -780,7 +782,7 @@
       var c = myChar(), col = b.getAttribute('data-wall');
       if (c.room.wall === col) { toast('이미 쓰고 있어요'); return; }
       if (c.gold < 80) { toast('골드가 모자라요 (80G)'); return; }
-      c.gold -= 80; c.room.wall = col; save(); renderRoom(); renderShop(); renderTama();
+      c.gold -= 80; c.room.wall = col; c.at = now(); save(); renderRoom(); renderShop(); renderTama();
       toast('벽지를 바꿨어요');
     });
     var floors = $('g4Floors');
@@ -790,7 +792,7 @@
       var c = myChar(), col = b.getAttribute('data-floor');
       if (c.room.floor === col) { toast('이미 쓰고 있어요'); return; }
       if (c.gold < 80) { toast('골드가 모자라요 (80G)'); return; }
-      c.gold -= 80; c.room.floor = col; save(); renderRoom(); renderShop(); renderTama();
+      c.gold -= 80; c.room.floor = col; c.at = now(); save(); renderRoom(); renderShop(); renderTama();
       toast('바닥을 바꿨어요');
     });
     var furn = $('g4Furn');
@@ -998,6 +1000,7 @@
       if (!yy) return;
       yy.sel = Number(b.getAttribute('data-piece'));
       yy.rev = (yy.rev || 0) + 1;
+      yy.at = now();
       save(); renderYut();
     });
   }
