@@ -185,8 +185,9 @@
           var m = String(txt).match(/\{[\s\S]*\}/);
           if (!m) throw new Error('bad');
           var j = JSON.parse(m[0]);
+          var v3 = V9();
           var yk = todayYmd();
-          v.dailyQuote[yk] = { quote: j.quote, fam: j.fam, by: mid(), at: now() };
+          v3.dailyQuote[yk] = { quote: j.quote, fam: j.fam, by: mid(), at: now() };
           save();
           var card = $('v9QuoteCard');
           if (card) card.__sig = null;
@@ -255,7 +256,8 @@
       var cell = e.target.closest('[data-v9podpick]');
       if (cell) {
         var yk = todayYmd();
-        v.pod[yk] = { pid: cell.getAttribute('data-v9podpick'), by: mid(), at: now() };
+        var v2 = V9();
+        v2.pod[yk] = { pid: cell.getAttribute('data-v9podpick'), by: mid(), at: now() };
         save();
         logEdit('1일 1장 대표사진 선정', yk);
         F.closeSheet();
@@ -269,7 +271,8 @@
         F.pickImages(function (files) {
           F.saveMedia(files[0]).then(function (m) {
             var yk = todayYmd();
-            v.pod[yk] = { thumb: m.thumb, mediaId: m.id, by: mid(), at: now() };
+            var v2 = V9();
+            v2.pod[yk] = { thumb: m.thumb, mediaId: m.id, by: mid(), at: now() };
             save();
             $('v9PodBody').__sig = null;
             renderPod();
@@ -292,7 +295,8 @@
           var n = clamp(parseInt(String(txt).replace(/[^0-9]/g, ''), 10) || 1, 1, parts.length);
           var chosen = list[n - 1];
           var yk = todayYmd();
-          v.pod[yk] = { pid: chosen.id, ai: 1, by: mid(), at: now() };
+          var v2 = V9();
+          v2.pod[yk] = { pid: chosen.id, ai: 1, by: mid(), at: now() };
           save();
           $('v9PodBody').__sig = null;
           renderPod();
@@ -469,8 +473,9 @@
         $('v9DdSave').onclick = function () {
           var t = ($('v9DdT').value || '').trim(), dd = $('v9DdD').value;
           if (!t || !dd) { toast('이름·날짜를 적어 주세요'); return; }
+          var v2 = V9();
           var id = 'd' + now().toString(36);
-          v.ddays[id] = { t: t, d: dd, by: mid(), at: now() };
+          v2.ddays[id] = { t: t, d: dd, by: mid(), at: now() };
           save();
           F.closeSheet();
           $('v9DdayBody').__sig = null;
@@ -482,7 +487,8 @@
       var del = e.target.closest('[data-v9ddel]');
       if (del) {
         var id = del.getAttribute('data-v9ddel');
-        if (v.ddays[id]) { v.ddays[id].del = 1; v.ddays[id].at = now(); save(); $('v9DdayBody').__sig = null; renderDday(); }
+        var v2 = V9();
+        if (v2.ddays[id]) { v2.ddays[id].del = 1; v2.ddays[id].at = now(); save(); $('v9DdayBody').__sig = null; renderDday(); }
       }
     });
   }
@@ -618,7 +624,8 @@
       if (!v) return;
       var ed = e.target.closest('[data-v9goaledit]');
       if (ed) {
-        var g = v.goals[ed.getAttribute('data-v9goaledit')] || {};
+        var gv = V9();
+        var g = gv.goals[ed.getAttribute('data-v9goaledit')] || {};
         F.openSheet('<h3>🎯 내 목표 쓰기</h3>' +
           '<div class="form-row"><label>이번 주 목표</label><input class="field" id="v9GlW" maxlength="40" value="' + esc(g.week || '') + '" placeholder="예: 수학 20페이지"></div>' +
           '<div class="form-row"><label>이번 달 목표</label><input class="field" id="v9GlM" maxlength="40" value="' + esc(g.month || '') + '" placeholder="예: 책 한 권 끝내기"></div>' +
@@ -626,7 +633,8 @@
           '<div style="display:flex;gap:8px;margin-top:6px"><button type="button" class="btn ghost" data-sheet-close>취소</button><button type="button" class="btn" id="v9GlSave">저장</button></div>');
         $('v9GlSave').onclick = function () {
           var id = me().id;
-          v.goals[id] = { week: ($('v9GlW').value || '').trim(), month: ($('v9GlM').value || '').trim(), dream: ($('v9GlD').value || '').trim(), at: now() };
+          var v2 = V9();
+          v2.goals[id] = { week: ($('v9GlW').value || '').trim(), month: ($('v9GlM').value || '').trim(), dream: ($('v9GlD').value || '').trim(), at: now() };
           save();
           logEdit('목표 배너 수정', memName(id) + '의 목표 갱신');
           F.closeSheet();
@@ -639,8 +647,9 @@
       var ch = e.target.closest('[data-v9goalearn]');
       if (ch) {
         var id = ch.getAttribute('data-v9goalearn');
-        if (!v.goalCheer[id]) v.goalCheer[id] = {};
-        v.goalCheer[id][mid()] = now();
+        var v2 = V9();
+        if (!v2.goalCheer[id]) v2.goalCheer[id] = {};
+        v2.goalCheer[id][mid()] = now();
         save();
         $('v9GoalsBody').__sig = null;
         renderGoals();
@@ -712,15 +721,17 @@
       if (!v) return;
       var bed = e.target.closest('#v9Bed');
       if (bed) {
-        saveSleep(v, { bedAt: now(), wakeAt: 0, ymd: todayYmd() });
+        var v2 = V9();
+        saveSleep(v2, { bedAt: now(), wakeAt: 0, ymd: todayYmd() });
         toast('😴 잘 자요 — 내일 아침 기상을 눌러 주세요');
         return;
       }
       var wake = e.target.closest('#v9Wake');
       if (wake) {
-        var rec = v.sleep[mid()] || {};
+        var v3 = V9();
+        var rec = v3.sleep[mid()] || {};
         if (!rec.bedAt) { toast('먼저 취침 기록을 눌렀어야 해요 — 그래도 기상으로 기록할게요'); }
-        saveSleep(v, { wakeAt: now(), ymd: todayYmd() });
+        saveSleep(v3, { wakeAt: now(), ymd: todayYmd() });
         toast('☀️ 좋은 아침이에요!');
         return;
       }
@@ -803,9 +814,10 @@
       var p = b.getAttribute('data-v9sch').split(':');
       var kid = p[0], step = p[1];
       var yk = todayYmd();
-      if (!v.school[yk]) v.school[yk] = {};
-      if (!v.school[yk][kid]) v.school[yk][kid] = {};
-      var rec = v.school[yk][kid];
+      var v2 = V9();
+      if (!v2.school[yk]) v2.school[yk] = {};
+      if (!v2.school[yk][kid]) v2.school[yk][kid] = {};
+      var rec = v2.school[yk][kid];
       var label = step === 'depart' ? '등교 출발' : (step === 'arrive' ? '학교 도착' : '집 도착');
       var finish = function (loc) {
         rec[step] = now();
@@ -1178,7 +1190,8 @@
     $('sb9GiveSave').onclick = function () {
       var to = $('sb9To').value, cat = $('sb9Cat').value, note = ($('sb9Note').value || '').trim();
       if (!to || !cat) { toast('대상·항목을 골라 주세요'); return; }
-      var c = sb.cat[cat];
+      var sb2 = sbOf();
+      var c = sb2.cat[cat];
       var id = 'r' + now().toString(36) + Math.random().toString(36).slice(2, 4);
       sb.rec[id] = { from: mid(), to: to, cat: cat, pts: c.pts, note: note, st: 'ok', ymd: todayYmd(), at: now() };
       save();
@@ -1216,9 +1229,10 @@
     $('sb9SugSave').onclick = function () {
       var to = $('sb9SugTo').value, cat = $('sb9SugCat').value, note = ($('sb9SugNote').value || '').trim();
       if (!to || !cat) { toast('대상·항목을 골라 주세요'); return; }
-      var c = sb.cat[cat];
+      var sb2 = sbOf();
+      var c = sb2.cat[cat];
       var id = 'r' + now().toString(36) + Math.random().toString(36).slice(2, 4);
-      sb.rec[id] = { from: mid(), to: to, cat: cat, pts: c.pts, note: note, img: photo, st: 'pending', ymd: todayYmd(), at: now() };
+      sb2.rec[id] = { from: mid(), to: to, cat: cat, pts: c.pts, note: note, img: photo, st: 'pending', ymd: todayYmd(), at: now() };
       save();
       logEdit('잘한 일 건의', memName(to) + ' · ' + c.t + (photo ? ' · 사진 첨부' : ''));
       F.closeSheet();
@@ -1238,16 +1252,17 @@
         '<div style="display:flex;gap:8px;margin-top:6px"><button type="button" class="btn ghost" data-sheet-close>돌아가기</button><button type="button" class="btn" id="sb9MoneyOk">✅ 칭찬 승인 + 지급</button></div>');
       $('sb9MoneyOk').onclick = function () {
         var amt = Math.round(Number($('sb9MoneyAmt').value || 0));
+        var v2 = V9();
         r.st = 'ok';
         r.done = { amt: amt, by: mid(), at: now() };
         r.at = now();
         if (amt > 0) {
           var yk = todayYmd();
-          if (!v.moneyD[r.to]) v.moneyD[r.to] = {};
-          if (!v.moneyD[r.to][yk]) v.moneyD[r.to][yk] = { items: [] };
-          if (!v.moneyD[r.to][yk].items) v.moneyD[r.to][yk].items = [];
-          v.moneyD[r.to][yk].items.push({ k: 'got', amt: amt, t: '🏅 상점 리워드 · ' + catName(sb, r.cat), at: now() });
-          v.moneyD[r.to][yk].at = now();
+          if (!v2.moneyD[r.to]) v2.moneyD[r.to] = {};
+          if (!v2.moneyD[r.to][yk]) v2.moneyD[r.to][yk] = { items: [] };
+          if (!v2.moneyD[r.to][yk].items) v2.moneyD[r.to][yk].items = [];
+          v2.moneyD[r.to][yk].items.push({ k: 'got', amt: amt, t: '🏅 상점 리워드 · ' + catName(sb, r.cat), at: now() });
+          v2.moneyD[r.to][yk].at = now();
         }
         save();
         logEdit('건의 승인 + 상점·용돈 지급', memName(r.to) + ' +' + r.pts + '점' + (amt ? ' · ' + amt + '원' : ''));
@@ -1295,6 +1310,7 @@
       if (del) { sb.cat[del.getAttribute('data-sb9cdel')].del = 1; del.closest('.sb9-catrow').remove(); }
     });
     $('sb9CatSave').onclick = function () {
+      var sb3 = sbOf();
       document.querySelectorAll('#sb9CatList .sb9-catrow').forEach(function (row) {
         var tIn = row.querySelector('[data-sb9ct]'), pIn = row.querySelector('[data-sb9cp]');
         if (!tIn || !pIn) return;
@@ -1302,11 +1318,11 @@
         var t = (tIn.value || '').trim();
         var pts = Math.max(-50, Math.min(50, Math.round(Number(pIn.value || 0))));
         if (!t) return;
-        if (!sb.cat[id] || sb.cat[id].del) {
+        if (!sb3.cat[id] || sb3.cat[id].del) {
           var nid = 'c' + now().toString(36) + Math.random().toString(36).slice(2, 4);
-          sb.cat[nid] = { t: t, pts: pts, kind: pts >= 0 ? 'plus' : 'minus', at: now() };
+          sb3.cat[nid] = { t: t, pts: pts, kind: pts >= 0 ? 'plus' : 'minus', at: now() };
         } else {
-          sb.cat[id].t = t; sb.cat[id].pts = pts; sb.cat[id].kind = pts >= 0 ? 'plus' : 'minus'; sb.cat[id].at = now();
+          sb3.cat[id].t = t; sb3.cat[id].pts = pts; sb3.cat[id].kind = pts >= 0 ? 'plus' : 'minus'; sb3.cat[id].at = now();
         }
       });
       save();
@@ -1411,9 +1427,10 @@
     $('mo9Save').onclick = function () {
       if (!sel.e) { toast('기분 이모티콘을 골라 주세요'); return; }
       var note = ($('mo9Note').value || '').trim();
-      v.mood[mid()] = { e: sel.e, t: sel.t, note: note, at: now(), ymd: todayYmd() };
+      var v2 = V9();
+      v2.mood[mid()] = { e: sel.e, t: sel.t, note: note, at: now(), ymd: todayYmd() };
       var hid = 'm' + now().toString(36) + Math.random().toString(36).slice(2, 4);
-      v.moodHist[hid] = { mid: mid(), e: sel.e, t: sel.t, note: note, at: now(), ymd: todayYmd() };
+      v2.moodHist[hid] = { mid: mid(), e: sel.e, t: sel.t, note: note, at: now(), ymd: todayYmd() };
       save();
       logEdit('기분 보드 변경', sel.e + ' ' + sel.t + (note ? ' · ' + note : ''));
       F.closeSheet();

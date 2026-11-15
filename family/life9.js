@@ -241,7 +241,10 @@
       '아래는 가족 위시리스트에 올라온 물건이야. 한국 온라인 시장(네이버쇼핑·다나와·쿠팡 기준)에서의 대략적인 최저가를 추정해서 "숫자원(예: 89,000원)" 형식과 어느 쇼핑몰이 가장 싼지 한 줄로만 알려줘.\n물건: ' + e.name + (e.price ? '\n원하는 가격대: ' + e.price : '')
     ).then(function (txt) {
       var m = String(txt).replace(/\n/g, ' ').match(/[\d,\s]+원/);
-      e.ai = { price: m ? m[0].replace(/\s/g, '') : txt.slice(0, 40), shop: (String(txt).match(/(쿠팡|네이버|다나와|구글|Coupang|넘이버)/i) || [''])[0], at: now() };
+      var v2 = V9();
+      var e2 = v2 && v2.wish[id];
+      if (!e2) return;
+      e2.ai = { price: m ? m[0].replace(/\s/g, '') : txt.slice(0, 40), shop: (String(txt).match(/(쿠팡|네이버|다나와|구글|Coupang)/i) || [''])[0], at: now() };
       save(); box_sig_reset(); renderWish();
     }).catch(function (err) {
       toast('AI 조회 실패: ' + (err && err.message === 'no-key' ? '키 먼저 등록' : '잠시 후 다시'));
