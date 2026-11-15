@@ -57,10 +57,14 @@
       return false;
     }
   }
-  function fileName(suffix) {
+  function fileName(suffix, ext) {
     var d0 = new Date();
     return '우리가족_' + d0.getFullYear() + pad(d0.getMonth() + 1) + pad(d0.getDate()) + '_' +
-      pad(d0.getHours()) + pad(d0.getMinutes()) + (suffix || '') + '.jpg';
+      pad(d0.getHours()) + pad(d0.getMinutes()) + (suffix || '') + '.' + (ext || 'jpg');
+  }
+  function extOf(src) {
+    var m = String(src || '').match(/\.(png|jpe?g|webp|gif)(?:[?#]|$)/i);
+    return m ? m[1].toLowerCase().replace('jpeg', 'jpg') : 'jpg';
   }
   /* 저장된(암호화) 가족사진 한 장을 폰에 저장 */
   function downloadPhoto(pid) {
@@ -74,7 +78,7 @@
   /* 같은 사이트의 기본 사진(icon-512.png 등) 저장 */
   function downloadUrl(src, name) {
     fetch(src, { cache: 'force-cache' }).then(function (r) { return r.blob(); }).then(function (b) {
-      saveBlob(b, name || fileName());
+      saveBlob(b, name || fileName('', extOf(src)));
     }).catch(function () { toast('사진을 저장하지 못했어요'); });
   }
 
