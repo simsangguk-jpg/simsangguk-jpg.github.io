@@ -2814,7 +2814,7 @@ function paintCaption(p) {
 }
 function closePhoto() {
   $('photoModal').classList.add('hidden');
-  $('pmImg').src = '';
+  $('pmImg').removeAttribute('src');
   pmPhotoId = null; pmData = null;
 }
 function togglePhotoLike() {
