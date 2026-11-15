@@ -310,6 +310,7 @@
     return p;
   }
   var CAT_LABEL = { food: '🍽️ 맛집', cafe: '☕ 카페', spot: '🌳 가볼만한곳' };
+  var CAT_SHORT = { food: '맛집', cafe: '카페', spot: '명소' };
   /* 맛집·카페·가볼만한곳을 각각 한 곳씩 담는다. 한 갈래가 비면 다른 갈래의 다음 곳으로 3곳을 채운다. */
   function pack(foodL, cafeL, spotL, lat, lon) {
     var seen = {}, picks = [];
@@ -359,7 +360,7 @@
     n.list.forEach(function (x, i) {
       html += '<button type="button" class="w8-chip" data-w8open="' + esc(id) + '|' + i + '">' +
         '<b>' + esc(x.name) + '</b>' +
-        '<span>' + esc(x.catLabel) + ' · ' + esc(distText(x.dist)) + '</span></button>';
+        '<span>' + esc(CAT_SHORT[x.cat] || '장소') + ' · ' + esc(distText(x.dist)) + '</span></button>';
     });
     html += '</div>';
     return html;
