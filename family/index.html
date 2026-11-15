@@ -3502,7 +3502,7 @@ function ensurePlay(cb) {
   if (pgLoading) return;
   pgLoading = true;
   var s = document.createElement('script');
-  s.src = './play3d.js?v=3d8';
+  s.src = './play3d.js?v=3d9';
   s.async = true;
   s.onload = function () { pgLoading = false; if (window.FamPlay) cb(); else toast('놀이터를 불러오지 못했어요'); };
   s.onerror = function () { pgLoading = false; toast('놀이터를 불러오지 못했어요. 잠시 후 다시 열어 주세요'); };

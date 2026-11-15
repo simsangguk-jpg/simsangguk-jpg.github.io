@@ -1347,13 +1347,13 @@ function resize() {
   P.renderer.setSize(w, h, false);
   var aspect = w / Math.max(1, h);
   var tanV = Math.tan(THREE.MathUtils.degToRad(P.camera.fov / 2));
-  var z = P.camOverride || clamp(3.35 / (tanV * aspect), 6.2, 14.5);
+  var z = P.camOverride || clamp(3.1 / (tanV * aspect), 5.9, 14.5);
   P.baseZ = z;
   P.fitZ = z;
   if (!P.zoomZ) P.zoomZ = z;
   P.camera.aspect = aspect;
-  P.camera.position.set(P.camX || 0, 1.15 + z * 0.28, z);
-  P.camera.lookAt(P.lookX || 0, 0.92, 0);
+  P.camera.position.set(P.camX || 0, 0.95 + z * 0.21, z);
+  P.camera.lookAt(P.lookX || 0, 0.98, 0);
   P.camera.updateProjectionMatrix();
 }
 
@@ -1405,11 +1405,11 @@ function frame(now) {
     var cc = P.chars[ci1];
     zNeed = Math.max(zNeed, cc.z + (Math.abs(cc.x - P.camX) + 0.75) / (tanV * asp) + 0.45);
   }
-  P.zoomZ = damp(P.zoomZ || zNeed, clamp(zNeed, P.baseZ || 6.2, 18), 2.2, dt);
+  P.zoomZ = damp(P.zoomZ || zNeed, clamp(zNeed, P.baseZ || 5.9, 18), 2.2, dt);
   P.camera.position.z = P.zoomZ;
   P.camera.position.x = P.camX;
-  P.camera.position.y = damp(P.camera.position.y, (1.15 + P.zoomZ * 0.28) - P.ptr.ny * 0.18, 2.0, dt);
-  P.camera.lookAt(P.lookX, 0.92, 0);
+  P.camera.position.y = damp(P.camera.position.y, (0.95 + P.zoomZ * 0.21) - P.ptr.ny * 0.18, 2.0, dt);
+  P.camera.lookAt(P.lookX, 0.98, 0);
 
   /* 배경 소품 */
   if (P.foam) {
