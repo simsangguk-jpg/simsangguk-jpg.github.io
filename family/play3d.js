@@ -84,7 +84,7 @@ function faceTex(expr) {
   }
   function brows(cy, tilt) {
     g.strokeStyle = ink; g.lineWidth = 10;
-    [0.27, 0.73].forEach(function (u, i) {
+    [0.235, 0.765].forEach(function (u, i) {
       var dir = i === 0 ? 1 : -1;
       g.beginPath();
       g.moveTo(u * S - 34 * dir, cy + tilt * dir);
@@ -110,48 +110,48 @@ function faceTex(expr) {
   function blush(a, cy) {
     g.fillStyle = 'rgba(255,138,128,' + (a || 0.34) + ')';
     cy = cy || 0.66 * S;
-    [0.12, 0.88].forEach(function (u) {
+    [0.085, 0.915].forEach(function (u) {
       g.beginPath(); g.ellipse(u * S, cy, 28, 16, 0, 0, Math.PI * 2); g.fill();
     });
   }
   function nose() {
     g.strokeStyle = 'rgba(90,60,40,.55)'; g.lineWidth = 7;
-    g.beginPath(); g.arc(0.5 * S, 0.60 * S, 9, 0.15 * Math.PI, 0.85 * Math.PI); g.stroke();
+    g.beginPath(); g.arc(0.5 * S, 0.625 * S, 9, 0.15 * Math.PI, 0.85 * Math.PI); g.stroke();
   }
 
-  var EY = 0.44 * S, MY = 0.72 * S;
+  var EY = 0.45 * S, MY = 0.735 * S;
 
   if (expr === 'normal') {
-    eyeOpen(0.265 * S, EY, 23, 29);
-    eyeOpen(0.735 * S, EY, 23, 29);
-    nose(); mouthSmile(MY, 30, 22, 11); blush(0.34, 0.63 * S);
+    eyeOpen(0.235 * S, EY, 23, 29);
+    eyeOpen(0.765 * S, EY, 23, 29);
+    nose(); mouthSmile(MY, 30, 22, 11); blush(0.34, 0.60 * S);
   } else if (expr === 'smile') {
-    eyeOpen(0.265 * S, EY, 23, 26, 0.85);
-    eyeOpen(0.735 * S, EY, 23, 26, 0.85);
-    nose(); mouthSmile(MY, 36, 28, 12); blush(0.40, 0.63 * S);
+    eyeOpen(0.235 * S, EY, 23, 26, 0.85);
+    eyeOpen(0.765 * S, EY, 23, 26, 0.85);
+    nose(); mouthSmile(MY, 36, 28, 12); blush(0.42, 0.60 * S);
   } else if (expr === 'laugh') {
-    arcEye(0.265 * S, EY + 6, 27, 18, true);
-    arcEye(0.735 * S, EY + 6, 27, 18, true);
-    nose(); mouthOpen(MY + 4, 33, 26, true); blush(0.48, 0.63 * S);
+    arcEye(0.235 * S, EY + 6, 27, 18, true);
+    arcEye(0.765 * S, EY + 6, 27, 18, true);
+    nose(); mouthOpen(MY + 4, 33, 26, true); blush(0.50, 0.60 * S);
   } else if (expr === 'sad') {
     brows(EY - 50, -10);
-    eyeOpen(0.265 * S, EY + 4, 19, 22); eyeOpen(0.735 * S, EY + 4, 19, 22);
+    eyeOpen(0.235 * S, EY + 4, 19, 22); eyeOpen(0.765 * S, EY + 4, 19, 22);
     nose();
     g.strokeStyle = ink; g.lineWidth = 11;
     g.beginPath(); g.moveTo(0.5 * S - 26, MY + 14); g.quadraticCurveTo(0.5 * S, MY - 14, 0.5 * S + 26, MY + 14); g.stroke();
-    blush(0.24, 0.63 * S);
+    blush(0.24, 0.60 * S);
   } else if (expr === 'cry') {
     brows(EY - 52, 11);
     g.strokeStyle = ink; g.lineWidth = 13;
-    [0.265, 0.735].forEach(function (u) {
+    [0.235, 0.765].forEach(function (u) {
       g.beginPath(); g.moveTo(u * S - 22, EY - 16); g.lineTo(u * S + 20, EY + 18); g.stroke();
       g.beginPath(); g.moveTo(u * S + 22, EY - 16); g.lineTo(u * S - 20, EY + 18); g.stroke();
     });
     mouthOpen(MY + 6, 28, 22, true);
-    blush(0.44, 0.63 * S);
+    blush(0.46, 0.60 * S);
   } else if (expr === 'dizzy') {
     g.strokeStyle = ink; g.lineWidth = 10;
-    [0.265, 0.735].forEach(function (u) {
+    [0.235, 0.765].forEach(function (u) {
       g.beginPath();
       for (var a = 0; a < 13; a++) {
         var r = 3 + a * 1.7, ang = a * 0.9;
@@ -168,19 +168,19 @@ function faceTex(expr) {
     g.bezierCurveTo(0.5 * S + 21, MY - 8, 0.5 * S + 27, MY + 6, 0.5 * S + 32, MY - 2);
     g.stroke();
   } else if (expr === 'surprise') {
-    [0.265, 0.735].forEach(function (u) {
+    [0.235, 0.765].forEach(function (u) {
       g.fillStyle = '#fff';
       g.beginPath(); g.ellipse(u * S, EY, 29, 31, 0, 0, Math.PI * 2); g.fill();
       g.fillStyle = ink; g.beginPath(); g.ellipse(u * S, EY + 2, 15, 18, 0, 0, Math.PI * 2); g.fill();
     });
     nose(); mouthOpen(MY + 2, 16, 20, false);
   } else if (expr === 'blink') {
-    arcEye(0.265 * S, EY + 2, 25, 9, false);
-    arcEye(0.735 * S, EY + 2, 25, 9, false);
-    nose(); mouthSmile(MY, 28, 18, 10); blush(0.34, 0.63 * S);
+    arcEye(0.235 * S, EY + 2, 25, 9, false);
+    arcEye(0.765 * S, EY + 2, 25, 9, false);
+    nose(); mouthSmile(MY, 28, 18, 10); blush(0.34, 0.60 * S);
   } else {
-    eyeOpen(0.265 * S, EY, 23, 29); eyeOpen(0.735 * S, EY, 23, 29);
-    nose(); mouthSmile(MY, 30, 22, 11); blush(0.34, 0.63 * S);
+    eyeOpen(0.235 * S, EY, 23, 29); eyeOpen(0.765 * S, EY, 23, 29);
+    nose(); mouthSmile(MY, 30, 22, 11); blush(0.34, 0.60 * S);
   }
 
   var t = new THREE.CanvasTexture(c);
@@ -462,7 +462,7 @@ function buildCharacter(cfg) {
 
   var S = cfg.scale, G = cfg.girth;
   var HIP = 0.56, TORSO_H = 0.60, SH_Y = 1.0, SH_X = 0.235 * G;
-  var HEAD_Y = 1.38, HR = 0.285;
+  var HEAD_Y = 1.43, HR = 0.315;
   var parts = {};
 
   /* --- 그림자(월드에 따로 붙여 높이에 따라 줄어듦) --- */
@@ -477,10 +477,10 @@ function buildCharacter(cfg) {
   function makeLeg(side) {
     var g = new THREE.Group();
     g.position.set(side * 0.105 * G, HIP, 0);
-    var leg = capsule(0.086, 0.345, cfg.bottom, 10);
+    var leg = capsule(0.094, 0.34, cfg.bottom, 10);
     leg.position.y = -0.2625;
     g.add(leg);
-    var shoe = new THREE.Mesh(geo('shoe', function () { return new THREE.BoxGeometry(0.155, 0.095, 0.23); }), mat(cfg.shoe));
+    var shoe = new THREE.Mesh(geo('shoe', function () { return new THREE.BoxGeometry(0.165, 0.1, 0.245); }), mat(cfg.shoe));
     shoe.position.set(0, -0.505, 0.035);
     g.add(shoe);
     var sole = new THREE.Mesh(geo('sole', function () { return new THREE.BoxGeometry(0.16, 0.03, 0.24); }), mat(0xFFFFFF, { transparent: true, opacity: 0.5 }));
@@ -607,8 +607,8 @@ function buildCharacter(cfg) {
   parts.armR = makeArm(1);
 
   /* --- 목 --- */
-  var neck = new THREE.Mesh(geo('neck', function () { return new THREE.CylinderGeometry(0.085, 0.095, 0.1, 10); }), mat(cfg.skin));
-  neck.position.y = 1.14;
+  var neck = new THREE.Mesh(geo('neck', function () { return new THREE.CylinderGeometry(0.085, 0.095, 0.14, 10); }), mat(cfg.skin));
+  neck.position.y = 1.16;
   rig.add(neck);
 
   /* --- 머리 --- */
@@ -621,7 +621,7 @@ function buildCharacter(cfg) {
   skull.scale.set(1, 1.02, 0.98);
   head.add(skull);
 
-  var earGeo = geo('ear', function () { return new THREE.SphereGeometry(0.062, 10, 8); });
+  var earGeo = geo('ear', function () { return new THREE.SphereGeometry(0.066, 10, 8); });
   var earL = new THREE.Mesh(earGeo, mat(cfg.skin));
   earL.position.set(-HR * 0.97, -0.02, 0.01);
   head.add(earL);
@@ -631,7 +631,7 @@ function buildCharacter(cfg) {
 
   /* 얼굴(구면 캡에 표정 텍스처) */
   var faceGeo = geo('facecap', function () {
-    return new THREE.SphereGeometry(HR * 1.008, 24, 18, Math.PI / 2 - 0.72, 1.44, 1.08, 1.28);
+    return new THREE.SphereGeometry(HR * 1.012, 26, 20, Math.PI / 2 - 0.95, 1.9, 1.05, 1.40);
   });
   var faceMat = new THREE.MeshBasicMaterial({ map: faceTex('normal'), transparent: true, depthWrite: false });
   var face = new THREE.Mesh(faceGeo, faceMat);
@@ -641,11 +641,11 @@ function buildCharacter(cfg) {
 
   /* 머리카락 */
   var hairM = mat(cfg.hair);
-  var capGeo = geo('haircap', function () { return new THREE.SphereGeometry(HR * 1.055, 22, 14, 0, Math.PI * 2, 0, 1.16); });
+  var capGeo = geo('haircap', function () { return new THREE.SphereGeometry(HR * 1.05, 22, 14, 0, Math.PI * 2, 0, 1.12); });
   var cap = new THREE.Mesh(capGeo, hairM);
   cap.scale.set(1.015, 1.0, 1.015);
   head.add(cap);
-  var fringeGeo = geo('fringe', function () { return new THREE.SphereGeometry(HR * 1.06, 18, 12, Math.PI / 2 - 1.15, 2.3, 0.55, 0.92); });
+  var fringeGeo = geo('fringe', function () { return new THREE.SphereGeometry(HR * 1.058, 20, 14, Math.PI / 2 - 1.30, 2.6, 0.5, 0.98); });
   var fringe = new THREE.Mesh(fringeGeo, hairM);
   head.add(fringe);
 
@@ -655,20 +655,20 @@ function buildCharacter(cfg) {
     back.position.set(0, -0.04, -0.11);
     head.add(back);
     [-1, 1].forEach(function (sd) {
-      var lock = capsule(0.085, 0.36, cfg.hair, 10);
-      lock.position.set(sd * HR * 0.92, -0.22, 0.0);
+      var lock = capsule(0.085, 0.40, cfg.hair, 10);
+      lock.position.set(sd * HR * 0.98, -0.26, 0.0);
       lock.scale.set(0.9, 1, 0.9);
       head.add(lock);
     });
   } else if (cfg.hairStyle === 'bowl') {
-    var fringe2 = new THREE.Mesh(geo('fringe2', function () { return new THREE.SphereGeometry(HR * 1.065, 18, 12, Math.PI / 2 - 1.25, 2.5, 0.7, 1.0); }), hairM);
+    var fringe2 = new THREE.Mesh(geo('fringe2', function () { return new THREE.SphereGeometry(HR * 1.062, 20, 14, Math.PI / 2 - 1.4, 2.8, 0.62, 1.02); }), hairM);
     head.add(fringe2);
     var tuft = new THREE.Mesh(geo('tuft', function () { return new THREE.SphereGeometry(0.075, 10, 8); }), hairM);
     tuft.position.set(0.02, HR * 1.0, 0.03);
     tuft.scale.set(1.1, 0.7, 1.1);
     head.add(tuft);
   } else if (cfg.hairStyle === 'neat') {
-    var side = new THREE.Mesh(geo('neatside', function () { return new THREE.SphereGeometry(HR * 1.05, 14, 10, 0, Math.PI * 2, 0.5, 0.8); }), hairM);
+    var side = new THREE.Mesh(geo('neatside', function () { return new THREE.SphereGeometry(HR * 1.045, 14, 10, 0, Math.PI * 2, 0.5, 0.8); }), hairM);
     side.position.set(0.04, 0.01, 0);
     side.scale.set(1, 0.9, 1);
     head.add(side);
@@ -682,19 +682,19 @@ function buildCharacter(cfg) {
   /* 안경(상국) */
   if (cfg.glasses) {
     var gGrp = new THREE.Group();
-    var lensGeo = geo('lens', function () { return new THREE.TorusGeometry(0.079, 0.013, 8, 22); });
+    var lensGeo = geo('lens', function () { return new THREE.TorusGeometry(0.086, 0.014, 8, 22); });
     var lensM = mat(0x1B1F26);
     [-1, 1].forEach(function (sd) {
       var lens = new THREE.Mesh(lensGeo, lensM);
-      lens.position.set(sd * 0.108, 0.005, 0.252);
+      lens.position.set(sd * 0.125, 0.0, HR * 0.90);
       gGrp.add(lens);
       var temple = new THREE.Mesh(geo('temple', function () { return new THREE.BoxGeometry(0.014, 0.014, 0.2); }), lensM);
-      temple.position.set(sd * 0.19, 0.01, 0.15);
+      temple.position.set(sd * 0.215, 0.005, HR * 0.55);
       temple.rotation.y = sd * 0.17;
       gGrp.add(temple);
     });
-    var bridge = new THREE.Mesh(geo('bridge', function () { return new THREE.BoxGeometry(0.058, 0.013, 0.013); }), lensM);
-    bridge.position.set(0, 0.01, 0.262);
+    var bridge = new THREE.Mesh(geo('bridge', function () { return new THREE.BoxGeometry(0.066, 0.014, 0.014); }), lensM);
+    bridge.position.set(0, 0.006, HR * 0.945);
     gGrp.add(bridge);
     head.add(gGrp);
   }
