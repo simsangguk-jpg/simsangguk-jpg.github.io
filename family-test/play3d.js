@@ -684,17 +684,20 @@ function buildCharacter(cfg) {
     var gGrp = new THREE.Group();
     var lensGeo = geo('lens', function () { return new THREE.TorusGeometry(0.086, 0.014, 8, 22); });
     var lensM = mat(0x1B1F26);
+    var FR = HR * 1.012;
+    var lx = 0.125;
+    var lz = Math.sqrt(FR * FR - lx * lx) + 0.004;
     [-1, 1].forEach(function (sd) {
       var lens = new THREE.Mesh(lensGeo, lensM);
-      lens.position.set(sd * 0.125, 0.0, HR * 0.90);
+      lens.position.set(sd * lx, 0.0, lz);
       gGrp.add(lens);
-      var temple = new THREE.Mesh(geo('temple', function () { return new THREE.BoxGeometry(0.014, 0.014, 0.2); }), lensM);
-      temple.position.set(sd * 0.215, 0.005, HR * 0.55);
-      temple.rotation.y = sd * 0.17;
+      var temple = new THREE.Mesh(geo('temple', function () { return new THREE.BoxGeometry(0.014, 0.014, 0.22); }), lensM);
+      temple.position.set(sd * (lx + 0.075), 0.004, FR * 0.52);
+      temple.rotation.y = sd * 0.2;
       gGrp.add(temple);
     });
-    var bridge = new THREE.Mesh(geo('bridge', function () { return new THREE.BoxGeometry(0.066, 0.014, 0.014); }), lensM);
-    bridge.position.set(0, 0.006, HR * 0.945);
+    var bridge = new THREE.Mesh(geo('bridge', function () { return new THREE.BoxGeometry(0.078, 0.014, 0.014); }), lensM);
+    bridge.position.set(0, 0.006, FR + 0.004);
     gGrp.add(bridge);
     head.add(gGrp);
   }
@@ -937,8 +940,10 @@ function poseChar(c, dt) {
     p.body.scale.y = 1.02 + b * 0.018;
     p.armL.rotation.z = -0.13 - Math.abs(b) * 0.03;
     p.armR.rotation.z = 0.13 + Math.abs(b) * 0.03;
-    p.head.rotation.y = Math.sin(P.t * 0.55 + c.phase) * 0.22;
-    p.head.rotation.x = Math.sin(P.t * 0.8 + c.phase) * 0.05;
+    if (!P.freeze) {
+      p.head.rotation.y = Math.sin(P.t * 0.55 + c.phase) * 0.22;
+      p.head.rotation.x = Math.sin(P.t * 0.8 + c.phase) * 0.05;
+    }
     p.legL.rotation.z = 0.02;
     p.legR.rotation.z = -0.02;
   } else if (st === 'wave') {
@@ -1329,7 +1334,7 @@ function resize() {
   P.renderer.setSize(w, h, false);
   var aspect = w / Math.max(1, h);
   var tanV = Math.tan(THREE.MathUtils.degToRad(P.camera.fov / 2));
-  var z = clamp(4.55 / (tanV * aspect), 8.7, 15.5);
+  var z = P.camOverride || clamp(4.55 / (tanV * aspect), 8.7, 15.5);
   P.fitZ = z;
   P.camera.aspect = aspect;
   P.camera.position.set(P.camX || 0, 1.5 + z * 0.30, z);
@@ -1683,6 +1688,7 @@ var FamPlay = {
     });
   },
   freeze: function (on) { P.freeze = !!on; },
+  cam: function (z) { P.camOverride = z || null; resize(); },
   ready: function () { return P.phase === 'ready'; },
   debug: function () {
     return {
