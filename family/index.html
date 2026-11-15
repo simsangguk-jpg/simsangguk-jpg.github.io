@@ -324,7 +324,7 @@ main{padding:14px 14px 6px}
       <button class="icon-btn" id="btnMe" aria-label="내 설정">⚙️</button>
     </div>
     <div class="wx-banner" id="wxBanner">
-      <div class="wx-row" id="wxRow"><div class="wx-chip"><div class="p">날씨</div><div class="t">–</div><div class="d">불러오는 중</div></div></div>
+      <div class="wx-row" id="wxRow"><div class="wx-chip"><div class="p">파주</div><div class="t">–</div><div class="d">불러오는 중</div></div><div class="wx-chip"><div class="p">연천</div><div class="t">–</div><div class="d">불러오는 중</div></div></div>
       <div class="cheer-line" id="cheerLine"><span class="who">💬</span><span class="txt">오늘도 우리 가족 화이팅!</span></div>
     </div>
     <div class="syncbar" id="syncBar"><span class="dot" id="syncDot"></span><span id="syncText">가족 클라우드 연결 중…</span></div>
@@ -960,6 +960,17 @@ function renderCheer() {
     banner.innerHTML = '<span class="who">💬</span><span class="txt">' + esc(DOC.cheer[ids[0]].text) + '</span>';
   }
 }
+function rotateCheer() {
+  var ids = Object.keys(DOC.cheer || {}).filter(function (k) { return DOC.cheer[k] && !DOC.cheer[k].d && DOC.cheer[k].text; });
+  if (!ids.length) return;
+  ids.sort(function (a, b) { return (DOC.cheer[b].at || 0) - (DOC.cheer[a].at || 0); });
+  var i = (window.__cheerIdx || 0) % ids.length;
+  window.__cheerIdx = (i + 1) % ids.length;
+  var c = DOC.cheer[ids[i]];
+  var m = DOC.members[ids[i]] || { name: '가족', emoji: '🧑' };
+  var line = $('cheerLine');
+  if (line) line.innerHTML = '<span class="who">' + (m.emoji || '💬') + ' ' + esc(m.name) + '</span><span class="txt">' + esc(c.text) + '</span>';
+}
 function renderPlans() {
   var box = $('planList');
   var ids = Object.keys(DOC.plans || {}).filter(function (k) { return DOC.plans[k] && !DOC.plans[k].d; });
@@ -1404,35 +1415,94 @@ var WX_PLACES = [
   { id: 'paju', name: '파주', lat: 37.7251, lon: 126.7660 },
   { id: 'yeoncheon', name: '연천', lat: 38.0964, lon: 127.0746 }
 ];
-function wmo(code) {
-  var c = Number(code);
-  if (c === 0) return { e: '☀️', t: '맑음' };
-  if (c === 1) return { e: '🌤️', t: '대체로 맑음' };
-  if (c === 2) return { e: '⛅', t: '구름 조금' };
-  if (c === 3) return { e: '☁️', t: '흐림' };
-  if (c === 45 || c === 48) return { e: '🌫️', t: '안개' };
-  if (c >= 51 && c <= 57) return { e: '🌦️', t: '이슬비' };
-  if (c >= 61 && c <= 67) return { e: '🌧️', t: '비' };
-  if (c >= 71 && c <= 77) return { e: '❄️', t: '눈' };
-  if (c >= 80 && c <= 82) return { e: '🌦️', t: '소나기' };
-  if (c === 85 || c === 86) return { e: '🌨️', t: '눈 소나기' };
-  if (c >= 95) return { e: '⛈️', t: '천둥·번개' };
+function symInfo(s) {
+  s = String(s || '').toLowerCase();
+  if (s.indexOf('thunder') >= 0) return { e: '⛈️', t: '천둥·번개' };
+  if (s.indexOf('sleet') >= 0) return { e: '🌨️', t: '진눈깨비' };
+  if (s.indexOf('snow') >= 0) return { e: '❄️', t: '눈' };
+  if (s.indexOf('heavyrain') >= 0) return { e: '🌧️', t: '강한 비' };
+  if (s.indexOf('lightrain') >= 0) return { e: '🌦️', t: '약한 비' };
+  if (s.indexOf('drizzle') >= 0) return { e: '🌦️', t: '이슬비' };
+  if (s.indexOf('rain') >= 0 || s.indexOf('shower') >= 0) return { e: '🌧️', t: '비' };
+  if (s.indexOf('fog') >= 0) return { e: '🌫️', t: '안개' };
+  if (s.indexOf('partlycloudy') >= 0 || s.indexOf('partly') >= 0) return { e: '⛅', t: '구름 조금' };
+  if (s.indexOf('fair') >= 0) return { e: '🌤️', t: '대체로 맑음' };
+  if (s.indexOf('cloudy') >= 0 || s.indexOf('overcast') >= 0) return { e: '☁️', t: '흐림' };
+  if (s.indexOf('clear') >= 0 || s.indexOf('sunny') >= 0) return { e: '☀️', t: '맑음' };
+  if (s.indexOf('mist') >= 0 || s.indexOf('haze') >= 0) return { e: '🌫️', t: '연무' };
   return { e: '🌡️', t: '날씨' };
 }
-function fetchPlaceWeather(p) {
+function wxFetch(url, ms) {
+  var ctrl = null, timer = null;
+  if (window.AbortController) { ctrl = new AbortController(); timer = setTimeout(function () { ctrl.abort(); }, ms || 9000); }
+  var opt = { cache: 'no-store' };
+  if (ctrl) opt.signal = ctrl.signal;
+  return fetch(url, opt).then(function (r) {
+    if (timer) clearTimeout(timer);
+    if (!r.ok) throw new Error('wx ' + r.status);
+    return r.json();
+  }, function (e) { if (timer) clearTimeout(timer); throw e; });
+}
+function pad2(n) { return String(n).padStart(2, '0'); }
+function ymd(d) { return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate()); }
+/* 1순위: 노르웨이 기상청(met.no) — 무료·키 불필요, 브라우저 직접 호출 가능 */
+function wxMetno(p) {
+  var url = 'https://api.met.no/weatherapi/locationforecast/2.0/compact?lat=' + p.lat + '&lon=' + p.lon;
+  return wxFetch(url, 9000).then(function (j) {
+    var ts = (j && j.properties && j.properties.timeseries) || [];
+    if (!ts.length) throw new Error('no-ts');
+    var cur = ts[0];
+    var code = (cur.data.next_1_hours && cur.data.next_1_hours.summary.symbol_code) ||
+      (cur.data.next_6_hours && cur.data.next_6_hours.summary.symbol_code) || 'cloudy';
+    var today = ymd(new Date());
+    var temps = [];
+    for (var i = 0; i < ts.length; i++) {
+      var d = new Date(ts[i].time);
+      if (ymd(d) !== today) continue;
+      var t = ts[i].data.instant.details.air_temperature;
+      if (typeof t === 'number') temps.push(t);
+    }
+    return {
+      name: p.name,
+      temp: Math.round(cur.data.instant.details.air_temperature),
+      code: code,
+      min: temps.length ? Math.round(Math.min.apply(null, temps)) : null,
+      max: temps.length ? Math.round(Math.max.apply(null, temps)) : null
+    };
+  });
+}
+/* 2순위: wttr.in */
+function wxWttr(p) {
+  var url = 'https://wttr.in/' + p.lat + ',' + p.lon + '?format=j1';
+  return wxFetch(url, 9000).then(function (j) {
+    var c = j.current_condition[0];
+    var d0 = j.weather[0];
+    return {
+      name: p.name,
+      temp: Math.round(Number(c.temp_C)),
+      code: (c.weatherDesc && c.weatherDesc[0] && c.weatherDesc[0].value) || '',
+      min: Math.round(Number(d0.mintempC)),
+      max: Math.round(Number(d0.maxtempC))
+    };
+  });
+}
+/* 3순위: open-meteo */
+function wxOpenMeteo(p) {
   var url = 'https://api.open-meteo.com/v1/forecast?latitude=' + p.lat + '&longitude=' + p.lon +
     '&current=temperature_2m,weather_code&daily=temperature_2m_max,temperature_2m_min&timezone=Asia%2FSeoul&forecast_days=1';
-  return fetch(url, { cache: 'no-store' })
-    .then(function (r) { if (!r.ok) throw new Error('wx'); return r.json(); })
-    .then(function (j) {
-      return {
-        name: p.name,
-        temp: Math.round(j.current.temperature_2m),
-        code: j.current.weather_code,
-        max: Math.round(j.daily.temperature_2m_max[0]),
-        min: Math.round(j.daily.temperature_2m_min[0])
-      };
-    })
+  return wxFetch(url, 8000).then(function (j) {
+    return {
+      name: p.name,
+      temp: Math.round(j.current.temperature_2m),
+      code: String(j.current.weather_code),
+      min: Math.round(j.daily.temperature_2m_min[0]),
+      max: Math.round(j.daily.temperature_2m_max[0])
+    };
+  });
+}
+function placeWeather(p) {
+  return wxMetno(p).catch(function () { return wxWttr(p); })
+    .catch(function () { return wxOpenMeteo(p); })
     .catch(function () { return { name: p.name, err: true }; });
 }
 function paintWeather(list) {
@@ -1441,10 +1511,11 @@ function paintWeather(list) {
     if (w.err) {
       return '<div class="wx-chip"><div class="p">' + esc(w.name) + '</div><div class="t">—</div><div class="d">날씨 확인 안 됨</div></div>';
     }
-    var m = wmo(w.code);
+    var m = symInfo(w.code);
+    var range = (w.min !== null && w.min !== undefined && w.max !== null) ? (' <span style="opacity:.8">' + w.min + '~' + w.max + '°</span>') : '';
     return '<div class="wx-chip"><div class="p">' + esc(w.name) + '</div>' +
       '<div class="t">' + m.e + ' ' + w.temp + '°</div>' +
-      '<div class="d">' + m.t + ' <span style="opacity:.8">' + w.min + '~' + w.max + '°</span></div></div>';
+      '<div class="d">' + m.t + range + '</div></div>';
   }).join('');
 }
 function loadWeather() {
@@ -1453,7 +1524,7 @@ function loadWeather() {
   if (mine && mine.at && (Date.now() - mine.at) < 1000 * 3600 * 3) {
     places.push({ id: 'here', name: '내 위치', lat: mine.lat, lon: mine.lon });
   }
-  Promise.all(places.map(fetchPlaceWeather)).then(function (list) {
+  Promise.all(places.map(placeWeather)).then(function (list) {
     wxCache = list; wxAt = Date.now();
     paintWeather(list);
   });
@@ -1682,8 +1753,9 @@ document.addEventListener('DOMContentLoaded', function () {
   boot();
   setInterval(function () {
     if (!DOC || !ME) return;
+    if (Date.now() - wxAt > 1000 * 60 * 30) loadWeather();
     if ($('sheet').classList.contains('hidden') === false) return;
-    renderEta(); renderLive(); renderPlans(); updateSyncLabel();
+    renderEta(); renderLive(); renderPlans(); updateSyncLabel(); rotateCheer();
   }, 30000);
 });
 })();
