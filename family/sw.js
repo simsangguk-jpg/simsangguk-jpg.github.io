@@ -1,9 +1,9 @@
-/* 상국수향지섭지율포털 Service Worker · v3 (2026-11-15 · V2 실시간 위치·채팅·편지·공지·일기·용돈)
+/* 상국수향지섭지율포털 Service Worker · v4 (2026-11-15 · V3 3D 가족 놀이터(play3d.js))
    - /family/ 범위만 담당한다(상국포털 본체 캐시와 섞이지 않게 별도 캐시 이름 사용)
    - 화면(HTML)은 네트워크 우선: 새로 배포한 내용이 앱에서도 바로 뜨도록
    - 그 밖의 정적 파일은 네트워크 우선, 실패 시 캐시
 */
-const SW_VERSION = 'family-portal-v3-2026-11-15';
+const SW_VERSION = 'family-portal-v4-2026-11-15';
 const OFFLINE_HTML = new URL('index.html', self.registration.scope).href;
 
 self.addEventListener('install', () => {
@@ -48,6 +48,14 @@ self.addEventListener('fetch', (event) => {
   }
 
   event.respondWith(
-    fetch(req, { cache: 'no-store' }).catch(() => caches.match(req))
+    fetch(req, { cache: 'no-store' })
+      .then((res) => {
+        if (res && res.ok) {
+          const copy = res.clone();
+          caches.open(SW_VERSION).then((c) => c.put(req, copy)).catch(() => {});
+        }
+        return res;
+      })
+      .catch(() => caches.match(req))
   );
 });

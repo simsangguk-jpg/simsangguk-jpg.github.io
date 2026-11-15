@@ -464,6 +464,34 @@ main{padding:14px 14px 6px}
 .tabbar button{position:relative}
 .tabbar .badge-dot{position:absolute;top:3px;left:50%;margin-left:3px;min-width:15px;height:15px;border-radius:20px;background:var(--coral);color:#fff;font-size:9px;font-weight:800;line-height:15px;text-align:center;padding:0 4px}
 
+/* ---------- 🧸 가족 놀이터(3D) ---------- */
+.pg-top{display:flex;align-items:center;gap:9px;width:100%;text-align:left;background:linear-gradient(100deg,#0E9F6E 0%,#22B884 52%,#5FD8A6 100%);color:#fff;border-radius:16px;padding:11px 13px;margin-bottom:11px;box-shadow:0 8px 20px rgba(14,159,110,.24)}
+.pg-top:active{transform:scale(.994)}
+.pg-top .ico{font-size:20px;line-height:1;flex:none}
+.pg-top .tx{flex:1;min-width:0}
+.pg-top .tx b{display:block;font-size:12.5px;font-weight:800;letter-spacing:-.3px}
+.pg-top .tx small{display:block;font-size:10.5px;opacity:.95;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pg-top .go{flex:none;font-size:10.5px;font-weight:800;background:rgba(255,255,255,.22);border-radius:20px;padding:5px 9px;white-space:nowrap}
+.pg-stage{position:relative;height:min(58vh,420px);min-height:320px;border-radius:18px;overflow:hidden;background:linear-gradient(180deg,#B5E4FF 0%,#DCF3FF 42%,#E6F6FF 62%,#FFF7EA 100%);box-shadow:inset 0 0 0 1px rgba(255,255,255,.55),0 6px 20px rgba(20,24,29,.08);touch-action:none;isolation:isolate}
+.pg-stage canvas{display:block;width:100%;height:100%;touch-action:none}
+.pg-stage.full{position:fixed;inset:0;z-index:78;height:auto;min-height:0;border-radius:0}
+body.pg-lock{overflow:hidden}
+.pg-ov{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.pg-tag{position:absolute;left:0;top:0;padding:2px 8px;border-radius:20px;background:rgba(255,255,255,.94);color:#14181D;font-size:10.5px;font-weight:800;letter-spacing:-.2px;box-shadow:0 2px 7px rgba(20,24,29,.16);white-space:nowrap;will-change:transform;border:1px solid rgba(20,24,29,.05)}
+.pg-bub{position:absolute;left:0;top:0;max-width:126px;padding:5px 9px;border-radius:12px;background:#fff;color:#14181D;font-size:11px;font-weight:700;line-height:1.35;box-shadow:0 4px 12px rgba(20,24,29,.18);text-align:center;word-break:keep-all;will-change:transform,opacity;opacity:0;transition:opacity .16s;border:1px solid #EEF2F4}
+.pg-bub.on{opacity:1}
+.pg-hint{position:absolute;left:8px;right:8px;bottom:7px;text-align:center;font-size:10.5px;font-weight:700;color:#54626E;background:rgba(255,255,255,.74);border-radius:20px;padding:4px 8px;pointer-events:none}
+.pg-loading{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;font-size:12.5px;font-weight:800;color:#3C4450;background:linear-gradient(180deg,#DCF3FF,#FFF7EA)}
+.pg-fallback{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;padding:18px;text-align:center;font-size:12px;line-height:1.6;color:#3C4450;background:linear-gradient(180deg,#E7F8F1,#FFF7EA)}
+.pg-fallback .e{font-size:34px}
+.pg-close{position:absolute;top:9px;right:9px;z-index:5;display:flex;align-items:center;gap:4px;padding:7px 12px;border-radius:20px;background:rgba(20,24,29,.62);color:#fff;font-size:11.5px;font-weight:800;backdrop-filter:blur(3px)}
+.pg-actions{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:10px}
+.pg-actions button{display:flex;align-items:center;justify-content:center;gap:5px;padding:11px 6px;border-radius:13px;font-size:12px;font-weight:800;letter-spacing:-.3px;background:#fff;border:1px solid var(--line);box-shadow:0 2px 8px rgba(20,24,29,.05);color:var(--ink);white-space:nowrap}
+.pg-actions button:active{transform:scale(.97);background:var(--mint-l)}
+.pg-actions button .e{font-size:15px;line-height:1}
+.pg-row{display:flex;gap:7px;margin-top:8px}
+.pg-row .btn{padding:11px;font-size:12.5px;border-radius:13px}
+
 @media (min-width:640px){
   main{max-width:520px;margin:0 auto;padding:16px 0 6px}
   .appbar{max-width:520px;margin:0 auto;border-radius:0 0 22px 22px}
@@ -569,6 +597,12 @@ main{padding:14px 14px 6px}
         <input id="homeChatInput" maxlength="500" placeholder="가족에게 한마디…" autocomplete="off">
         <button type="button" id="homeChatSend">보내기</button>
       </div>
+
+      <button type="button" class="pg-top" id="pgTopBtn">
+        <span class="ico">🧸</span>
+        <span class="tx"><b>우리 가족 놀이터 (3D)</b><small>상국·수향·지섭·지율이 뛰어놀아요 · 잡아서 던져 보세요</small></span>
+        <span class="go">놀러 가기 ›</span>
+      </button>
 
       <div class="card">
         <div class="card-head"><h2>📍 가족 위치</h2><span class="sub" id="locSumAt">–</span></div>
@@ -783,6 +817,43 @@ main{padding:14px 14px 6px}
         </div>
       </div>
     </section>
+
+    <!-- ===== 🧸 가족 놀이터(3D) ===== -->
+    <section id="view-play" class="hidden">
+      <div class="card" style="padding:12px 12px 14px">
+        <div class="card-head" style="margin-bottom:9px">
+          <h2>🧸 우리 가족 놀이터</h2>
+          <span class="sub" id="pgSub">걷고·뛰고·던지면 구르고</span>
+        </div>
+
+        <div class="pg-stage" id="pgStage">
+          <div class="pg-ov" id="pgOverlay"></div>
+          <div class="pg-loading" id="pgLoading"><div class="spinner"></div><div>가족 4명을 3D로 불러오는 중…</div></div>
+          <div class="pg-fallback hidden" id="pgFallback">
+            <span class="e">🧸</span>
+            <b>3D 화면을 켜지 못했어요</b>
+            <span id="pgFallbackMsg">이 브라우저에서는 WebGL을 쓸 수 없어요.</span>
+            <span style="font-size:11px;opacity:.75">휴대폰 브라우저를 최신으로 바꾸거나, 다른 기기에서 열어 주세요.</span>
+          </div>
+          <button type="button" class="pg-close hidden" id="pgFullExit">✕ 닫기</button>
+          <div class="pg-hint" id="pgHint">콕 누르면 웃고 · 끌어서 던지면 날아가 굴러요</div>
+        </div>
+
+        <div class="pg-actions" id="pgActions">
+          <button type="button" data-pg="laugh"><span class="e">😄</span>다 같이 웃기</button>
+          <button type="button" data-pg="flip"><span class="e">🤸</span>재주넘기</button>
+          <button type="button" data-pg="wave"><span class="e">👋</span>손 흔들기</button>
+          <button type="button" data-pg="cry"><span class="e">😢</span>울상 짓기</button>
+          <button type="button" data-pg="dance"><span class="e">🕺</span>다 같이 춤추기</button>
+          <button type="button" data-pg="jump"><span class="e">🎈</span>다 같이 점프</button>
+        </div>
+        <div class="pg-row">
+          <button type="button" class="btn soft" id="pgFull">🔍 크게 보기</button>
+          <button type="button" class="btn ghost" id="pgReset">🔄 처음 자리로</button>
+        </div>
+        <div class="hint">속초 바닷가 가족사진을 보고 만든 4명이에요 — 아빠 안경·남색 패딩, 엄마 긴 머리, 지섭 검정 코트, 지율 아이보리 패딩. 집어 던지면 중력을 받아 날아가 구르고, 아프면 울고, 툴툴 털고 일어나요. 이 화면은 사진·기록과 따로 움직이고 저장되는 자료는 없어요.</div>
+      </div>
+    </section>
   </main>
 
   <nav class="tabbar" id="tabbar">
@@ -790,6 +861,7 @@ main{padding:14px 14px 6px}
     <button type="button" data-view="chat"><span class="ico">💬</span>채팅<span class="badge-dot hidden" id="tabChatDot">0</span></button>
     <button type="button" data-view="photos"><span class="ico">📷</span>사진</button>
     <button type="button" data-view="map"><span class="ico">📍</span>위치</button>
+    <button type="button" data-view="play"><span class="ico">🧸</span>놀이터</button>
     <button type="button" data-view="life"><span class="ico">📋</span>생활<span class="badge-dot hidden" id="tabLifeDot">0</span></button>
   </nav>
 </div>
@@ -3336,7 +3408,7 @@ function lateSheet() {
 }
 function switchView(v) {
   currentView = v;
-  ['home', 'chat', 'photos', 'map', 'life'].forEach(function (name) {
+  ['home', 'chat', 'photos', 'map', 'life', 'play'].forEach(function (name) {
     var el = $('view-' + name);
     if (el) el.classList.toggle('hidden', name !== v);
     var btn = document.querySelector('#tabbar button[data-view="' + name + '"]');
@@ -3352,6 +3424,13 @@ function switchView(v) {
   if (v === 'photos') renderPhotos();
   if (v === 'chat') { renderChat(true); markChatSeen(); }
   if (v === 'life') { paintLife(); renderLetters(); renderNotices(); renderDiary(); renderMoney(); renderReco(); }
+  if (v === 'play') {
+    if (window.FamPlay) window.FamPlay.enter();
+    else ensurePlay(function () { if (window.FamPlay) window.FamPlay.enter(); });
+  } else {
+    if (window.FamPlay) window.FamPlay.leave();
+    if (pgFullOn) setPgFull(false);
+  }
   if (v === 'chat') window.scrollTo({ top: document.body.scrollHeight });
   else window.scrollTo({ top: 0, behavior: 'smooth' });
 }
@@ -3412,6 +3491,54 @@ document.addEventListener('DOMContentLoaded', function () {
     renderLocSummary(); renderHomeChat(); renderChat(); autoShareUI(); renderTabBadges();
   }, 30000);
 });
+/* ============================================================
+   V3 · 🧸 가족 놀이터(3D) 연결
+   - 무거운 3D 도구는 '놀이터'를 처음 열 때만 불러온다(첫 화면 가볍게)
+   - 가족 DB는 읽지도 쓰지도 않는다: 화면 안에서만 노는 장면
+   ============================================================ */
+var pgLoading = false, pgFullOn = false;
+function ensurePlay(cb) {
+  if (window.FamPlay) { cb(); return; }
+  if (pgLoading) return;
+  pgLoading = true;
+  var s = document.createElement('script');
+  s.src = './play3d.js';
+  s.async = true;
+  s.onload = function () { pgLoading = false; if (window.FamPlay) cb(); else toast('놀이터를 불러오지 못했어요'); };
+  s.onerror = function () { pgLoading = false; toast('놀이터를 불러오지 못했어요. 잠시 후 다시 열어 주세요'); };
+  document.head.appendChild(s);
+}
+function setPgFull(on) {
+  pgFullOn = !!on;
+  var st = $('pgStage');
+  if (!st) return;
+  st.classList.toggle('full', pgFullOn);
+  $('pgFullExit').classList.toggle('hidden', !pgFullOn);
+  document.body.classList.toggle('pg-lock', pgFullOn);
+  window.dispatchEvent(new Event('resize'));
+  if (window.FamPlay) setTimeout(function () { window.dispatchEvent(new Event('resize')); }, 60);
+}
+(function wirePlay() {
+  var top = $('pgTopBtn');
+  if (top) top.addEventListener('click', function () { switchView('play'); });
+  var acts = $('pgActions');
+  if (acts) acts.addEventListener('click', function (e) {
+    var b = e.target.closest('[data-pg]');
+    if (!b || !window.FamPlay) return;
+    window.FamPlay.act(b.getAttribute('data-pg'));
+  });
+  var full = $('pgFull');
+  if (full) full.addEventListener('click', function () { setPgFull(true); });
+  var exit = $('pgFullExit');
+  if (exit) exit.addEventListener('click', function () { setPgFull(false); });
+  var reset = $('pgReset');
+  if (reset) reset.addEventListener('click', function () {
+    if (window.FamPlay) window.FamPlay.act('reset');
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && pgFullOn) setPgFull(false);
+  });
+})();
 })();
 </script>
 </body>
