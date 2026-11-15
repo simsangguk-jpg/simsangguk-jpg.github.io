@@ -305,28 +305,40 @@
   }
 
   /* ---------------- mount ---------------- */
+  /* 사진 탭 썸네일마다 ⬇️ 저장 버튼을 붙인다(사진을 새로 올려도 바로) */
+  function decorateGrid() {
+    var grid = $('photoGrid');
+    if (!grid) return;
+    var cells = grid.querySelectorAll('[data-photo]');
+    for (var i = 0; i < cells.length; i++) {
+      var cell = cells[i];
+      if (cell.querySelector('[data-p7dl]')) continue;
+      var id = cell.getAttribute('data-photo');
+      if (!id) continue;
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'p7-cell-dl';
+      b.setAttribute('data-p7dl', id);
+      b.setAttribute('aria-label', '사진 저장');
+      b.textContent = '⬇️';
+      cell.appendChild(b);
+    }
+  }
+  var gridWatch = null;
+  function watchGrid() {
+    var grid = $('photoGrid');
+    if (!grid || gridWatch || !global.MutationObserver) return;
+    gridWatch = new MutationObserver(function () { try { decorateGrid(); } catch (e) {} });
+    gridWatch.observe(grid, { childList: true });
+  }
+
   function render() {
     if (!F || !d() || !me()) return;
     style();
     wire();
     renderRank();
     renderPhotos();
-    /* 사진 탭 썸네일에 저장 버튼 보강 */
-    var grid = $('photoGrid');
-    if (grid) {
-      var cells = grid.querySelectorAll('[data-photo]');
-      for (var i = 0; i < cells.length; i++) {
-        var cell = cells[i];
-        if (cell.querySelector('[data-p7dl]')) continue;
-        var id = cell.getAttribute('data-photo');
-        var b = document.createElement('button');
-        b.type = 'button';
-        b.className = 'p7-cell-dl';
-        b.setAttribute('data-p7dl', id);
-        b.textContent = '⬇️';
-        cell.appendChild(b);
-      }
-    }
+    try { decorateGrid(); watchGrid(); } catch (e) {}
   }
   function mount(FAM) {
     if (ON) return;
