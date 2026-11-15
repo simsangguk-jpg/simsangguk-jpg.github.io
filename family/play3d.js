@@ -405,7 +405,7 @@ function buildWorld(scene) {
 
   /* 구름 */
   P.clouds = [];
-  [[-6.5, 5.4, -13, 9], [5.2, 6.6, -15, 12], [0.5, 7.6, -18, 8]].forEach(function (c) {
+  [[-7.5, 4.6, -13, 6.5], [6.2, 5.4, -15, 7.5], [0.5, 5.9, -18, 5.5]].forEach(function (c) {
     var sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: spriteTex('cloud'), transparent: true, opacity: 0.75, depthWrite: false }));
     sp.position.set(c[0], c[1], c[2]);
     sp.scale.set(c[3], c[3] * 0.55, 1);
@@ -1369,7 +1369,7 @@ function updateHud(dt) {
     var top = c.y + (1.78 * c.S) + c.rig.position.y;
     var pt = project(c.x, top, c.z);
     c.tag.style.transform = 'translate(-50%,-100%) translate(' + pt.x.toFixed(1) + 'px,' + pt.y.toFixed(1) + 'px)';
-    var pb = project(c.x, top + 0.16, c.z);
+    var pb = project(c.x, top + 0.52, c.z);
     c.bubble.style.transform = 'translate(-50%,-100%) translate(' + pb.x.toFixed(1) + 'px,' + pb.y.toFixed(1) + 'px)';
     var dist = Math.hypot(c.x, c.z);
     var vis = 'visible';
