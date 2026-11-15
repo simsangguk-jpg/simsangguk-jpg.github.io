@@ -1463,6 +1463,15 @@
   function ensureHomeCards() {
     var home = $('view-home');
     if (!home) return;
+    /* id 없는 원래 카드에도 안정적 자동 id를 부여해 꾸미기(순서·숨김) 대상에 포함 */
+    Array.prototype.forEach.call(home.children, function (ch) {
+      if (ch.id) return;
+      var h = ch.querySelector ? ch.querySelector('h2, b') : null;
+      var key = h ? h.textContent.trim() : (ch.className || 'el');
+      var hsh = 0;
+      for (var i = 0; i < key.length; i++) hsh = (hsh * 31 + key.charCodeAt(i)) >>> 0;
+      ch.id = 'v9n' + hsh.toString(36);
+    });
     var brief = $('briefCard');
     /* 삽입 앵커를 한 번 고정해 카드 순서가 뒤집히지 않게 한다 */
     var anchor = brief ? brief.nextSibling : null;
