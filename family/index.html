@@ -3349,7 +3349,7 @@ function switchView(v) {
   }
   if (v === 'photos') renderPhotos();
   if (v === 'chat') { renderChat(true); markChatSeen(); }
-  if (v === 'life') openLife(lifeTab);
+  if (v === 'life') { paintLife(); renderLetters(); renderNotices(); renderDiary(); renderMoney(); renderReco(); }
   if (v === 'chat') window.scrollTo({ top: document.body.scrollHeight });
   else window.scrollTo({ top: 0, behavior: 'smooth' });
 }
