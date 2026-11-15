@@ -123,8 +123,11 @@
     /* 오늘 상태 + 내일 상태를 함께 보여 준다 (저녁에는 내일이 더 중요) */
     const tm = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
     const stm = getShiftState(tm);
+    const nextLabel = `${ch.getMonth()+1}/${ch.getDate()}(${days[ch.getDay()]})`;
+    const sameAsTomorrow = (ch.getMonth() === tm.getMonth() && ch.getDate() === tm.getDate());
+    const tail = (sameAsTomorrow && stm.isWork) ? '' : ` · 다음 ${st.isWork ? '휴식' : '출근'} ${nextLabel}`;
     document.getElementById('wShiftSub').textContent =
-      `내일 ${tm.getMonth()+1}/${tm.getDate()}(${days[tm.getDay()]}) ${stm.isWork ? '🔴 근무 ' + stm.dayInBlock + '일차' : '🟢 휴식'} · 다음 ${st.isWork ? '휴식' : '출근'} ${ch.getMonth()+1}/${ch.getDate()}(${days[ch.getDay()]})`;
+      `내일 ${tm.getMonth()+1}/${tm.getDate()}(${days[tm.getDay()]}) ${stm.isWork ? '🔴 근무 ' + stm.dayInBlock + '일차' : '🟢 휴식'}` + tail;
   </script>
 </body>
 </html>
