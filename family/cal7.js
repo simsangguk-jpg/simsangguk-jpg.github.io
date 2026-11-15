@@ -727,11 +727,14 @@
       if (h.lv !== x.imp || (pick === 'auto') !== !!x.auto) changes.push('중요도 ' + IMP[x.imp].e + IMP[x.imp].n + ' → ' + IMP[h.lv].e + IMP[h.lv].n);
       if (!changes.length) { F.closeSheet(); toast('바뀐 내용이 없어요'); return; }
 
+      /* 시트를 연 뒤 다른 기기와 동기화되면 DOC 객체가 새것으로 바뀐다 → 저장 직전에 다시 찾는다 */
+      var rr = rawRec(kind, id);
+      if (!rr) { toast('일정을 찾을 수 없어요 · 새로고침해 주세요'); return; }
       var n = now();
-      r.t = title; r.d = nd; r.time = ntm; r.memo = nmemo; r.owner = nown;
-      r.imp = h.lv; r.impAuto = pick === 'auto' ? 1 : 0; r.impWhy = h.why;
-      r.at = n;
-      pushHist(r, '수정', changes.join(' · '), n);
+      rr.t = title; rr.d = nd; rr.time = ntm; rr.memo = nmemo; rr.owner = nown;
+      rr.imp = h.lv; rr.impAuto = pick === 'auto' ? 1 : 0; rr.impWhy = h.why;
+      rr.at = n;
+      pushHist(rr, '수정', changes.join(' · '), n);
       save();
       F.closeSheet();
       if (nd) { selDay = nd; var mm2 = nd.slice(0, 7); if (mm2 !== viewMonth) { viewMonth = mm2; lsSet(LS_MONTH, mm2); } lsSet(LS_SEL, selDay); }
