@@ -16,7 +16,7 @@
   var F = null, ON = false;
   var LS_MONTH = 'sgftest7_month_v9', LS_SEL = 'sgftest7_sel_v9', LS_MS = 'sgftest7_ms_v9';
   var viewMonth = '', selDay = '', celebrate = null, pendingDel = '';
-  var histOpen = {}, formSeq = 0;
+  var histOpen = {};
 
   /* ---------------- 중요도·상태 정의 ---------------- */
   var IMP = {
@@ -625,9 +625,8 @@
   }
   function val(id) { var e = $(id); return e ? e.value : ''; }
 
-  function openAdd(day) {
-    var seq = ++formSeq;
-    var date = day || selDay || today();
+  function openAdd(day, noDate) {
+    var date = noDate ? '' : (day || selDay || today());
     F.openSheet(
       '<h3>📅 새 일정·할일 추가</h3>' +
       '<div class="sdesc">가족 누구나 쓸 수 있어요. 제목을 적으면 중요도를 자동으로 판단해 드려요. 날짜를 비우면 ‘날짜 없는 할일’이 됩니다.</div>' +
@@ -819,7 +818,7 @@
         lsSet(LS_SEL, selDay); lsSet(LS_MONTH, viewMonth); render(); return;
       }
       if (e.target.closest('[data-c7add]')) { openAdd(selDay || today()); return; }
-      if (e.target.closest('[data-c7addtodo]')) { openAdd(''); return; }
+      if (e.target.closest('[data-c7addtodo]')) { openAdd('', true); return; }
       if (e.target.closest('[data-c7celx]')) { celebrate = null; render(); return; }
     });
     box.addEventListener('keydown', function (e) {
