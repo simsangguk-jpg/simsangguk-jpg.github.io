@@ -119,13 +119,15 @@
     var yk = todayYmd();
     var ov = v.dailyQuote[yk];
     if (ov && ov.quote && ov.quote.text) return ov.quote;
-    return pickSeeded(QUOTES, 1);
+    var x = pickSeeded(QUOTES, 1);
+    return { text: x.t || '', by: x.by || '', src: x.src || '' };
   }
   function famSayOfToday(v) {
     var yk = todayYmd();
     var ov = v.dailyQuote[yk];
     if (ov && ov.fam && ov.fam.text) return ov.fam;
-    return pickSeeded(FAM_SAYS, 2);
+    var x = pickSeeded(FAM_SAYS, 2);
+    return { text: x.t || '', from: x.from || '' };
   }
   function renderQuote() {
     var v = V9(), card = $('v9QuoteCard');
@@ -1441,13 +1443,15 @@
     var home = $('view-home');
     if (!home) return;
     var brief = $('briefCard');
+    /* 삽입 앵커를 한 번 고정해 카드 순서가 뒤집히지 않게 한다 */
+    var anchor = brief ? brief.nextSibling : null;
     var mk = function (id, cls, html) {
       if ($(id)) return;
       var div = document.createElement('div');
       div.id = id;
       div.className = cls || 'card';
       div.innerHTML = html;
-      home.insertBefore(div, brief ? brief.nextSibling : home.firstChild.nextSibling);
+      home.insertBefore(div, anchor);
     };
     /* 명언: 날씨 카드(overcast) 인근 → briefCard 위에 둔다 */
     /* 기분 보드: 홈 가장 위(꾸미기 버튼 바로 아래) 고정 */
@@ -1457,8 +1461,9 @@
       mo.className = 'card';
       mo.style.cssText = 'border:1.5px solid #F6D9E4;background:linear-gradient(180deg,#FFF5F8,#FFFFFF)';
       mo.innerHTML = '<div class="card-head"><h2>🎭 지금 우리 가족 기분</h2><span class="sub">실시간 · 원터치 공유</span></div><div id="v9MoodBody"></div>';
-      var anchor = $('v9QuoteCard') || brief;
-      home.insertBefore(mo, anchor || home.firstChild);
+      /* 가장 위쪽 고정: 달력 배너 위(꾸미기 버튼 바로 아래) */
+      var top = $('famCalBanner') || home.firstChild;
+      home.insertBefore(mo, top);
     }
     if (!$('v9QuoteCard')) {
       var q = document.createElement('div');
