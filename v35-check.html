@@ -16,6 +16,7 @@
   var q = new URLSearchParams(location.search);
   var mode = q.get('w') || 'phone';
   var lat = q.get('lat'), lon = q.get('lon');
+  var off = parseInt(q.get('off') || '150', 10);
   var host = document.getElementById('host');
   var fr = document.getElementById('fr');
   if (mode === 'wide') host.className = 'wide';
@@ -31,7 +32,7 @@
       }
       var el = d.getElementById('sgTravelMapCard');
       if (el) {
-        var top = el.getBoundingClientRect().top + W.scrollY - 8;
+        var top = el.getBoundingClientRect().top + W.scrollY - off;
         W.scrollTo(0, Math.max(0, top));
       }
     } catch (e) {}
