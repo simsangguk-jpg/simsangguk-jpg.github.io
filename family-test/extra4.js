@@ -58,7 +58,7 @@
     var out = [];
     Object.keys(node || {}).forEach(function (k) {
       var it = node[k];
-      if (it && typeof it === 'object' && !it.d) { it._id = k; out.push(it); }
+      if (it && typeof it === 'object' && !it.del) { it._id = k; out.push(it); }
     });
     return out;
   }
@@ -66,7 +66,7 @@
   function drop(node, id) {
     var it = node && node[id];
     if (!it) return;
-    it.d = 1; it.at = now();
+    it.del = 1; it.at = now();
   }
   function dv(x) { return x < 10 ? '0' + x : '' + x; }
 
@@ -640,7 +640,7 @@
     paint(box, sig, function () {
       if (!shown.length) return '<div class="v4-empty">' + (todoTab === 'done' ? '아직 완료한 일이 없어요' : '남은 할일이 없어요! 🎉') + '</div>';
       return shown.map(function (x) {
-        return '<div class="v4-row" data-todo="' + x._id + '"><button type="button" class="v4-chk ' + (x.done ? 'on' : '') + '" data-tdel="0" aria-label="완료 체크">✓</button>' +
+        return '<div class="v4-row" data-todo="' + x._id + '"><button type="button" class="v4-chk ' + (x.done ? 'on' : '') + '" data-tog="1" aria-label="완료 체크">✓</button>' +
           '<span class="tx"><b style="' + (x.done ? 'text-decoration:line-through;color:#9AA4AF' : '') + '">' + esc(x.t) + '</b><small>' + memEmoji(x.by) + ' ' + esc(memName(x.by)) + ' · ' + F.ago(x.at) + (x.done && x.doneBy ? ' · ' + memName(x.doneBy) + ' 완료' : '') + '</small></span>' +
           (x.done ? '<span class="v4-tag">완료</span>' : '') +
           '<button type="button" class="v4-x" data-tdel="1" aria-label="삭제">✕</button></div>';

@@ -619,7 +619,7 @@
     var gl = $('g4GiftList'), gs = $('g4GiftSub');
     if (gl) {
       var es = [];
-      Object.keys(g.gift).forEach(function (k) { var v = g.gift[k]; if (v && !v.d && v.to === me().id) { v._id = k; es.push(v); } });
+      Object.keys(g.gift).forEach(function (k) { var v = g.gift[k]; if (v && !v.del && v.to === me().id) { v._id = k; es.push(v); } });
       es.sort(function (a, b) { return (b.at || 0) - (a.at || 0); });
       if (gs) gs.textContent = es.length + '개';
       gl.innerHTML = es.length ? es.slice(0, 10).map(function (v) {
@@ -690,7 +690,7 @@
     if (!v || v.to !== me().id) return;
     var c = myChar(), it = itemById(v.item);
     if (it) { c.items[v.item] = (c.items[v.item] || 0) + 1; c.at = now(); }
-    v.d = 1; v.at = now();
+    v.del = 1; v.at = now();
     save(); renderShop(); toast('선물을 받았어요: ' + (it ? it.n : '선물'));
   }
   function wireShop() {
