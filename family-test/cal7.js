@@ -49,6 +49,12 @@
   function esc(s) { return F ? F.esc(s) : String(s == null ? '' : s); }
   function now() { return Date.now(); }
   function pad(n) { return n < 10 ? '0' + n : '' + n; }
+  /* 받침에 따라 '로' / '으로' */
+  function roWord(w) {
+    var c = String(w || '').charCodeAt(String(w || '').length - 1);
+    if (c < 0xAC00 || c > 0xD7A3) return '로';
+    return ((c - 0xAC00) % 28 !== 0) ? '으로' : '로';
+  }
   function today() { return F ? F.todayYmd() : ''; }
   function mid() { return me() ? me().id : ''; }
   function meName() { return me() ? me().name : '가족'; }
@@ -581,7 +587,7 @@
     } else if (cur === 'done') {
       toast('↩️ 완료를 해제했어요 · 가족 경험치 -' + IMP[im].xp + ' XP (총 ' + xp.total + ' XP)');
     } else {
-      toast('상태를 ' + ST[st].n + '(으)로 바꿨어요');
+      toast('상태를 ' + ST[st].n + roWord(ST[st].n) + ' 바꿨어요');
     }
     if (st === 'done' && hit && celebrate && celebrate.xp === hit) {
       toast('🎊 가족 경험치 ' + celebrate.xp + '점 돌파! ' + celebrate.t + ' 어때요?');
