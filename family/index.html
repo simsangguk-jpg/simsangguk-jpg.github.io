@@ -1124,7 +1124,9 @@ function mergeLikes(a, b) {
   return out;
 }
 function mergeRecord(a, b) {
-  var newer = recAt(b) >= recAt(a) ? b : a;
+  /* 같은 시각(at)이면 이 기기(로컬)의 값을 남긴다 — 방금 끈 '자동 공유' 같은 표시가
+     같은 시각의 원격 값에 덮여 되살아나는 것을 막기 위해서다. */
+  var newer = recAt(b) > recAt(a) ? b : a;
   var older = (newer === b) ? a : b;
   var out = {}, k;
   for (k in older) out[k] = older[k];
