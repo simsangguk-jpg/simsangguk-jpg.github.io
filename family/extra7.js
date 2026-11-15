@@ -275,26 +275,29 @@
     }, true);
     /* 응원 보내기: 누적 기록도 함께 남긴다 */
     var btn = $('btnCheer');
-    if (btn) {
-      btn.addEventListener('click', function () { afterCheer($('cheerInput') ? $('cheerInput').value : ''); });
-    }
+    if (btn) btn.addEventListener('click', function () { afterCheer(); });
   }
-  /* index.html 이 응원을 저장한 뒤(같은 클릭) 호출된다 — 조금 뒤 기록을 남긴다 */
-  function afterCheer(text) {
-    var t = String(text || '').trim();
-    if (!t) return;
+  /* index.html 이 응원을 저장한 뒤(같은 클릭) 불린다.
+     입력칸은 본체가 먼저 비우므로 값을 읽지 않고 DOC.cheer 에 저장된 내용을 그대로 기록한다. */
+  function afterCheer() {
     setTimeout(function () {
       var D = d();
       if (!D || !me()) return;
       var c = D.cheer && D.cheer[me().id];
-      if (!c || c.text !== t) return;              /* 저장 실패/빈 값이면 아무 것도 안 함 */
+      if (!c || !c.text || c.d) return;            /* 저장되지 않았으면 아무 것도 안 함 */
       if (!D.v7 || typeof D.v7 !== 'object') D.v7 = {};
       if (!D.v7.chr || typeof D.v7.chr !== 'object') D.v7.chr = {};
+      var at = c.at || now(), mine = me().id, dup = false;
+      Object.keys(D.v7.chr).forEach(function (k) {
+        var e = D.v7.chr[k];
+        if (e && e.by === mine && (e.at || 0) === at) dup = true;
+      });
+      if (dup) { renderRank(); return; }
       var key = 'c' + now().toString(36) + Math.random().toString(36).slice(2, 4);
-      D.v7.chr[key] = { by: me().id, text: t, at: c.at || now() };
+      D.v7.chr[key] = { by: mine, text: c.text, at: at };
       save();
       renderRank();
-    }, 60);
+    }, 80);
   }
 
   /* ---------------- mount ---------------- */
