@@ -785,15 +785,15 @@ function pickBehavior(c) {
   var near = others.filter(function (o) { return Math.hypot(o.x - c.x, o.z - c.z) < 2.4; });
   if (r < 0.34) {
     /* 걷기 */
-    var a = rnd(0, Math.PI * 2), rad = rnd(0.6, 3.3);
-    c.tx = clamp(c.x + Math.cos(a) * rad, -3.4, 3.4);
-    c.tz = clamp(c.z + Math.sin(a) * rad, -3.0, 3.0);
+    var a = rnd(0, Math.PI * 2), rad = rnd(0.6, 2.4);
+    c.tx = clamp(c.x + Math.cos(a) * rad, -2.5, 2.5);
+    c.tz = clamp(c.z + Math.sin(a) * rad, -2.2, 2.2);
     setState(c, 'walk');
     setFace(c, 'normal');
   } else if (r < 0.46) {
-    var a2 = rnd(0, Math.PI * 2), rad2 = rnd(1.6, 3.6);
-    c.tx = clamp(c.x + Math.cos(a2) * rad2, -3.6, 3.6);
-    c.tz = clamp(c.z + Math.sin(a2) * rad2, -3.2, 3.2);
+    var a2 = rnd(0, Math.PI * 2), rad2 = rnd(1.4, 2.6);
+    c.tx = clamp(c.x + Math.cos(a2) * rad2, -2.6, 2.6);
+    c.tz = clamp(c.z + Math.sin(a2) * rad2, -2.3, 2.3);
     setState(c, 'run');
     setFace(c, 'smile');
   } else if (r < 0.56 && near.length) {
@@ -1046,7 +1046,7 @@ function poseChar(c, dt) {
 }
 
 /* ---------------- 비행/구르기 물리 ---------------- */
-var GRAV = 17, WALL_R = 4.95, GROUND_R = 3.9;
+var GRAV = 17, WALL_R = 4.6, GROUND_R = 2.85;
 
 function updateFlight(c, dt) {
   var rr, nx, nz, dot;
@@ -1343,11 +1343,13 @@ function resize() {
   P.renderer.setSize(w, h, false);
   var aspect = w / Math.max(1, h);
   var tanV = Math.tan(THREE.MathUtils.degToRad(P.camera.fov / 2));
-  var z = P.camOverride || clamp(4.55 / (tanV * aspect), 8.7, 15.5);
+  var z = P.camOverride || clamp(3.35 / (tanV * aspect), 6.2, 14.5);
+  P.baseZ = z;
   P.fitZ = z;
+  if (!P.zoomZ) P.zoomZ = z;
   P.camera.aspect = aspect;
-  P.camera.position.set(P.camX || 0, 1.5 + z * 0.30, z);
-  P.camera.lookAt(0, 0.95, 0);
+  P.camera.position.set(P.camX || 0, 1.15 + z * 0.28, z);
+  P.camera.lookAt(P.lookX || 0, 0.92, 0);
   P.camera.updateProjectionMatrix();
 }
 
@@ -1384,12 +1386,26 @@ function frame(now) {
   if (dt <= 0) return;
   P.t += dt;
 
-  /* 카메라 살짝 따라가기 */
-  var cx = P.ptr.nx * 0.5, cy = P.ptr.ny * 0.22;
-  P.camX = damp(P.camX || 0, cx, 2.2, dt);
+  /* 카메라: 가족들 가운데를 부드럽게 따라가고, 던져진 가족도 화면 안에 담는다 */
+  var cxs = 0, nC = P.chars.length;
+  for (var ci0 = 0; ci0 < nC; ci0++) cxs += P.chars[ci0].x;
+  cxs = nC ? cxs / nC : 0;
+  var lx = clamp(cxs, -1.8, 1.8);
+  P.lookX = damp(P.lookX || 0, lx, 1.6, dt);
+  P.camX = damp(P.camX || 0, lx + P.ptr.nx * 0.25, 1.6, dt);
+
+  var tanV = Math.tan(THREE.MathUtils.degToRad(P.camera.fov / 2));
+  var asp = P.W / Math.max(1, P.H);
+  var zNeed = P.baseZ || 6.2;
+  for (var ci1 = 0; ci1 < nC; ci1++) {
+    var cc = P.chars[ci1];
+    zNeed = Math.max(zNeed, cc.z + (Math.abs(cc.x - P.camX) + 0.75) / (tanV * asp) + 0.45);
+  }
+  P.zoomZ = damp(P.zoomZ || zNeed, clamp(zNeed, P.baseZ || 6.2, 18), 2.2, dt);
+  P.camera.position.z = P.zoomZ;
   P.camera.position.x = P.camX;
-  P.camera.position.y = damp(P.camera.position.y, (1.5 + (P.fitZ || 9) * 0.30) - cy, 2.2, dt);
-  P.camera.lookAt(0, 0.95, 0);
+  P.camera.position.y = damp(P.camera.position.y, (1.15 + P.zoomZ * 0.28) - P.ptr.ny * 0.18, 2.0, dt);
+  P.camera.lookAt(P.lookX, 0.92, 0);
 
   /* 배경 소품 */
   if (P.foam) {
@@ -1580,8 +1596,6 @@ function init() {
       }
       buildScene();
       P.phase = 'ready';
-      var hint = document.getElementById('pgHint');
-      if (hint) hint.textContent = '';
       if (P.active) startLoop();
     } catch (ex) {
       fail('이 브라우저에서는 3D 화면을 켤 수 없어요. (WebGL)');
