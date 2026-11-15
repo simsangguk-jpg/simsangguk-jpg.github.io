@@ -498,7 +498,7 @@
     box.__sig = sig;
 
     var html = '<div class="c7-hd"><h2>📅 우리가족 달력</h2><span class="lb">가족 누구나 작성 · 편집</span></div>' +
-      xpHtml(x) + celHtml() + advHtml(x) + calHtml(items) +
+      xpHtml(x) + celHtml() + (celebrate ? '' : advHtml(x)) + calHtml(items) +
       '<div class="c7-dayh"><b>' + dayLabel + '</b><span class="n">' + list.length + '건</span>' +
       '<button type="button" class="c7-add" data-c7add="1">＋ 일정 추가</button></div>';
 
@@ -525,6 +525,22 @@
     if (box.innerHTML !== html) box.innerHTML = html;
   }
 
+  /* 예전(V4) 기록에는 작성자·작성시각 필드가 없다.
+     손대는 순간 확정해 두어야 상태를 바꿀 때마다 '작성 시각'이 지금으로 흔들리지 않는다. */
+  function ensureMeta(r) {
+    if (!r.createdAt) r.createdAt = r.at || now();
+    if (!r.createdBy) r.createdBy = r.by || '';
+    if (!r.st) { r.st = r.done ? 'done' : 'plan'; r.stAt = r.at || now(); }
+    if (!IMP[r.imp]) {
+      var j = judge(r.t, r.memo, r.d || '');
+      r.imp = j.level; r.impAuto = 1; r.impWhy = j.why;
+    }
+    if (!Array.isArray(r.history) || !r.history.length) {
+      r.history = [{ by: r.createdBy, name: nameOf(r.createdBy) || '가족', action: '작성',
+        detail: '가족 달력에 처음 등록', at: r.createdAt }];
+    }
+  }
+
   /* ---------------- 이력 쓰기 ---------------- */
   function pushHist(r, action, detail, at) {
     if (!Array.isArray(r.history)) r.history = [];
@@ -540,10 +556,10 @@
   function setStatus(kind, id, st) {
     var r = rawRec(kind, id);
     if (!r) return;
+    ensureMeta(r);
     var cur = prep(r, id, kind).st;
     if (cur === st) return;
     var n = now();
-    var wasXp = cur === 'done' ? IMP[prep(r, id, kind).imp].xp : 0;
     var im = prep(r, id, kind).imp;
 
     r.st = st;
@@ -558,9 +574,9 @@
     syncMilestones(xp.total, true);
     render();
     if (st === 'done') {
-      toast('✅ 완료! 가족 경험치 +' + im.xp + ' XP (총 ' + xp.total + ' XP)');
+      toast('✅ 완료! 가족 경험치 +' + IMP[im].xp + ' XP (총 ' + xp.total + ' XP)');
     } else if (cur === 'done') {
-      toast('↩️ 완료를 해제했어요 · 가족 경험치 -' + im.xp + ' XP (총 ' + xp.total + ' XP)');
+      toast('↩️ 완료를 해제했어요 · 가족 경험치 -' + IMP[im].xp + ' XP (총 ' + xp.total + ' XP)');
     } else {
       toast('상태를 ' + ST[st].n + '(으)로 바꿨어요');
     }
@@ -571,6 +587,7 @@
   function removeItem(kind, id) {
     var r = rawRec(kind, id);
     if (!r) return;
+    ensureMeta(r);
     var n = now();
     r.del = 1; r.at = n; r.deletedBy = mid();
     pushHist(r, '삭제', '가족 달력에서 지움', n);
@@ -730,6 +747,7 @@
       /* 시트를 연 뒤 다른 기기와 동기화되면 DOC 객체가 새것으로 바뀐다 → 저장 직전에 다시 찾는다 */
       var rr = rawRec(kind, id);
       if (!rr) { toast('일정을 찾을 수 없어요 · 새로고침해 주세요'); return; }
+      ensureMeta(rr);
       var n = now();
       rr.t = title; rr.d = nd; rr.time = ntm; rr.memo = nmemo; rr.owner = nown;
       rr.imp = h.lv; rr.impAuto = pick === 'auto' ? 1 : 0; rr.impWhy = h.why;
