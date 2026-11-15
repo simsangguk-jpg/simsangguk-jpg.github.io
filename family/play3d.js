@@ -1352,8 +1352,8 @@ function resize() {
   P.fitZ = z;
   if (!P.zoomZ) P.zoomZ = z;
   P.camera.aspect = aspect;
-  P.camera.position.set(P.camX || 0, 0.95 + z * 0.21, z);
-  P.camera.lookAt(P.lookX || 0, 0.98, 0);
+  P.camera.position.set(P.camX || 0, 0.95 + z * 0.24, z);
+  P.camera.lookAt(P.lookX || 0, 1.18, 0);
   P.camera.updateProjectionMatrix();
 }
 
@@ -1408,8 +1408,8 @@ function frame(now) {
   P.zoomZ = damp(P.zoomZ || zNeed, clamp(zNeed, P.baseZ || 5.9, 18), 2.2, dt);
   P.camera.position.z = P.zoomZ;
   P.camera.position.x = P.camX;
-  P.camera.position.y = damp(P.camera.position.y, (0.95 + P.zoomZ * 0.21) - P.ptr.ny * 0.18, 2.0, dt);
-  P.camera.lookAt(P.lookX, 0.98, 0);
+  P.camera.position.y = damp(P.camera.position.y, (0.95 + P.zoomZ * 0.24) - P.ptr.ny * 0.18, 2.0, dt);
+  P.camera.lookAt(P.lookX, 1.18, 0);
 
   /* 배경 소품 */
   if (P.foam) {
