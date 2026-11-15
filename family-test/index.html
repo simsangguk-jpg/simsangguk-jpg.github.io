@@ -895,10 +895,10 @@ body.pg-lock{overflow:hidden}
 <input type="file" id="filePicker" accept="image/*" multiple class="hidden">
 <div class="sheet hidden" id="sheet"><div class="sheet-inner" id="sheetInner"></div></div>
 <div class="toast" id="toast"></div>
-<script src="./extra4.js?v=t742106"></script>
-<script src="./game4.js?v=t742106"></script>
-<script src="./mind5.js?v=t742106"></script>
-<script src="./cal7.js?v=t742106"></script>
+<script src="./extra4.js?v=t742225"></script>
+<script src="./game4.js?v=t742225"></script>
+<script src="./mind5.js?v=t742225"></script>
+<script src="./cal7.js?v=t742225"></script>
 <script>
 (function () {
 'use strict';
@@ -3811,7 +3811,7 @@ function ensurePlay(cb) {
   if (pgLoading) return;
   pgLoading = true;
   var s = document.createElement('script');
-  s.src = './play3d.js?v=t742106';
+  s.src = './play3d.js?v=t742225';
   s.async = true;
   s.onload = function () { pgLoading = false; if (window.FamPlay) cb(); else toast('놀이터를 불러오지 못했어요'); };
   s.onerror = function () { pgLoading = false; toast('놀이터를 불러오지 못했어요. 잠시 후 다시 열어 주세요'); };

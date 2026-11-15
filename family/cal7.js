@@ -208,6 +208,7 @@
   }
   /* 새로 넘은 단계가 있으면 축하 카드를 띄운다 */
   function syncMilestones(xp, notify) {
+    if (celebrate && celebrate.xp > xp) celebrate = null;   /* 완료를 되돌려 단계 아래로 내려가면 축하 카드도 내린다 */
     var have = achievedMs(xp).map(function (m) { return m.xp; });
     var raw = lsGet(LS_MS), seen = null;
     try { seen = raw ? JSON.parse(raw) : null; } catch (e) { seen = null; }
@@ -218,6 +219,7 @@
     if (!notify) return;
     var top = Math.max.apply(null, fresh);
     MS.forEach(function (m) { if (m.xp === top) celebrate = m; });
+    return top;
   }
 
   /* ---------------- 스타일 ---------------- */
@@ -571,7 +573,8 @@
     save();
 
     var xp = xpInfo();
-    syncMilestones(xp.total, true);
+    var prevCel = celebrate ? celebrate.xp : 0;
+    var hit = syncMilestones(xp.total, true);   /* 이번에 새로 넘은 단계 XP (없으면 undefined) */
     render();
     if (st === 'done') {
       toast('✅ 완료! 가족 경험치 +' + IMP[im].xp + ' XP (총 ' + xp.total + ' XP)');
@@ -580,7 +583,9 @@
     } else {
       toast('상태를 ' + ST[st].n + '(으)로 바꿨어요');
     }
-    if (celebrate) toast('🎊 가족 경험치 ' + celebrate.xp + '점 돌파! ' + celebrate.t + ' 어때요?');
+    if (st === 'done' && hit && celebrate && celebrate.xp === hit) {
+      toast('🎊 가족 경험치 ' + celebrate.xp + '점 돌파! ' + celebrate.t + ' 어때요?');
+    }
   }
 
   /* ---------------- 삭제 ---------------- */
