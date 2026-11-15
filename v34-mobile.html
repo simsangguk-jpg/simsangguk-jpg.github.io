@@ -22,7 +22,7 @@
           var d = fr.contentWindow.document;
           var el = d.getElementById(target);
           if (el) {
-            var top = el.getBoundingClientRect().top + fr.contentWindow.scrollY - 8;
+            var top = el.getBoundingClientRect().top + fr.contentWindow.scrollY - 152;
             fr.contentWindow.scrollTo(0, Math.max(0, top));
             clearInterval(timer);
             return;
