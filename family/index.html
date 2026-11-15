@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=5">
 <meta name="theme-color" content="#0E9F6E">
 <meta name="robots" content="noindex, nofollow, noarchive">
-<title>상국수향지섭지율포털</title>
+<title>상국수향지섭지율포털 V9</title>
 <meta name="description" content="상국·수향·지섭·지율 우리 가족 전용 공간">
 <link rel="manifest" href="./manifest.webmanifest">
 <link rel="icon" href="./icon-192.png">
@@ -914,6 +914,10 @@ body.pg-lock{overflow:hidden}
 <script src="./cal7.js?v=7a"></script>
 <script src="./extra7.js?v=7a"></script>
 <script src="./home8.js?v=8a"></script>
+<script src="./tama3d.js?v=9a"></script>
+<script src="./minicar3d.js?v=9a"></script>
+<script src="./life9.js?v=9a"></script>
+<script src="./home9.js?v=9a"></script>
 <script>
 (function () {
 'use strict';
@@ -1638,7 +1642,9 @@ function renderReco() {
     return '<div class="reco-item"><div class="rh"><div class="rname">' + esc(r.name) + '</div><div class="stars">' + stars(r.stars || 0) + '</div></div>' +
       (r.note ? '<div class="note">' + esc(r.note) + '</div>' : '') +
       '<div class="rf"><span class="pill">' + esc(m.emoji + ' ' + m.name) + '</span>' +
-      (r.map ? '<a class="pill map" href="' + esc(r.map) + '" target="_blank" rel="noopener">지도 열기</a>' : '<a class="pill map" href="https://map.naver.com/p/search/' + encodeURIComponent(r.name) + '" target="_blank" rel="noopener">지도 열기</a>') +
+      (r.map ? '<a class="pill map" href="' + esc(r.map) + '" target="_blank" rel="noopener">지도 열기</a>' :
+        '<a class="pill map" href="https://map.naver.com/p/search/' + encodeURIComponent(r.name) + '" target="_blank" rel="noopener">네이버지도</a>' +
+        '<a class="pill map" style="background:#F0F5FF;color:#2F6FD0" href="https://map.kakao.com/link/search/' + encodeURIComponent(r.name) + '" target="_blank" rel="noopener">카카오맵</a>') +
       '<button type="button" class="love' + (mineOn ? '' : ' off') + '" data-love="' + esc(recoCat) + ':' + esc(k) + '">' + (mineOn ? '❤️' : '🤍') + ' 가고 싶어요 <b>' + cnt + '</b></button>' +
       (ME && r.by === ME.id ? '<button type="button" data-reco-del="' + esc(recoCat) + ':' + esc(k) + '" style="color:#B8C1CA;font-size:15px">✕</button>' : '') +
       '</div></div>';

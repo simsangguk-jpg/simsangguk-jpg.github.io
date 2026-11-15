@@ -284,13 +284,20 @@
       '.c7-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}',
       '.c7-grid .wd{text-align:center;font-size:10px;font-weight:900;color:#9AA4AF;padding:2px 0 4px}',
       '.c7-grid .wd.sun{color:#D9534F}.c7-grid .wd.sat{color:#2F6FD0}',
-      '.c7-grid .cd{position:relative;aspect-ratio:1/1;border-radius:11px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:12.5px;font-weight:800;background:#FAFBFB;border:1.5px solid transparent;color:#3C4450;padding:2px 0}',
+      '.c7-grid .cd{position:relative;aspect-ratio:1/1;border-radius:11px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:1px;font-size:12.5px;font-weight:800;background:#FAFBFB;border:1.5px solid transparent;color:#3C4450;padding:2px 1px;overflow:hidden}',
       '.c7-grid .cd.emp{background:transparent;border-color:transparent}',
       '.c7-grid .cd.sun{color:#D9534F}.c7-grid .cd.sat{color:#2F6FD0}',
       '.c7-grid .cd.today{border-color:#12B886;background:#F0FBF6;color:#0A7D56;font-weight:900}',
       '.c7-grid .cd.on{background:#0E9F6E;border-color:#0E9F6E;color:#fff;font-weight:900}',
       '.c7-grid .cd.on .dots i{box-shadow:0 0 0 1.5px rgba(255,255,255,.9)}',
       '.c7-grid .cd .dots{display:flex;gap:2px;height:5px;align-items:center}',
+      /* V9: 점 대신 일정 제목 텍스트를 칸 안에 바로 표시 */
+      '.c7-grid .cd .tt{display:block;width:100%;font-size:8.5px;font-weight:800;line-height:1.2;letter-spacing:-.3px;color:#4A5560;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:center;word-break:keep-all}',
+      '.c7-grid .cd .tt.hi{color:#D9534F}',
+      '.c7-grid .cd .tt.mid{color:#B8860B}',
+      '.c7-grid .cd .tt.low{color:#0A7D56}',
+      '.c7-grid .cd .tt.done{opacity:.55;text-decoration:line-through}',
+      '.c7-grid .cd.on .tt{color:#fff}',
       '.c7-grid .cd .dots i{width:5px;height:5px;border-radius:50%;background:#E5484D}',
       '.c7-grid .cd .dots i.mid{background:#E8890C}.c7-grid .cd .dots i.low{background:#0E9F6E}',
       '.c7-grid .cd .dots i.dn{opacity:.28}',
@@ -400,10 +407,24 @@
   function calHtml(items) {
     var p = viewMonth.split('-'), y = Number(p[0]), m = Number(p[1]);
     var counts = {};
+    var titles = {};
     items.forEach(function (x) {
       if (!x.d || x.d.slice(0, 7) !== viewMonth) return;
       var c = counts[x.d] || (counts[x.d] = { high: 0, mid: 0, low: 0, n: 0 });
       c[x.imp]++; c.n++;
+      if (!titles[x.d]) titles[x.d] = [];
+      titles[x.d].push(x);
+    });
+    /* 제목 우선순위: 중요도(높음>보통>낮음) → 시간 → 작성 시각 */
+    var IMP_ORD = { high: 0, mid: 1, low: 2 };
+    Object.keys(titles).forEach(function (ds) {
+      titles[ds].sort(function (a, b) {
+        var ia = IMP_ORD[a.imp] != null ? IMP_ORD[a.imp] : 3, ib = IMP_ORD[b.imp] != null ? IMP_ORD[b.imp] : 3;
+        if (ia !== ib) return ia - ib;
+        var ta = (a.time || ''), tb = (b.time || '');
+        if (ta !== tb) return ta < tb ? -1 : 1;
+        return (a.createdAt || a.at || 0) - (b.createdAt || b.at || 0);
+      });
     });
     var first = new Date(y, m - 1, 1), start = first.getDay(), last = new Date(y, m, 0).getDate();
     var t = today();
@@ -420,17 +441,15 @@
       var wdi = (start + day - 1) % 7;
       cls += (wdi === 0 ? ' sun' : (wdi === 6 ? ' sat' : ''));
       var dots = '';
-      var parts = [];
-      ['high', 'mid', 'low'].forEach(function (k) {
-        for (var q = 0; q < Math.min(3, c[k]); q++) parts.push('<i class="' + (k === 'high' ? '' : k) + '"></i>');
-      });
-      if (c.n > 3) {
-        /* 점이 3개를 넘으면 중요도 순으로 3개만 */
-        parts = parts.slice(0, 3);
-      }
-      if (parts.length) dots = '<span class="dots">' + parts.join('') + '</span>';
-      h += '<div class="' + cls + '" data-c7day="' + ds + '" role="button" tabindex="0" aria-label="' + m + '월 ' + day + '일 ' + wd[wdi] + '요일' + (c.n ? ' · 일정 ' + c.n + '건' : '') + '">' + day + dots +
-        (c.n > 3 ? '<span class="more">' + c.n + '</span>' : '') + '</div>';
+      /* V9: 점(•) 대신 그날 일정 제목을 칸 안에 바로 보여준다(중요도 순 최대 2개) */
+      var tl = (titles[ds] || []).slice(0, 2);
+      var ttHtml = tl.map(function (x) {
+        var t2 = String(x.t || '').trim();
+        if (!t2) return '';
+        return '<span class="tt ' + (x.imp || 'mid') + (x.st === 'done' ? ' done' : '') + '">' + esc((x.time ? x.time + ' ' : '') + t2) + '</span>';
+      }).join('');
+      h += '<div class="' + cls + '" data-c7day="' + ds + '" role="button" tabindex="0" aria-label="' + m + '월 ' + day + '일 ' + wd[wdi] + '요일' + (c.n ? ' · 일정 ' + c.n + '건' : '') + '">' + day + ttHtml +
+        (c.n > 2 ? '<span class="more">+' + (c.n - 2) + '</span>' : '') + '</div>';
     }
     var monthN = items.filter(function (x) { return x.d && x.d.slice(0, 7) === viewMonth; }).length;
     var head = '<div class="c7-mh"><button type="button" data-c7m="-1" aria-label="이전 달">‹</button>' +
@@ -438,7 +457,7 @@
       '<button type="button" data-c7m="1" aria-label="다음 달">›</button>' +
       '<button type="button" class="today-b" data-c7today="1">오늘</button></div>';
     return '<div class="c7-cal">' + head + '<div class="c7-grid">' + h + '</div>' +
-      '<div class="c7-legend"><span>🔴 높음</span><span>🟡 보통</span><span>🟢 낮음</span><span>· 점은 그날 일정</span></div></div>';
+      '<div class="c7-legend"><span>🔴 높음</span><span>🟡 보통</span><span>🟢 낮음</span><span>· 제목은 그날 일정</span></div></div>';
   }
 
   function xpHtml(x) {
