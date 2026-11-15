@@ -3,7 +3,7 @@
    - 화면(HTML)은 네트워크 우선: 새로 배포한 내용이 앱에서도 바로 뜨도록
    - 그 밖의 정적 파일은 네트워크 우선, 실패 시 캐시
 */
-const SW_VERSION = 'family-portal-v4-2026-11-15';
+const SW_VERSION = 'family-test-v4-2026-11-15';
 const OFFLINE_HTML = new URL('index.html', self.registration.scope).href;
 
 self.addEventListener('install', () => {
@@ -25,7 +25,7 @@ self.addEventListener('fetch', (event) => {
   let url;
   try { url = new URL(req.url); } catch (err) { return; }
   if (url.origin !== self.location.origin) return;
-  if (url.pathname.indexOf('/family/') !== 0) return;
+  if (url.pathname.indexOf('/family-test/') !== 0) return;
 
   const isNavigation = req.mode === 'navigate' ||
     (req.headers.get('accept') || '').includes('text/html');

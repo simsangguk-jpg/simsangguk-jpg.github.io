@@ -109,8 +109,9 @@ function faceTex(expr) {
   }
   function blush(a, cy) {
     g.fillStyle = 'rgba(255,138,128,' + (a || 0.34) + ')';
-    [0.14, 0.86].forEach(function (u) {
-      g.beginPath(); g.ellipse(u * S, cy, 26, 15, 0, 0, Math.PI * 2); g.fill();
+    cy = cy || 0.66 * S;
+    [0.12, 0.88].forEach(function (u) {
+      g.beginPath(); g.ellipse(u * S, cy, 28, 16, 0, 0, Math.PI * 2); g.fill();
     });
   }
   function nose() {
@@ -118,69 +119,68 @@ function faceTex(expr) {
     g.beginPath(); g.arc(0.5 * S, 0.60 * S, 9, 0.15 * Math.PI, 0.85 * Math.PI); g.stroke();
   }
 
-  var EY = 0.435 * S, MY = 0.72 * S;
+  var EY = 0.44 * S, MY = 0.72 * S;
 
   if (expr === 'normal') {
-    eyeOpen(0.28 * S, EY, 20, 25);
-    eyeOpen(0.72 * S, EY, 20, 25);
-    nose(); mouthSmile(MY, 28, 20, 10); blush(0.30);
+    eyeOpen(0.265 * S, EY, 23, 29);
+    eyeOpen(0.735 * S, EY, 23, 29);
+    nose(); mouthSmile(MY, 30, 22, 11); blush(0.34, 0.63 * S);
   } else if (expr === 'smile') {
-    eyeOpen(0.28 * S, EY, 20, 22, 0.85);
-    eyeOpen(0.72 * S, EY, 20, 22, 0.85);
-    nose(); mouthSmile(MY, 34, 26, 11); blush(0.36);
+    eyeOpen(0.265 * S, EY, 23, 26, 0.85);
+    eyeOpen(0.735 * S, EY, 23, 26, 0.85);
+    nose(); mouthSmile(MY, 36, 28, 12); blush(0.40, 0.63 * S);
   } else if (expr === 'laugh') {
-    arcEye(0.28 * S, EY + 6, 24, 16, true);
-    arcEye(0.72 * S, EY + 6, 24, 16, true);
-    nose(); mouthOpen(MY + 4, 30, 24, true); blush(0.45);
+    arcEye(0.265 * S, EY + 6, 27, 18, true);
+    arcEye(0.735 * S, EY + 6, 27, 18, true);
+    nose(); mouthOpen(MY + 4, 33, 26, true); blush(0.48, 0.63 * S);
   } else if (expr === 'sad') {
-    brows(EY - 46, -9);
-    eyeOpen(0.28 * S, EY + 4, 17, 20); eyeOpen(0.72 * S, EY + 4, 17, 20);
+    brows(EY - 50, -10);
+    eyeOpen(0.265 * S, EY + 4, 19, 22); eyeOpen(0.735 * S, EY + 4, 19, 22);
     nose();
-    g.strokeStyle = ink; g.lineWidth = 10;
-    g.beginPath(); g.moveTo(0.5 * S - 24, MY + 12); g.quadraticCurveTo(0.5 * S, MY - 12, 0.5 * S + 24, MY + 12); g.stroke();
-    blush(0.22);
+    g.strokeStyle = ink; g.lineWidth = 11;
+    g.beginPath(); g.moveTo(0.5 * S - 26, MY + 14); g.quadraticCurveTo(0.5 * S, MY - 14, 0.5 * S + 26, MY + 14); g.stroke();
+    blush(0.24, 0.63 * S);
   } else if (expr === 'cry') {
-    brows(EY - 48, 10);
-    g.strokeStyle = ink; g.lineWidth = 12;
-    [0.28, 0.72].forEach(function (u) {
-      g.beginPath(); g.moveTo(u * S - 20, EY - 14); g.lineTo(u * S + 18, EY + 16); g.stroke();
-      g.beginPath(); g.moveTo(u * S + 20, EY - 14); g.lineTo(u * S - 18, EY + 16); g.stroke();
+    brows(EY - 52, 11);
+    g.strokeStyle = ink; g.lineWidth = 13;
+    [0.265, 0.735].forEach(function (u) {
+      g.beginPath(); g.moveTo(u * S - 22, EY - 16); g.lineTo(u * S + 20, EY + 18); g.stroke();
+      g.beginPath(); g.moveTo(u * S + 22, EY - 16); g.lineTo(u * S - 20, EY + 18); g.stroke();
     });
-    mouthOpen(MY + 6, 26, 20, true);
-    blush(0.40);
+    mouthOpen(MY + 6, 28, 22, true);
+    blush(0.44, 0.63 * S);
   } else if (expr === 'dizzy') {
-    g.strokeStyle = ink; g.lineWidth = 9;
-    [0.28, 0.72].forEach(function (u) {
+    g.strokeStyle = ink; g.lineWidth = 10;
+    [0.265, 0.735].forEach(function (u) {
       g.beginPath();
-      for (var a = 0; a < 12; a++) {
-        var r = 3 + a * 1.6, ang = a * 0.9;
+      for (var a = 0; a < 13; a++) {
+        var r = 3 + a * 1.7, ang = a * 0.9;
         var px = u * S + Math.cos(ang) * r, py = EY + Math.sin(ang) * r;
         a ? g.lineTo(px, py) : g.moveTo(px, py);
       }
       g.stroke();
     });
     nose();
-    g.strokeStyle = ink; g.lineWidth = 10;
+    g.strokeStyle = ink; g.lineWidth = 11;
     g.beginPath();
-    g.moveTo(0.5 * S - 30, MY);
-    g.bezierCurveTo(0.5 * S - 14, MY - 14, 0.5 * S - 2, MY + 14, 0.5 * S + 12, MY);
-    g.bezierCurveTo(0.5 * S + 20, MY - 8, 0.5 * S + 26, MY + 6, 0.5 * S + 30, MY - 2);
+    g.moveTo(0.5 * S - 32, MY);
+    g.bezierCurveTo(0.5 * S - 15, MY - 15, 0.5 * S - 2, MY + 15, 0.5 * S + 13, MY);
+    g.bezierCurveTo(0.5 * S + 21, MY - 8, 0.5 * S + 27, MY + 6, 0.5 * S + 32, MY - 2);
     g.stroke();
   } else if (expr === 'surprise') {
-    g.fillStyle = '#fff';
-    [0.28, 0.72].forEach(function (u) {
-      g.beginPath(); g.ellipse(u * S, EY, 26, 28, 0, 0, Math.PI * 2); g.fill();
-      g.fillStyle = ink; g.beginPath(); g.ellipse(u * S, EY + 2, 13, 16, 0, 0, Math.PI * 2); g.fill();
+    [0.265, 0.735].forEach(function (u) {
       g.fillStyle = '#fff';
+      g.beginPath(); g.ellipse(u * S, EY, 29, 31, 0, 0, Math.PI * 2); g.fill();
+      g.fillStyle = ink; g.beginPath(); g.ellipse(u * S, EY + 2, 15, 18, 0, 0, Math.PI * 2); g.fill();
     });
-    nose(); mouthOpen(MY + 2, 15, 18, false);
+    nose(); mouthOpen(MY + 2, 16, 20, false);
   } else if (expr === 'blink') {
-    arcEye(0.28 * S, EY + 2, 22, 8, false);
-    arcEye(0.72 * S, EY + 2, 22, 8, false);
-    nose(); mouthSmile(MY, 26, 16, 9); blush(0.30);
+    arcEye(0.265 * S, EY + 2, 25, 9, false);
+    arcEye(0.735 * S, EY + 2, 25, 9, false);
+    nose(); mouthSmile(MY, 28, 18, 10); blush(0.34, 0.63 * S);
   } else {
-    eyeOpen(0.28 * S, EY, 20, 25); eyeOpen(0.72 * S, EY, 20, 25);
-    nose(); mouthSmile(MY, 28, 20, 10);
+    eyeOpen(0.265 * S, EY, 23, 29); eyeOpen(0.735 * S, EY, 23, 29);
+    nose(); mouthSmile(MY, 30, 22, 11); blush(0.34, 0.63 * S);
   }
 
   var t = new THREE.CanvasTexture(c);
@@ -265,67 +265,76 @@ function buildWorld(scene) {
 
   /* 바다 */
   var sea = new THREE.Mesh(
-    geo('sea', function () { return new THREE.PlaneGeometry(160, 160); }),
-    mat(0x74CFE6)
+    geo('sea', function () { return new THREE.PlaneGeometry(180, 180); }),
+    mat(0x63C7E3)
   );
   sea.rotation.x = -Math.PI / 2;
-  sea.position.y = -0.62;
+  sea.position.y = -0.52;
   root.add(sea);
   var sea2 = new THREE.Mesh(
-    geo('sea2', function () { return new THREE.PlaneGeometry(160, 160); }),
-    mat(0x9FE0F0, { transparent: true, opacity: 0.55 })
+    geo('sea2', function () { return new THREE.PlaneGeometry(180, 180); }),
+    mat(0x8DDCF0, { transparent: true, opacity: 0.45 })
   );
   sea2.rotation.x = -Math.PI / 2;
-  sea2.position.y = -0.60;
+  sea2.position.y = -0.5;
   root.add(sea2);
 
   /* 모래섬 */
   var island = new THREE.Mesh(
-    geo('island', function () { return new THREE.CylinderGeometry(5.34, 5.62, 1.0, 56, 1); }),
-    mat(0xF2DFBB)
+    geo('island', function () { return new THREE.CylinderGeometry(5.06, 5.4, 1.0, 56, 1); }),
+    [mat(0xE2C795), mat(0xF1DCB2), mat(0xD8BC8C)]
   );
   island.position.y = -0.5;
   root.add(island);
 
   var sandTop = new THREE.Mesh(
-    geo('sandTop', function () { return new THREE.CircleGeometry(5.3, 56); }),
-    mat(0xF8EBCF)
+    geo('sandTop', function () { return new THREE.CircleGeometry(5.04, 56); }),
+    mat(0xF4E2B8)
   );
   sandTop.rotation.x = -Math.PI / 2;
-  sandTop.position.y = 0.004;
+  sandTop.position.y = 0.006;
   root.add(sandTop);
 
   var inner = new THREE.Mesh(
-    geo('inner', function () { return new THREE.CircleGeometry(3.9, 48); }),
-    mat(0xFBF2DE, { transparent: true, opacity: 0.85 })
+    geo('inner', function () { return new THREE.CircleGeometry(3.75, 48); }),
+    mat(0xF9EBCB, { transparent: true, opacity: 0.9 })
   );
   inner.rotation.x = -Math.PI / 2;
-  inner.position.y = 0.008;
+  inner.position.y = 0.01;
   root.add(inner);
 
   /* 파도(흰 테두리) */
   var foam = new THREE.Mesh(
-    geo('foam', function () { return new THREE.TorusGeometry(5.48, 0.085, 8, 64); }),
-    mat(0xFFFFFF, { transparent: true, opacity: 0.85 })
+    geo('foam', function () { return new THREE.TorusGeometry(5.2, 0.075, 8, 64); }),
+    mat(0xFFFFFF, { transparent: true, opacity: 0.9 })
   );
   foam.rotation.x = -Math.PI / 2;
-  foam.position.y = -0.44;
+  foam.position.y = -0.42;
   root.add(foam);
   P.foam = foam;
 
   var foam2 = new THREE.Mesh(
-    geo('foam2', function () { return new THREE.TorusGeometry(5.92, 0.05, 8, 64); }),
-    mat(0xFFFFFF, { transparent: true, opacity: 0.5 })
+    geo('foam2', function () { return new THREE.TorusGeometry(6.3, 0.05, 8, 64); }),
+    mat(0xFFFFFF, { transparent: true, opacity: 0.55 })
   );
   foam2.rotation.x = -Math.PI / 2;
-  foam2.position.y = -0.55;
+  foam2.position.y = -0.5;
   root.add(foam2);
   P.foam2 = foam2;
+
+  var foam3 = new THREE.Mesh(
+    geo('foam3', function () { return new THREE.TorusGeometry(8.2, 0.045, 8, 72); }),
+    mat(0xFFFFFF, { transparent: true, opacity: 0.32 })
+  );
+  foam3.rotation.x = -Math.PI / 2;
+  foam3.position.y = -0.51;
+  root.add(foam3);
+  P.foam3 = foam3;
 
   /* 바위 */
   var rockM = mat(0x9AA3A8);
   var rockM2 = mat(0x87919A);
-  var ROCK_SPOTS = [[-4.75, 2.6, 0.5], [-5.05, 0.9, 0.38], [4.55, 2.9, 0.44], [4.9, -3.1, 0.36], [-3.2, -4.35, 0.42]];
+  var ROCK_SPOTS = [[-4.45, 2.35, 0.42], [-4.7, 0.8, 0.3], [4.25, 2.6, 0.38], [4.55, -2.7, 0.3], [-3.0, -4.0, 0.34]];
   ROCK_SPOTS.forEach(function (r, i) {
     var m = new THREE.Mesh(geo('rock', function () { return new THREE.IcosahedronGeometry(1, 0); }), i % 2 ? rockM2 : rockM);
     m.position.set(r[0], 0.05, r[1]);
@@ -336,43 +345,43 @@ function buildWorld(scene) {
 
   /* 파라솔 */
   var uGrp = new THREE.Group();
-  var pole = new THREE.Mesh(geo('pole', function () { return new THREE.CylinderGeometry(0.035, 0.035, 1.7, 8); }), mat(0xEFE7DA));
-  pole.position.y = 0.85;
+  var pole = new THREE.Mesh(geo('pole', function () { return new THREE.CylinderGeometry(0.03, 0.03, 1.45, 8); }), mat(0xEFE7DA));
+  pole.position.y = 0.72;
   uGrp.add(pole);
-  var cap = new THREE.Mesh(geo('ucap', function () { return new THREE.ConeGeometry(1.02, 0.55, 14, 1, true); }), mat(0xFF8C79, { side: THREE.DoubleSide }));
-  cap.position.y = 1.72;
+  var cap = new THREE.Mesh(geo('ucap', function () { return new THREE.ConeGeometry(0.78, 0.42, 14, 1, true); }), mat(0xFF8C79, { side: THREE.DoubleSide }));
+  cap.position.y = 1.45;
   uGrp.add(cap);
-  var capTop = new THREE.Mesh(geo('ucapTop', function () { return new THREE.SphereGeometry(0.09, 10, 8); }), mat(0xFFFFFF));
-  capTop.position.y = 2.0;
+  var capTop = new THREE.Mesh(geo('ucapTop', function () { return new THREE.SphereGeometry(0.07, 10, 8); }), mat(0xFFFFFF));
+  capTop.position.y = 1.66;
   uGrp.add(capTop);
-  uGrp.position.set(-4.05, 0, -1.9);
+  uGrp.position.set(-3.55, 0, -1.6);
   uGrp.rotation.z = 0.12;
   root.add(uGrp);
 
   /* 속초 표지판 */
   var signGrp = new THREE.Group();
-  var sp1 = new THREE.Mesh(geo('sp1', function () { return new THREE.CylinderGeometry(0.05, 0.05, 1.0, 8); }), mat(0x8A6242));
-  sp1.position.y = 0.5;
+  var sp1 = new THREE.Mesh(geo('sp1', function () { return new THREE.CylinderGeometry(0.045, 0.045, 0.9, 8); }), mat(0x8A6242));
+  sp1.position.y = 0.45;
   signGrp.add(sp1);
   var board = new THREE.Mesh(
-    geo('board', function () { return new THREE.BoxGeometry(0.9, 0.62, 0.08); }),
+    geo('board', function () { return new THREE.BoxGeometry(0.78, 0.54, 0.07); }),
     new THREE.MeshLambertMaterial({ map: spriteTex('sign'), color: 0xffffff })
   );
-  board.position.y = 1.12;
+  board.position.y = 1.0;
   signGrp.add(board);
-  signGrp.position.set(3.9, 0, -2.5);
+  signGrp.position.set(3.35, 0, -2.05);
   signGrp.rotation.y = -0.35;
   root.add(signGrp);
 
   /* 비치볼 */
   var ball = new THREE.Mesh(
-    geo('ball', function () { return new THREE.SphereGeometry(0.3, 20, 14); }),
+    geo('ball', function () { return new THREE.SphereGeometry(0.26, 20, 14); }),
     new THREE.MeshLambertMaterial({ map: spriteTex('ball'), color: 0xffffff })
   );
-  ball.position.set(2.55, 0.3, 2.15);
+  ball.position.set(2.3, 0.26, 1.85);
   root.add(ball);
   P.ball = ball;
-  P.ballBase = 0.3;
+  P.ballBase = 0.26;
 
   /* 갈매기 2마리 */
   var gulls = [];
@@ -813,6 +822,28 @@ function pickBehavior(c) {
     setState(c, 'idle');
     c.idleFor = rnd(1.4, 3.6);
     setFace(c, 'normal');
+    faceTo(c, rnd(-0.4, 0.4), 1, 2.4);
+  }
+}
+
+/* 서로 너무 붙지 않게 살짝 떼어 놓기 */
+function separate() {
+  var n = P.chars.length;
+  for (var i = 0; i < n; i++) {
+    var a = P.chars[i];
+    if (a.state === 'held' || a.state === 'fly' || a.state === 'roll') continue;
+    for (var j = i + 1; j < n; j++) {
+      var b = P.chars[j];
+      if (b.state === 'held' || b.state === 'fly' || b.state === 'roll') continue;
+      var dx = b.x - a.x, dz = b.z - a.z;
+      var d = Math.hypot(dx, dz);
+      if (d > 0.001 && d < 0.78) {
+        var push = (0.78 - d) * 0.5;
+        var ux = dx / d, uz = dz / d;
+        a.x -= ux * push; a.z -= uz * push;
+        b.x += ux * push; b.z += uz * push;
+      }
+    }
   }
 }
 
@@ -906,8 +937,8 @@ function poseChar(c, dt) {
     p.body.scale.y = 1.02 + b * 0.018;
     p.armL.rotation.z = -0.13 - Math.abs(b) * 0.03;
     p.armR.rotation.z = 0.13 + Math.abs(b) * 0.03;
-    p.head.rotation.y = Math.sin(P.t * 0.55 + c.phase) * 0.32;
-    p.head.rotation.x = Math.sin(P.t * 0.8 + c.phase) * 0.06;
+    p.head.rotation.y = Math.sin(P.t * 0.55 + c.phase) * 0.22;
+    p.head.rotation.x = Math.sin(P.t * 0.8 + c.phase) * 0.05;
     p.legL.rotation.z = 0.02;
     p.legR.rotation.z = -0.02;
   } else if (st === 'wave') {
@@ -1145,7 +1176,7 @@ function updateChar(c, dt) {
       c.phase += dt * (st === 'run' ? 11.5 : 6.6);
     }
   } else if (st === 'idle') {
-    if (c.t > c.idleFor) pickBehavior(c);
+    if (!P.freeze && c.t > c.idleFor) pickBehavior(c);
     if (st !== 'idle') { poseChar(c, dt); return; }
   } else if (c.dur && c.t >= c.dur) {
     setState(c, 'idle');
@@ -1298,11 +1329,11 @@ function resize() {
   P.renderer.setSize(w, h, false);
   var aspect = w / Math.max(1, h);
   var tanV = Math.tan(THREE.MathUtils.degToRad(P.camera.fov / 2));
-  var z = clamp(3.45 / (tanV * aspect), 8.3, 14.5);
+  var z = clamp(4.55 / (tanV * aspect), 8.7, 15.5);
   P.fitZ = z;
   P.camera.aspect = aspect;
-  P.camera.position.set(P.camX || 0, 1.0 + z * 0.27, z);
-  P.camera.lookAt(0, 1.02, 0);
+  P.camera.position.set(P.camX || 0, 1.5 + z * 0.30, z);
+  P.camera.lookAt(0, 0.95, 0);
   P.camera.updateProjectionMatrix();
 }
 
@@ -1343,8 +1374,8 @@ function frame(now) {
   var cx = P.ptr.nx * 0.5, cy = P.ptr.ny * 0.22;
   P.camX = damp(P.camX || 0, cx, 2.2, dt);
   P.camera.position.x = P.camX;
-  P.camera.position.y = damp(P.camera.position.y, (1.0 + (P.fitZ || 9) * 0.27) - cy, 2.2, dt);
-  P.camera.lookAt(0, 1.02, 0);
+  P.camera.position.y = damp(P.camera.position.y, (1.5 + (P.fitZ || 9) * 0.30) - cy, 2.2, dt);
+  P.camera.lookAt(0, 0.95, 0);
 
   /* 배경 소품 */
   if (P.foam) {
@@ -1378,7 +1409,7 @@ function frame(now) {
 
   /* 가끔 다 같이 인사 */
   P.greetT -= dt;
-  if (P.greetT <= 0) {
+  if (P.greetT <= 0 && !P.freeze) {
     P.greetT = rnd(13, 22);
     var free = P.chars.filter(function (c) { return c.state === 'idle' || c.state === 'walk'; });
     if (free.length >= 2) {
@@ -1396,6 +1427,8 @@ function frame(now) {
   }
 
   for (var i = 0; i < P.chars.length; i++) updateChar(P.chars[i], dt);
+  separate();
+  for (var i2 = 0; i2 < P.chars.length; i2++) P.chars[i2].root.position.set(P.chars[i2].x, P.chars[i2].y, P.chars[i2].z);
   updateParticles(dt);
   updateHud(dt);
 
@@ -1421,19 +1454,19 @@ function stopLoop() {
 /* ---------------- 만들기 ---------------- */
 function buildScene() {
   P.scene = new THREE.Scene();
-  P.scene.fog = new THREE.Fog(0xE6F6FF, 13, 34);
-  P.camera = new THREE.PerspectiveCamera(46, 1, 0.1, 120);
-  P.camera.position.set(0, 3.4, 9.4);
-  P.camera.lookAt(0, 1.02, 0);
+  P.scene.fog = new THREE.Fog(0xDCF3FB, 26, 78);
+  P.camera = new THREE.PerspectiveCamera(46, 1, 0.1, 200);
+  P.camera.position.set(0, 4.2, 9.4);
+  P.camera.lookAt(0, 0.95, 0);
 
-  P.scene.add(new THREE.HemisphereLight(0xDCF2FF, 0xF0DDB8, 0.72));
-  var dir = new THREE.DirectionalLight(0xFFFFFF, 0.72);
+  P.scene.add(new THREE.HemisphereLight(0xDCF2FF, 0xF2DFC0, 0.5));
+  var dir = new THREE.DirectionalLight(0xFFFFFF, 0.52);
   dir.position.set(4.5, 8.5, 5.5);
   P.scene.add(dir);
-  var fill = new THREE.DirectionalLight(0xCDE8FF, 0.28);
+  var fill = new THREE.DirectionalLight(0xCFE9FF, 0.18);
   fill.position.set(-5, 3, -4);
   P.scene.add(fill);
-  P.scene.add(new THREE.AmbientLight(0xFFFFFF, 0.18));
+  P.scene.add(new THREE.AmbientLight(0xFFFFFF, 0.14));
 
   buildWorld(P.scene);
 
@@ -1637,6 +1670,19 @@ var FamPlay = {
     stopLoop();
   },
   act: act,
+  pose: function () {
+    P.freeze = true;
+    act('reset');
+    P.chars.forEach(function (c) {
+      c.x = c.cfg.x; c.z = c.cfg.z;
+      c.faceAng = 0; c.spinY = 0;
+      c.root.position.set(c.x, 0, c.z);
+      c.root.rotation.y = 0;
+      setFace(c, 'normal');
+      c.bubble.classList.remove('on'); c.bubbleT = 0;
+    });
+  },
+  freeze: function (on) { P.freeze = !!on; },
   ready: function () { return P.phase === 'ready'; },
   debug: function () {
     return {
