@@ -10,7 +10,7 @@
 (function (global) {
   'use strict';
 
-  var F = null, ON = false;
+  var F = null, ON = false, wired = false;
   var quiz = null;        /* 진행 중인 검사 {key, ans:[], priv:0|1} */
   var lastKey = '';       /* 방금 끝낸 검사(리포트 우선 표시) */
 
@@ -788,10 +788,8 @@
      렌더
      ============================================================ */
   function render() {
-    if (!ON || !F || !F.doc() || !F.me()) return;
-    style();
-    buildCard();
-    buildLife();
+    if (!F || !F.doc() || !F.me()) return;
+    ensure();
     var M = V5();
     var sig = JSON.stringify([M.res, M.love, M.cmt, F.members().map(function (m) { return [m.id, m.name, m.role, m.emoji]; })]);
     paint($('v5Board'), sig, boardHtml);
@@ -836,14 +834,18 @@
     });
   }
 
+  function ensure() {
+    style();
+    buildCard();
+    buildLife();
+    if (!wired) { wired = true; wire(); }
+  }
+
   function mount(FAM) {
     if (ON) return;
     F = FAM;
     ON = true;
-    style();
-    buildCard();
-    buildLife();
-    wire();
+    ensure();
     render();
   }
 
@@ -854,8 +856,8 @@
   var prevView = global.__FAM_VIEW;
   global.__FAM_RENDER = function () {
     if (prevRender) { try { prevRender(); } catch (e) {} }
-    if (!ON && global.FAM && global.FAM.doc && global.FAM.doc()) { try { mount(global.FAM); } catch (e) { console.warn('MIND5 mount', e); } }
-    try { if (global.MIND5) global.MIND5.render(); } catch (e) { console.warn('MIND5 render', e); }
+    if (!F && global.FAM && global.FAM.doc && global.FAM.doc()) { try { F = global.FAM; ON = true; } catch (e) {} }
+    try { if (F && F.doc() && F.me()) { ensure(); global.MIND5.render(); } } catch (e) { console.warn('MIND5 render', e); }
   };
   global.__FAM_VIEW = function (v) {
     if (prevView) { try { prevView(v); } catch (e) {} }
@@ -867,6 +869,15 @@
     global.FAM4.mount = function (FAM) {
       om.call(global.FAM4, FAM);
       try { mount(FAM); } catch (e) { console.warn('MIND5 mount', e); }
+      try { ensure(); render(); } catch (e) { console.warn('MIND5 ensure', e); }
+    };
+  }
+  /* game4 가 목차·생활 틀을 다시 그리는 경우까지 막아 둔다 */
+  if (global.GAME4 && typeof global.GAME4.mount === 'function') {
+    var og = global.GAME4.mount;
+    global.GAME4.mount = function (FAM) {
+      og.call(global.GAME4, FAM);
+      try { ensure(); render(); } catch (e) { console.warn('MIND5 ensure', e); }
     };
   }
 })(window);
