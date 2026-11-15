@@ -250,7 +250,7 @@
     return '<div class="m5-bar"><span class="lb">' + label + '</span><span class="bg"><i style="width:' + x + '%;background:' + color + '"></i></span><span class="n">' + x + '</span></div>';
   }
   function encOf(k, r, gid) {
-    var nm = (gid === mid()) ? '나' : nameOf(gid);
+    var nm = nameOf(gid);
     if (k === 'stress') return (S_ENC[r.lvl] || S_ENC.ok).replace('{name}', nm);
     if (k === 'mood') return (WX[r.w] || WX.cloud).enc.replace('{name}', nm);
     if (k === 'lang') {
@@ -383,7 +383,7 @@
     var ms = F.members();
     var any = ms.some(function (m) { return lastAt(m.id); });
     var head = '<div class="m5-boardtop"><b>🧠 우리 가족 마음 현황판</b><span>' + ms.length + '명 · ' +
-      (any ? '최근 ' + esc(F.ago(Math.max.apply(null, ms.map(function (m) { return lastAt(m.id); })))) + ' 검사' : '아직 검사 전') + '</span></div>';
+      (any ? '최근 검사 ' + esc(F.ago(Math.max.apply(null, ms.map(function (m) { return lastAt(m.id); })))) : '아직 검사 전') + '</span></div>';
     return head + '<div class="m5-grid">' + ms.map(memberCard).join('') + '</div>' +
       (any ? '' : '<div class="m5-empty">아직 아무도 검사를 하지 않았어요. 한 사람이 먼저 하면 가족 현황판이 채워져요.</div>');
   }
@@ -463,6 +463,11 @@
     }
     var prog = $('m5Prog');
     if (prog) prog.textContent = quiz.ans.filter(function (x) { return x >= 0; }).length + '/' + TESTS[quiz.key].qs.length;
+    var left = quiz.ans.filter(function (x) { return x < 0; }).length;
+    if (!left) {
+      var f = wrap.querySelector('.m5-qf');
+      if (f) setTimeout(function () { f.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 120);
+    }
   }
   function submit() {
     if (!quiz) return;
@@ -540,12 +545,15 @@
       '</div>';
   }
   function cmtChips(gid) {
-    var r = resOf(gid), out = [];
-    if (r.stress && r.stress.lvl === 'high') out.push('요즘 많이 지쳐 보여. 오늘은 일찍 쉬자 🌙');
-    else if (r.stress && r.stress.lvl === 'warn') out.push('잠깐 숨 고르고, 같이 산책할까? 🚶');
-    if (r.mood && r.mood.w === 'storm') out.push('마음이 무거운 날엔 말 안 해도 괜찮아 🤍');
-    else if (r.mood && r.mood.w === 'shower') out.push('소나기 지나가면 맑아질 거야 ☀️');
-    if (r.ego && typeof r.ego.avg === 'number' && r.ego.avg < 45) out.push('너는 충분히 잘하고 있어. 그거면 됐어 💗');
+    var r = resOf(gid), isMe = gid === mid(), out = [];
+    var s = (!isMe && r.stress && r.stress.priv) ? null : r.stress;
+    var w = (!isMe && r.mood && r.mood.priv) ? null : r.mood;
+    var e = (!isMe && r.ego && r.ego.priv) ? null : r.ego;
+    if (s && s.lvl === 'high') out.push('요즘 많이 지쳐 보여. 오늘은 일찍 쉬자 🌙');
+    else if (s && s.lvl === 'warn') out.push('잠깐 숨 고르고, 같이 산책할까? 🚶');
+    if (w && w.w === 'storm') out.push('마음이 무거운 날엔 말 안 해도 괜찮아 🤍');
+    else if (w && w.w === 'shower') out.push('소나기 지나가면 맑아질 거야 ☀️');
+    if (e && typeof e.avg === 'number' && e.avg < 45) out.push('너는 충분히 잘하고 있어. 그거면 됐어 💗');
     out.push('오늘 하루도 정말 수고했어요 💛');
     out.push('네 편이야, 언제든 이야기해 🤍');
     return out.slice(0, 3);
@@ -571,6 +579,7 @@
       M.cmt[gid][id] = { t: t.slice(0, 140), by: mid(), at: now() };
       save();
       F.closeSheet();
+      blurAll();
       repaint(['v5Board', 'v5LifeMini']);
       render();
       toast(nameOf(gid) + ' 님에게 격려를 남겼어요');
@@ -593,6 +602,7 @@
     var cur = loveOf(gid)[id];
     M.love[gid][id] = { v: cur ? 0 : 1, at: now() };
     save();
+    blurAll();
     repaint(['v5Board', 'v5LifeMini']);
     render();
     if (!cur && gid !== id) toast(nameOf(gid) + ' 님에게 힘내요 하트를 보냈어요 💖');
