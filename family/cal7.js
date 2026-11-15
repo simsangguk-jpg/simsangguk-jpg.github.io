@@ -65,6 +65,16 @@
   function md(ds) { return ds ? Number(ds.slice(5, 7)) + '/' + Number(ds.slice(8, 10)) : ''; }
   function weekday(ds) { var x = new Date(Number(ds.slice(0, 4)), Number(ds.slice(5, 7)) - 1, Number(ds.slice(8, 10))); return '일월화수목금토'.charAt(x.getDay()); }
   function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  /* '1430' · '14:30' · '9:5' 같은 입력을 '14:30' 으로. 못 읽으면 '' */
+  function normTime(v) {
+    var s = String(v || '').trim().replace(/[^0-9:]/g, '');
+    if (!s) return '';
+    var m = s.match(/^(\d{1,2}):?(\d{2})$/);
+    if (!m) return '';
+    var h = Number(m[1]), mi = Number(m[2]);
+    if (h > 23 || mi > 59) return '';
+    return pad(h) + ':' + pad(mi);
+  }
   function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
 
   /* ---------------- 중요도 자동 판단 ---------------- */
@@ -350,7 +360,7 @@
 
     h += '<div class="c7-sts">';
     ST_ORDER.forEach(function (k) {
-      h += '<button type="button" class="' + (x.st === k ? 'on ' + k : '') + '" data-c7st="' + k + '" aria-label="' + ST[k].n + '로 바꾸기">' + ST[k].e + ' ' + ST[k].n + '</button>';
+      h += '<button type="button" class="' + (x.st === k ? 'on ' + k : '') + '" data-c7st="' + k + '" aria-label="' + ST[k].n + ' 상태로 바꾸기">' + ST[k].e + ' ' + ST[k].n + '</button>';
     });
     h += '</div>';
 
@@ -405,7 +415,7 @@
         parts = parts.slice(0, 3);
       }
       if (parts.length) dots = '<span class="dots">' + parts.join('') + '</span>';
-      h += '<div class="' + cls + '" data-c7day="' + ds + '" role="button" tabindex="0">' + day + dots +
+      h += '<div class="' + cls + '" data-c7day="' + ds + '" role="button" tabindex="0" aria-label="' + m + '월 ' + day + '일 ' + wd[wdi] + '요일' + (c.n ? ' · 일정 ' + c.n + '건' : '') + '">' + day + dots +
         (c.n > 3 ? '<span class="more">' + c.n + '</span>' : '') + '</div>';
     }
     var monthN = items.filter(function (x) { return x.d && x.d.slice(0, 7) === viewMonth; }).length;
@@ -596,7 +606,7 @@
       '<div class="form-row"><label>제목</label><input class="field" id="c7fT" maxlength="60" placeholder="예: 지섭이 병원 예약 / 장보기"></div>' +
       '<div style="display:flex;gap:8px">' +
       '<div class="form-row" style="flex:1.2"><label>날짜</label><input class="field" type="date" id="c7fD" value="' + esc(date) + '"></div>' +
-      '<div class="form-row" style="flex:1"><label>시간(선택)</label><input class="field" type="time" id="c7fTm"></div>' +
+      '<div class="form-row" style="flex:1"><label>시간(선택)</label><input class="field" id="c7fTm" inputmode="numeric" maxlength="5" placeholder="예: 14:30"></div>' +
       '</div>' +
       '<div class="form-row"><label>메모(선택)</label><textarea class="field" id="c7fM" rows="2" maxlength="200" placeholder="준비물·장소·자세한 내용"></textarea></div>' +
       '<div style="display:flex;gap:8px">' +
@@ -626,8 +636,10 @@
     if ($('c7fS')) $('c7fS').onclick = function () {
       var title = (val('c7fT') || '').trim();
       if (!title) { toast('제목을 적어 주세요'); if ($('c7fT')) $('c7fT').focus(); return; }
+      var tm = normTime(val('c7fTm'));
+      if ((val('c7fTm') || '').trim() && !tm) { toast('시간은 14:30 처럼 적어 주세요'); if ($('c7fTm')) $('c7fTm').focus(); return; }
       var did = addItem({
-        t: title, d: val('c7fD') || '', time: val('c7fTm') || '', memo: (val('c7fM') || '').trim(),
+        t: title, d: val('c7fD') || '', time: tm, memo: (val('c7fM') || '').trim(),
         owner: val('c7fO') || '', imp: val('c7fI') === 'auto' ? '' : val('c7fI')
       });
       F.closeSheet();
@@ -671,7 +683,7 @@
       '<div class="form-row"><label>제목</label><input class="field" id="c7eT" maxlength="60" value="' + esc(x.t) + '"></div>' +
       '<div style="display:flex;gap:8px">' +
       '<div class="form-row" style="flex:1.2"><label>날짜</label><input class="field" type="date" id="c7eD" value="' + esc(x.d) + '"></div>' +
-      '<div class="form-row" style="flex:1"><label>시간(선택)</label><input class="field" type="time" id="c7eTm" value="' + esc(x.time) + '"></div>' +
+      '<div class="form-row" style="flex:1"><label>시간(선택)</label><input class="field" id="c7eTm" inputmode="numeric" maxlength="5" placeholder="예: 14:30" value="' + esc(x.time) + '"></div>' +
       '</div>' +
       '<div class="form-row"><label>메모(선택)</label><textarea class="field" id="c7eM" rows="2" maxlength="200">' + esc(x.memo) + '</textarea></div>' +
       '<div style="display:flex;gap:8px">' +
@@ -701,7 +713,9 @@
     if ($('c7eS')) $('c7eS').onclick = function () {
       var title = (val('c7eT') || '').trim();
       if (!title) { toast('제목을 적어 주세요'); return; }
-      var nd = val('c7eD') || '', ntm = val('c7eTm') || '';
+      var ntmRaw = (val('c7eTm') || '').trim();
+      var nd = val('c7eD') || '', ntm = normTime(ntmRaw);
+      if (ntmRaw && !ntm) { toast('시간은 14:30 처럼 적어 주세요'); if ($('c7eTm')) $('c7eTm').focus(); return; }
       var nmemo = (val('c7eM') || '').trim(), nown = val('c7eO') || '', pick = val('c7eI');
       var h = hint();
       var changes = [];
