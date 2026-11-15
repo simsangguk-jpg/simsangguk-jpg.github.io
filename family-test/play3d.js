@@ -266,7 +266,7 @@ function buildWorld(scene) {
   /* 바다 */
   var sea = new THREE.Mesh(
     geo('sea', function () { return new THREE.PlaneGeometry(180, 180); }),
-    mat(0x4FBEDD)
+    mat(0x52C3E1)
   );
   sea.rotation.x = -Math.PI / 2;
   sea.position.y = -0.52;
@@ -282,14 +282,14 @@ function buildWorld(scene) {
   /* 모래섬 */
   var island = new THREE.Mesh(
     geo('island', function () { return new THREE.CylinderGeometry(5.06, 5.4, 1.0, 56, 1); }),
-    [mat(0xE2C795), mat(0xF1DCB2), mat(0xD8BC8C)]
+    [mat(0xE0C38F), mat(0xF2DDAF), mat(0xDDBF8D)]
   );
   island.position.y = -0.5;
   root.add(island);
 
   var sandTop = new THREE.Mesh(
     geo('sandTop', function () { return new THREE.CircleGeometry(5.04, 56); }),
-    mat(0xF4E2B8)
+    mat(0xF2DEB0)
   );
   sandTop.rotation.x = -Math.PI / 2;
   sandTop.position.y = 0.006;
@@ -297,7 +297,7 @@ function buildWorld(scene) {
 
   var inner = new THREE.Mesh(
     geo('inner', function () { return new THREE.CircleGeometry(3.75, 48); }),
-    mat(0xF9EBCB, { transparent: true, opacity: 0.9 })
+    mat(0xF9E8C2, { transparent: true, opacity: 0.92 })
   );
   inner.rotation.x = -Math.PI / 2;
   inner.position.y = 0.01;
@@ -558,8 +558,8 @@ function buildCharacter(cfg) {
       torso.add(rib);
     });
   } else if (cfg.style === 'coat') {
-    var hoodie = new THREE.Mesh(geo('hd', function () { return new THREE.BoxGeometry(0.17, 0.17, 0.05); }), mat(cfg.inner));
-    hoodie.position.set(0, 0.38, bodyR(0.38, G) * 0.78 + 0.006);
+    var hoodie = new THREE.Mesh(geo('hd', function () { return new THREE.BoxGeometry(0.2, 0.19, 0.045); }), mat(cfg.inner));
+    hoodie.position.set(0, 0.40, bodyR(0.40, G) * 0.78 + 0.004);
     torso.add(hoodie);
     var hood = new THREE.Mesh(geo('hood', function () { return new THREE.SphereGeometry(0.17, 14, 10); }), mat(cfg.inner));
     hood.scale.set(1, 0.62, 0.8);
@@ -1468,13 +1468,13 @@ function stopLoop() {
 /* ---------------- 만들기 ---------------- */
 function buildScene() {
   P.scene = new THREE.Scene();
-  P.scene.fog = new THREE.Fog(0xCFEAF6, 30, 82);
+  P.scene.fog = new THREE.Fog(0xD3ECF7, 46, 130);
   P.camera = new THREE.PerspectiveCamera(46, 1, 0.1, 200);
   P.camera.position.set(0, 4.2, 9.4);
   P.camera.lookAt(0, 0.95, 0);
 
-  P.scene.add(new THREE.HemisphereLight(0xDCF2FF, 0xF2DFC0, 0.5));
-  var dir = new THREE.DirectionalLight(0xFFFFFF, 0.52);
+  P.scene.add(new THREE.HemisphereLight(0xDCF2FF, 0xF2DFC0, 0.48));
+  var dir = new THREE.DirectionalLight(0xFFFFFF, 0.60);
   dir.position.set(4.5, 8.5, 5.5);
   P.scene.add(dir);
   var fill = new THREE.DirectionalLight(0xCFE9FF, 0.18);
@@ -1698,6 +1698,22 @@ var FamPlay = {
   },
   freeze: function (on) { P.freeze = !!on; },
   cam: function (z) { P.camOverride = z || null; resize(); },
+  testThrow: function (key) {
+    if (P.phase !== 'ready') return null;
+    var c = null;
+    for (var i = 0; i < P.chars.length; i++) if (P.chars[i].key === key) c = P.chars[i];
+    if (!c) return null;
+    var r = P.canvas.getBoundingClientRect();
+    var pt = project(c.x, c.y + 0.9 * c.S, c.z);
+    var base = { clientX: r.left + pt.x, clientY: r.top + pt.y, pointerId: 1, pointerType: 'mouse', preventDefault: function () {} };
+    onDown(base);
+    var held = c.state;
+    for (var k = 1; k <= 5; k++) {
+      onMove({ clientX: base.clientX + k * 7, clientY: base.clientY - k * 14, pointerId: 1, pointerType: 'mouse' });
+    }
+    onUp({ clientX: base.clientX + 35, clientY: base.clientY - 70, pointerId: 1, pointerType: 'mouse' });
+    return { held: held, after: c.state, vx: +c.vx.toFixed(2), vy: +c.vy.toFixed(2), y: +c.y.toFixed(2) };
+  },
   ready: function () { return P.phase === 'ready'; },
   debug: function () {
     return {
