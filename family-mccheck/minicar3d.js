@@ -754,8 +754,8 @@
     /* 스포일러 */
     if (cfg.aero === 'spoiler') {
       x.fillStyle = '#2B3138';
-      x.fillRect(bx - 5 * k, bodyTop - 13 * k, 6 * k, 20 * k);
-      rrect(x, bx - 12 * k, bodyTop - 17 * k, 26 * k, 7 * k, 3 * k);
+      x.fillRect(bx + 5 * k, bodyTop - 9 * k, 3.5 * k, 11 * k);
+      rrect(x, bx - 6 * k, bodyTop - 13 * k, 24 * k, 5 * k, 2 * k);
       x.fill();
     }
     if (cfg.aero === 'roller') {
@@ -838,7 +838,7 @@
       '.mc-chip{flex:1 1 0;min-width:0;padding:8px 2px;border-radius:11px;background:#F3F6F8;border:1.5px solid transparent;font-size:11.5px;font-weight:800;color:#5C6673;white-space:nowrap;text-align:center;transition:.14s}',
       '.mc-chip.on{background:#E7F8F1;border-color:#0E9F6E;color:#0B7A54;box-shadow:0 2px 8px rgba(14,159,110,.18)}',
       '.mc-chip:active{transform:scale(.97)}',
-      '.mc-color{flex:none;width:26px;height:26px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1.5px rgba(60,72,84,.32);transition:.14s}',
+      '.mc-color{flex:none;width:26px;height:26px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1.5px rgba(60,72,84,.32),inset 0 0 0 1px rgba(40,50,60,.18);transition:.14s}',
       '.mc-color.on{box-shadow:0 0 0 2.5px #0E9F6E}',
       '.mc-stats{margin-top:9px;padding:9px 10px;border-radius:12px;background:#F7FAFC;border:1px solid #E6EDF2;font-size:11px;font-weight:700;color:#4E5A66;line-height:1.6}',
       '.mc-stats b{color:#0B7A54;font-weight:900}',
