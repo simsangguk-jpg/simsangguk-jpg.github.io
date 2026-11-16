@@ -371,7 +371,6 @@
       camera.position.set(0, 3.8, -7);
       buildTrack();
       resize3D();
-      global.__MC3D = { scene: scene, camera: camera, renderer: renderer, THREE: THREE };
       return true;
     } catch (e) {
       console.warn('minicar3d init', e);
@@ -596,8 +595,8 @@
     var u = run.u;
     var curv = curveCurvature(u);
     var drift = curv * run.s * run.s * 0.07 * (1.25 - st.grip) * (1 - st.st * 0.45);
-    run.lane = clamp(run.lane + drift * dt, -1.9, 1.9);
-    var offRoad = Math.abs(run.lane * 0.5) > HW * 0.92;
+    run.lane = clamp(run.lane + drift * dt, -1.7, 1.7);
+    var offRoad = Math.abs(run.lane * 0.5) > HW * 0.85;
     if (offRoad) run.s *= 1 - Math.min(0.9, dt * 2.2);
     run.shake = offRoad ? 1 : Math.max(0, run.shake - dt * 3);
 
