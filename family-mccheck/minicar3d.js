@@ -362,6 +362,7 @@
       camera.position.set(0, 3.8, -7);
       buildTrack();
       resize3D();
+      global.__MC3D = { scene: scene, camera: camera, renderer: renderer, THREE: THREE };
       return true;
     } catch (e) {
       console.warn('minicar3d init', e);
