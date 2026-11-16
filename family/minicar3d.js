@@ -89,18 +89,18 @@
     mclaren: { n: '맥라렌', em: '🟠', color: '#FF7A1A', note: '눈물방울형' }
   };
   var MODELS = {
-    revuelto: { n: '레부엘토', brand: 'lambo', len: 0.96, wid: 0.47, nose: 0.070, hood: 0.115, roof: 0.265, roofA: 0.03, roofB: -0.17, deck: 0.200, tail: 0.225, wr: 0.098, base: { top: 352, acc: 3.6, grip: 1.00, stab: 0.95 } },
-    aventador: { n: '아벤타도르 SVJ', brand: 'lambo', len: 0.95, wid: 0.48, nose: 0.075, hood: 0.120, roof: 0.262, roofA: 0.00, roofB: -0.19, deck: 0.205, tail: 0.230, wr: 0.100, base: { top: 350, acc: 3.4, grip: 0.99, stab: 0.93 } },
-    sf90: { n: 'SF90 스트라달레', brand: 'ferrari', len: 0.94, wid: 0.46, nose: 0.082, hood: 0.128, roof: 0.280, roofA: 0.05, roofB: -0.15, deck: 0.212, tail: 0.228, wr: 0.098, base: { top: 340, acc: 3.9, grip: 1.01, stab: 0.98 } },
-    gtb296: { n: '296 GTB', brand: 'ferrari', len: 0.90, wid: 0.45, nose: 0.088, hood: 0.132, roof: 0.288, roofA: 0.04, roofB: -0.14, deck: 0.214, tail: 0.222, wr: 0.096, base: { top: 330, acc: 3.7, grip: 1.02, stab: 0.99 } },
-    gt3rs: { n: '911 GT3 RS', brand: 'porsche', len: 0.92, wid: 0.47, nose: 0.100, hood: 0.136, roof: 0.300, roofA: -0.01, roofB: -0.23, deck: 0.240, tail: 0.250, wr: 0.099, base: { top: 296, acc: 3.5, grip: 1.08, stab: 1.08 } },
-    taycan: { n: '타이칸 터보 S', brand: 'porsche', len: 0.95, wid: 0.47, nose: 0.090, hood: 0.140, roof: 0.302, roofA: 0.02, roofB: -0.21, deck: 0.235, tail: 0.240, wr: 0.098, base: { top: 260, acc: 3.9, grip: 1.03, stab: 1.03 } },
-    r8: { n: 'R8 V10 퍼포먼스', brand: 'audi', len: 0.90, wid: 0.46, nose: 0.085, hood: 0.126, roof: 0.272, roofA: 0.03, roofB: -0.14, deck: 0.218, tail: 0.232, wr: 0.097, base: { top: 331, acc: 3.4, grip: 1.01, stab: 0.97 } },
-    etrongt: { n: 'RS e-tron GT', brand: 'audi', len: 0.95, wid: 0.47, nose: 0.090, hood: 0.140, roof: 0.300, roofA: 0.03, roofB: -0.19, deck: 0.235, tail: 0.240, wr: 0.098, base: { top: 250, acc: 3.8, grip: 1.02, stab: 1.01 } },
-    models: { n: '모델 S 플레이드', brand: 'tesla', len: 0.98, wid: 0.48, nose: 0.100, hood: 0.145, roof: 0.308, roofA: 0.01, roofB: -0.24, deck: 0.240, tail: 0.248, wr: 0.099, base: { top: 322, acc: 4.0, grip: 1.00, stab: 1.00 } },
-    model3: { n: '모델 3 퍼포먼스', brand: 'tesla', len: 0.92, wid: 0.46, nose: 0.100, hood: 0.140, roof: 0.304, roofA: 0.00, roofB: -0.20, deck: 0.232, tail: 0.242, wr: 0.097, base: { top: 261, acc: 3.7, grip: 1.01, stab: 1.01 } },
-    m720s: { n: '720S', brand: 'mclaren', len: 0.93, wid: 0.46, nose: 0.078, hood: 0.120, roof: 0.268, roofA: 0.05, roofB: -0.14, deck: 0.208, tail: 0.222, wr: 0.098, base: { top: 341, acc: 3.6, grip: 1.02, stab: 0.96 } },
-    artura: { n: '아투라', brand: 'mclaren', len: 0.90, wid: 0.45, nose: 0.082, hood: 0.124, roof: 0.272, roofA: 0.05, roofB: -0.13, deck: 0.206, tail: 0.218, wr: 0.096, base: { top: 330, acc: 3.5, grip: 1.02, stab: 0.97 } }
+    revuelto: { n: '레부엘토', brand: 'lambo', len: 0.96, wid: 0.47, nose: 0.095, hood: 0.155, roof: 0.310, roofA: 0.03, roofB: -0.17, deck: 0.210, tail: 0.222, wr: 0.082, base: { top: 352, acc: 3.6, grip: 1.00, stab: 0.95 } },
+    aventador: { n: '아벤타도르 SVJ', brand: 'lambo', len: 0.95, wid: 0.48, nose: 0.100, hood: 0.162, roof: 0.306, roofA: 0.00, roofB: -0.19, deck: 0.214, tail: 0.226, wr: 0.084, base: { top: 350, acc: 3.4, grip: 0.99, stab: 0.93 } },
+    sf90: { n: 'SF90 스트라달레', brand: 'ferrari', len: 0.94, wid: 0.46, nose: 0.110, hood: 0.172, roof: 0.326, roofA: 0.05, roofB: -0.15, deck: 0.222, tail: 0.224, wr: 0.082, base: { top: 340, acc: 3.9, grip: 1.01, stab: 0.98 } },
+    gtb296: { n: '296 GTB', brand: 'ferrari', len: 0.90, wid: 0.45, nose: 0.118, hood: 0.178, roof: 0.336, roofA: 0.04, roofB: -0.14, deck: 0.224, tail: 0.218, wr: 0.080, base: { top: 330, acc: 3.7, grip: 1.02, stab: 0.99 } },
+    gt3rs: { n: '911 GT3 RS', brand: 'porsche', len: 0.92, wid: 0.47, nose: 0.132, hood: 0.182, roof: 0.348, roofA: -0.01, roofB: -0.23, deck: 0.250, tail: 0.244, wr: 0.083, base: { top: 296, acc: 3.5, grip: 1.08, stab: 1.08 } },
+    taycan: { n: '타이칸 터보 S', brand: 'porsche', len: 0.95, wid: 0.47, nose: 0.120, hood: 0.188, roof: 0.352, roofA: 0.02, roofB: -0.21, deck: 0.244, tail: 0.235, wr: 0.082, base: { top: 260, acc: 3.9, grip: 1.03, stab: 1.03 } },
+    r8: { n: 'R8 V10 퍼포먼스', brand: 'audi', len: 0.90, wid: 0.46, nose: 0.114, hood: 0.169, roof: 0.318, roofA: 0.03, roofB: -0.14, deck: 0.228, tail: 0.228, wr: 0.081, base: { top: 331, acc: 3.4, grip: 1.01, stab: 0.97 } },
+    etrongt: { n: 'RS e-tron GT', brand: 'audi', len: 0.95, wid: 0.47, nose: 0.120, hood: 0.188, roof: 0.350, roofA: 0.03, roofB: -0.19, deck: 0.244, tail: 0.235, wr: 0.082, base: { top: 250, acc: 3.8, grip: 1.02, stab: 1.01 } },
+    models: { n: '모델 S 플레이드', brand: 'tesla', len: 0.98, wid: 0.48, nose: 0.134, hood: 0.195, roof: 0.360, roofA: 0.01, roofB: -0.24, deck: 0.250, tail: 0.243, wr: 0.083, base: { top: 322, acc: 4.0, grip: 1.00, stab: 1.00 } },
+    model3: { n: '모델 3 퍼포먼스', brand: 'tesla', len: 0.92, wid: 0.46, nose: 0.134, hood: 0.188, roof: 0.355, roofA: 0.00, roofB: -0.20, deck: 0.242, tail: 0.237, wr: 0.081, base: { top: 261, acc: 3.7, grip: 1.01, stab: 1.01 } },
+    m720s: { n: '720S', brand: 'mclaren', len: 0.93, wid: 0.46, nose: 0.104, hood: 0.162, roof: 0.312, roofA: 0.05, roofB: -0.14, deck: 0.216, tail: 0.217, wr: 0.082, base: { top: 341, acc: 3.6, grip: 1.02, stab: 0.96 } },
+    artura: { n: '아투라', brand: 'mclaren', len: 0.90, wid: 0.45, nose: 0.110, hood: 0.167, roof: 0.317, roofA: 0.05, roofB: -0.13, deck: 0.214, tail: 0.213, wr: 0.080, base: { top: 330, acc: 3.5, grip: 1.02, stab: 0.97 } }
   };
   var MODEL_BY_BRAND = {};
   Object.keys(MODELS).forEach(function (k) {
@@ -342,7 +342,7 @@
   function profilePts(m) {
     var L = m.len / 2;
     return [
-      [-L, 0.062],
+      [-L, 0.048],
       [-L, m.tail],
       [-L * 0.86, m.deck],
       [m.roofB, m.deck],
@@ -352,7 +352,7 @@
       [L * 0.58, m.hood * 0.93],
       [L * 0.90, m.nose],
       [L, m.nose * 0.86],
-      [L, 0.058]
+      [L, 0.046]
     ];
   }
   function carLabel(text, accent) {
