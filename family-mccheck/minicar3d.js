@@ -210,7 +210,7 @@
     for (var q = 1; q < nrm.length; q += 3) nrm[q] = 1;
     g.setAttribute('normal', new THREE.Float32BufferAttribute(nrm, 3));
     trackG = new THREE.Group();
-    trackG.add(new THREE.Mesh(g, new THREE.MeshLambertMaterial({ color: 0x5A6470 })));
+    trackG.add(new THREE.Mesh(g, new THREE.MeshLambertMaterial({ color: 0x5A6470, side: THREE.DoubleSide })));
     /* 가드레일 — 도로 양옆에 세운 얇은 난간(도로를 덮지 않게) */
     var railPos = [], railIdx = [], vi = 0, side, k2;
     for (k2 = 0; k2 < 2; k2++) {
@@ -654,8 +654,8 @@
     step(dt);
     placeCar();
     if (carG && camera) {
-      var back = new THREE.Vector3(0, 0, -1).applyQuaternion(carG.quaternion).multiplyScalar(6.2);
-      camera.position.lerp(new THREE.Vector3(carG.position.x + back.x, carG.position.y + 3.6, carG.position.z + back.z), 1 - Math.exp(-6 * dt));
+      var back = new THREE.Vector3(0, 0, -1).applyQuaternion(carG.quaternion).multiplyScalar(5.0);
+      camera.position.lerp(new THREE.Vector3(carG.position.x + back.x, carG.position.y + 2.3, carG.position.z + back.z), 1 - Math.exp(-6 * dt));
       camera.lookAt(carG.position.x, carG.position.y + 0.5, carG.position.z);
     }
     renderer.render(scene, camera);
