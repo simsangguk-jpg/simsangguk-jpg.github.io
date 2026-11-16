@@ -7,6 +7,7 @@
    - 다마고치가 그 3D 방 안에서 직접 돌아다니고 가구와 상호작용
      (침대→잠, 밥그릇→밥, 책상→공부, 러그→기뻐하기)
    - 저장: DOC.v9.tama / DOC.v9.room (가족 DB · 매일 23:59 구글드라이브 백업에 포함)
+   - V12: 펫 선택·방 꾸미기·돌보기 버튼을 균일한 버튼 키(키패드) 그리드로 정돈
    ============================================================ */
 (function (global) {
   'use strict';
@@ -468,6 +469,67 @@
   }
 
   /* ---------------- UI ---------------- */
+  /* 스타일(V12): 선택 창·조작 버튼을 버튼 키(키패드) 모양으로 통일 */
+  function t9style() {
+    if ($('t9style')) return;
+    var s = document.createElement('style');
+    s.id = 't9style';
+    s.textContent = [
+      /* 히어로(이름·레벨·능력치) */
+      '.t9-hero{display:flex;gap:9px;margin:2px 0 9px;padding:10px 12px 11px;border-radius:15px;background:linear-gradient(180deg,#F2FBF7,#FCFEFD);border:1px solid #D9F0E4}',
+      '.t9-hero .t9-info{flex:1;min-width:0}',
+      '.t9-hero b{font-size:15px;font-weight:900;letter-spacing:-.3px}',
+      '.t9-badge{display:inline-block;font-size:10px;font-weight:800;color:#0A7D56;background:#E7F8F1;border-radius:7px;padding:2px 6px;margin-left:4px;vertical-align:2px;letter-spacing:-.2px}',
+      '.t9-sub{font-size:11px;color:#79838F;font-weight:700;margin:3px 0 7px;letter-spacing:-.2px}',
+      '.t9-stat{display:flex;align-items:center;gap:6px;margin-top:4px}',
+      '.t9-stat .lb{font-size:10.5px;font-weight:800;color:#3C4450;width:57px;flex:none;letter-spacing:-.3px}',
+      '.t9-stat .bg{flex:1;height:7px;border-radius:99px;background:#E9EEF2;overflow:hidden}',
+      '.t9-stat .bg i{display:block;height:100%;border-radius:99px;transition:width .3s}',
+      '.t9-stat .v{font-size:10px;font-weight:800;color:#79838F;width:18px;flex:none;text-align:right}',
+      /* 펫 종류 선택 */
+      '.t9-setup{background:#FCFDFD;border:1px solid #E9EEF2;border-radius:16px;padding:11px;margin-bottom:10px}',
+      '.t9-setup-h{font-size:12.5px;font-weight:900;letter-spacing:-.3px;margin:0 0 8px}',
+      '.t9-sp-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}',
+      '@media(min-width:430px){.t9-sp-grid{grid-template-columns:repeat(4,1fr)}}',
+      '.t9-sp{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-height:66px;padding:8px 4px 7px;border-radius:14px;background:linear-gradient(180deg,#fff,#F8FAFB);border:1.5px solid #EAEEF2;box-shadow:0 2px 0 #E6ECF1;font-size:11px;font-weight:800;color:#3C4450;letter-spacing:-.3px;line-height:1.2;transition:transform .08s,box-shadow .1s,border-color .12s,background .12s}',
+      '.t9-sp img{width:30px;height:30px;display:block}',
+      '.t9-sp:active{transform:translateY(2px);box-shadow:none;background:#F1F5F7}',
+      '.t9-sp.on{border-color:#0E9F6E;background:linear-gradient(180deg,#F3FCF7,#E9F9F1);color:#0A7D56;box-shadow:0 2px 0 #C4E8D8,0 5px 12px rgba(14,159,110,.12)}',
+      '.t9-sp.on::after{content:"\\2713";position:absolute;top:-5px;right:-5px;width:18px;height:18px;border-radius:50%;background:#0E9F6E;color:#fff;font-size:10px;font-weight:900;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 5px rgba(14,159,110,.35)}',
+      '.t9-namerow{display:flex;gap:7px;margin-top:8px}',
+      '.t9-namerow .field{margin-bottom:0;flex:1;min-width:0;padding:12px 13px}',
+      '.t9-namerow .btn{width:auto;flex:none;padding:0 16px;white-space:nowrap;border-radius:13px;font-size:13.5px}',
+      /* 3D 무대 */
+      '.t9-canvas-wrap{position:relative;width:100%;height:250px;border-radius:16px;overflow:hidden;background:#F5F7F8;border:1px solid #EAEEF2}',
+      '@media(min-width:430px){.t9-canvas-wrap{height:300px}}',
+      '#t9Canvas{display:block;width:100%;height:100%;touch-action:pan-y}',
+      '.t9-cam-hint{position:absolute;left:50%;bottom:8px;transform:translateX(-50%);padding:4px 10px;border-radius:20px;background:rgba(20,24,29,.5);color:#fff;font-size:10.5px;font-weight:800;letter-spacing:-.2px;pointer-events:none;backdrop-filter:blur(2px)}',
+      /* 돌보기·행동 키패드 (3열×2줄 + 하단 와이드 키) */
+      '.t9-acts{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:10px}',
+      '.t9-acts button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;height:54px;border-radius:14px;background:linear-gradient(180deg,#fff,#F6F9FA);border:1.5px solid #EAEEF2;box-shadow:0 3px 0 #E3EAEF,0 5px 10px rgba(20,24,29,.05);font-size:11px;font-weight:800;color:#3C4450;letter-spacing:-.3px;line-height:1.15;transition:transform .07s,box-shadow .09s,background .12s,border-color .12s}',
+      '.t9-acts button span{font-size:17px;line-height:1}',
+      '.t9-acts button:active{transform:translateY(3px);box-shadow:0 0 0 #E3EAEF,0 1px 3px rgba(20,24,29,.05);background:#F0F5F3}',
+      '.t9-acts button.wide{grid-column:1/-1;flex-direction:row;gap:6px;height:46px;background:linear-gradient(180deg,#EAF9F2,#DEF5E9);border-color:#BFE9D6;color:#0A7D56;box-shadow:0 3px 0 #C4E8D8,0 5px 12px rgba(14,159,110,.10);font-size:12px}',
+      '.t9-acts button.wide span{font-size:16px}',
+      '@media(hover:hover){.t9-acts button:hover{border-color:#CFE6DC;background:#F4FBF8}.t9-acts button.wide:hover{background:#E1F7EC}}',
+      /* 방 꾸미기 키 그리드 */
+      '.t9-room{margin-top:12px;border-top:1px solid #EAEEF2;padding-top:11px}',
+      '.t9-rh{font-size:12.5px;font-weight:900;letter-spacing:-.3px}',
+      '.t9-rh-sub{display:block;font-size:10.5px;font-weight:700;color:#79838F;margin-top:2px;letter-spacing:-.2px}',
+      '.t9-grp{margin-top:9px}',
+      '.t9-glb{font-size:10.5px;font-weight:900;color:#79838F;letter-spacing:.3px;margin-bottom:5px}',
+      '.t9-keys{display:flex;flex-wrap:wrap;gap:6px}',
+      '.t9-key{flex:1 1 auto;min-width:0;display:flex;align-items:center;justify-content:center;gap:5px;height:38px;padding:0 7px;border-radius:12px;background:linear-gradient(180deg,#fff,#F8FAFB);border:1.5px solid #EAEEF2;box-shadow:0 2px 0 #E6ECF1;font-size:11.5px;font-weight:800;color:#3C4450;letter-spacing:-.3px;white-space:nowrap;overflow:hidden;transition:transform .07s,box-shadow .1s,background .12s,border-color .12s}',
+      '.t9-key i{width:13px;height:13px;border-radius:4px;flex:none;box-shadow:inset 0 0 0 1px rgba(20,24,29,.12)}',
+      '.t9-key:active{transform:translateY(2px);box-shadow:none;background:#F1F5F7}',
+      '.t9-key.on{border-color:#0E9F6E;background:linear-gradient(180deg,#F3FCF7,#E9F9F1);color:#0A7D56;box-shadow:0 2px 0 #C4E8D8}',
+      '.t9-keys.c2 .t9-key{flex-basis:calc((100% - 6px)/2)}',
+      '.t9-keys.c3 .t9-key{flex-basis:calc((100% - 12px)/3)}',
+      '.t9-keys.c4 .t9-key{flex-basis:calc((100% - 18px)/4)}',
+      '.t9-keys.c5 .t9-key{flex-basis:calc((100% - 24px)/5)}'
+    ].join('');
+    document.head.appendChild(s);
+  }
   function bar(lb, v, col) {
     return '<div class="t9-stat"><span class="lb">' + lb + '</span><span class="bg"><i style="width:' + v + '%;background:' + col + '"></i></span><span class="v">' + v + '</span></div>';
   }
@@ -498,37 +560,38 @@
     box.innerHTML =
       '<div class="t9-setup-h">🥚 내 다마고치 만들기</div>' +
       '<div class="t9-sp-grid">' + Object.keys(SPECIES).map(function (k) {
-        return '<button type="button" class="t9-sp' + (window.__t9sp === k ? ' on' : '') + '" data-t9sp="' + k + '"><img alt="" src="data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'40\' height=\'40\'%3E%3Ccircle cx=\'20\' cy=\'22\' r=\'13\' fill=\'%23' + SPECIES[k].c.toString(16).padStart(6, '0') + '\'/%3E%3Ccircle cx=\'15\' cy=\'19\' r=\'2\' fill=\'%23222\'/%3E%3Ccircle cx=\'25\' cy=\'19\' r=\'2\' fill=\'%23222\'/%3E%3C/svg%3E">' + esc(SPECIES[k].n) + '</button>';
+        var sel = window.__t9sp === k;
+        return '<button type="button" class="t9-sp' + (sel ? ' on' : '') + '" data-t9sp="' + k + '" aria-pressed="' + (sel ? 'true' : 'false') + '"><img alt="" src="data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'40\' height=\'40\'%3E%3Ccircle cx=\'20\' cy=\'22\' r=\'13\' fill=\'%23' + SPECIES[k].c.toString(16).padStart(6, '0') + '\'/%3E%3Ccircle cx=\'15\' cy=\'19\' r=\'2\' fill=\'%23222\'/%3E%3Ccircle cx=\'25\' cy=\'19\' r=\'2\' fill=\'%23222\'/%3E%3C/svg%3E"><span>' + esc(SPECIES[k].n) + '</span></button>';
       }).join('') + '</div>' +
-      '<div style="display:flex;gap:7px;margin-top:9px">' +
-      '<input class="field" id="t9Name" maxlength="10" placeholder="이름 직접 정하기 (예: 몽글이)" style="margin-bottom:0;flex:1">' +
-      '<button type="button" class="btn" id="t9Start" style="width:auto;padding:0 18px">태어나기</button></div>' +
+      '<div class="t9-namerow">' +
+      '<input class="field" id="t9Name" maxlength="10" placeholder="이름 직접 정하기 (예: 몽글이)">' +
+      '<button type="button" class="btn" id="t9Start">태어나기</button></div>' +
       '<div class="hint">종류를 고르고 이름을 지어 주세요. 키우는 방식(밥·쓰다듬기·놀이·재우기)에 따라 성장·성격이 달라져요.</div>';
   }
   function roomUI() {
     var r = roomOf(true), box = $('t9Room');
     if (!box) return;
     box.innerHTML =
-      '<div class="t9-rh">🛏️ 내 방 꾸미기 <span class="t9-rh-sub">벽지·바닥·가구·조명을 골라 저장해요</span></div>' +
-      '<div class="t9-optrow"><span class="t9-lb">벽지</span>' + WALLS.map(function (w) {
-        return '<button type="button" class="t9-opt' + (r.wall === w[0] ? ' on' : '') + '" data-t9wall="' + w[0] + '"><i style="background:' + w[0] + '"></i>' + w[1] + '</button>';
-      }).join('') + '</div>' +
-      '<div class="t9-optrow"><span class="t9-lb">바닥</span>' + FLOORS.map(function (w) {
-        return '<button type="button" class="t9-opt' + (r.floor === w[0] ? ' on' : '') + '" data-t9floor="' + w[0] + '"><i style="background:' + w[0] + '"></i>' + w[1] + '</button>';
-      }).join('') + '</div>' +
-      '<div class="t9-optrow"><span class="t9-lb">조명</span>' + LIGHTS.map(function (w) {
-        return '<button type="button" class="t9-opt' + (r.light === w[0] ? ' on' : '') + '" data-t9light="' + w[0] + '">' + w[1] + '</button>';
-      }).join('') + '</div>' +
-      '<div class="t9-optrow"><span class="t9-lb">가구</span>' + Object.keys(FURN).map(function (k) {
-        return '<button type="button" class="t9-opt' + (r.items && r.items[k] ? ' on' : '') + '" data-t9furn="' + k + '">' + FURN[k].n + '</button>';
-      }).join('') + '</div>';
+      '<div class="t9-rh">🛏️ 내 방 꾸미기<span class="t9-rh-sub">벽지·바닥·가구·조명을 골라 저장해요</span></div>' +
+      '<div class="t9-grp"><div class="t9-glb">🎨 벽지</div><div class="t9-keys c3">' + WALLS.map(function (w) {
+        return '<button type="button" class="t9-key' + (r.wall === w[0] ? ' on' : '') + '" data-t9wall="' + w[0] + '"><i style="background:' + w[0] + '"></i>' + esc(w[1]) + '</button>';
+      }).join('') + '</div></div>' +
+      '<div class="t9-grp"><div class="t9-glb">🪵 바닥</div><div class="t9-keys c3">' + FLOORS.map(function (w) {
+        return '<button type="button" class="t9-key' + (r.floor === w[0] ? ' on' : '') + '" data-t9floor="' + w[0] + '"><i style="background:' + w[0] + '"></i>' + esc(w[1]) + '</button>';
+      }).join('') + '</div></div>' +
+      '<div class="t9-grp"><div class="t9-glb">💡 조명</div><div class="t9-keys c3">' + LIGHTS.map(function (w) {
+        return '<button type="button" class="t9-key' + (r.light === w[0] ? ' on' : '') + '" data-t9light="' + w[0] + '">' + esc(w[1]) + '</button>';
+      }).join('') + '</div></div>' +
+      '<div class="t9-grp"><div class="t9-glb">🛋️ 가구 <span style="font-weight:700">— 누르면 놓기·치우기</span></div><div class="t9-keys c4">' + Object.keys(FURN).map(function (k) {
+        return '<button type="button" class="t9-key' + (r.items && r.items[k] ? ' on' : '') + '" data-t9furn="' + k + '">' + esc(FURN[k].n) + '</button>';
+      }).join('') + '</div></div>';
   }
 
   /* ---------------- 패널 DOM ---------------- */
   function paneHtml() {
     return '<div class="card" id="t9Card" style="padding:12px 12px 14px">' +
       '<div class="card-head" style="margin-bottom:9px"><h2>🥚 3D 다마고치</h2><span class="sub" id="t9Sub">3D 방에서 직접 살아 움직여요</span></div>' +
-      '<div id="t9Setup"></div>' +
+      '<div id="t9Setup" class="t9-setup"></div>' +
       '<div id="t9Hero"></div>' +
       '<div class="t9-canvas-wrap" id="t9CanvasWrap">' +
       '<canvas id="t9Canvas"></canvas>' +
@@ -555,6 +618,7 @@
     el.className = 'hidden';
     el.innerHTML = paneHtml();
     view.appendChild(el);
+    t9style();
     /* nav 버튼 끼워 넣기(다마고치 자리 옆) */
     var btn = document.createElement('button');
     btn.type = 'button';
