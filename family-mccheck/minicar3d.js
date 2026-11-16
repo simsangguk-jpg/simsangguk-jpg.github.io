@@ -269,8 +269,8 @@
     var g = new THREE.Group();
     var body = new THREE.Mesh(new THREE.BoxGeometry(B.w, B.h, 0.82), new THREE.MeshLambertMaterial({ color: c.color }));
     body.position.y = 0.16; g.add(body);
-    var cab = new THREE.Mesh(new THREE.BoxGeometry(B.w * 0.7, 0.1, 0.36), new THREE.MeshLambertMaterial({ color: 0xBFE3F5 }));
-    cab.position.set(0, 0.27, -0.03); g.add(cab);
+    var cab = new THREE.Mesh(new THREE.BoxGeometry(B.w * 0.58, 0.075, 0.32), new THREE.MeshLambertMaterial({ color: 0xBFE3F5 }));
+    cab.position.set(0, 0.16 + B.h / 2 + 0.035, -0.02); g.add(cab);
     if (c.aero === 'spoiler') {
       var sp = new THREE.Mesh(new THREE.BoxGeometry(B.w * 0.9, 0.03, 0.14), new THREE.MeshLambertMaterial({ color: 0x2B3138 }));
       sp.position.set(0, 0.34, -0.38); g.add(sp);
@@ -595,9 +595,9 @@
 
     var u = run.u;
     var curv = curveCurvature(u);
-    var drift = curv * run.s * run.s * 0.16 * (1.25 - st.grip) * (1 - st.st * 0.45);
+    var drift = curv * run.s * run.s * 0.07 * (1.25 - st.grip) * (1 - st.st * 0.45);
     run.lane = clamp(run.lane + drift * dt, -1.3, 1.3);
-    var offRoad = Math.abs(run.lane) > 1.28;
+    var offRoad = Math.abs(run.lane) > 1.25;
     if (offRoad) run.s *= 1 - Math.min(0.9, dt * 2.2);
     run.shake = offRoad ? 1 : Math.max(0, run.shake - dt * 3);
 
@@ -657,9 +657,9 @@
     step(dt);
     placeCar();
     if (carG && camera) {
-      var back = new THREE.Vector3(0, 0, -1).applyQuaternion(carG.quaternion).multiplyScalar(5.0);
-      camera.position.lerp(new THREE.Vector3(carG.position.x + back.x, carG.position.y + 2.3, carG.position.z + back.z), 1 - Math.exp(-6 * dt));
-      camera.lookAt(carG.position.x, carG.position.y + 0.5, carG.position.z);
+      var back = new THREE.Vector3(0, 0, -1).applyQuaternion(carG.quaternion).multiplyScalar(3.8);
+      camera.position.lerp(new THREE.Vector3(carG.position.x + back.x, carG.position.y + 1.75, carG.position.z + back.z), 1 - Math.exp(-6 * dt));
+      camera.lookAt(carG.position.x, carG.position.y + 0.32, carG.position.z);
     }
     renderer.render(scene, camera);
     raceHud();
