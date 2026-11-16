@@ -869,7 +869,7 @@
   }
   function secFood() {
     return '<div class="card" id="v4Food"><div class="card-head"><h2>🍽️ 음식 사진 칼로리</h2><span class="sub" id="v4FoodSum">오늘 0kcal</span></div>' +
-      '<div class="fb-desc">음식 사진을 올리고 음식을 고르면 칼로리·영양을 간단히 분석해요. 설정에 Gemini 키를 넣으면 사진을 AI가 직접 봐요.</div>' +
+      '<div class="fb-desc">음식 사진을 올리고 음식을 고르면 칼로리·영양을 간단히 분석해요. 설정에서 미쁠 키를 넣으면 사진을 미쁠이 직접 봐요.</div>' +
       '<div style="display:flex;gap:7px;margin:9px 0 7px"><input class="field" id="v4FoodName" maxlength="30" list="v4FoodList" placeholder="음식 이름 (예: 김치찌개)" style="margin:0;flex:1"><input class="field" id="v4FoodQty" type="number" min="0.5" max="5" step="0.5" value="1" style="margin:0;width:74px"><span style="display:flex;align-items:center;font-size:12px;color:#79838F">인분</span></div>' +
       '<datalist id="v4FoodList">' + FOODS.map(function (f) { return '<option value="' + esc(f[0]) + '">'; }).join('') + '</datalist>' +
       '<div class="v4-flex"><button type="button" class="btn soft" id="v4FoodPhoto" style="padding:11px;font-size:12.5px">📷 음식 사진</button><button type="button" class="btn" id="v4FoodGo" style="padding:11px;font-size:12.5px">🔍 분석하기</button></div>' +
@@ -877,7 +877,7 @@
       '<div id="v4FoodResult" style="margin-top:8px"></div>' +
       '<div id="v4FoodLog" style="margin-top:6px"></div>' +
       '<div id="v4FoodKey" style="margin-top:4px"></div>' +
-      '<div class="hint">사진은 가족 저장소에 암호화되어 보관돼요. Gemini 키는 이 기기에만 저장되고 가족에게 공유되지 않아요.</div></div>';
+      '<div class="hint">사진은 가족 저장소에 암호화되어 보관돼요. 미쁠 키는 이 기기에만 저장되고 가족에게 공유되지 않아요.</div></div>';
   }
   var foodPhotoBuf = null;
   function renderFood() {
@@ -892,14 +892,14 @@
       if (!es.length) return '<div class="v4-empty">오늘 먹은 음식을 기록해 보세요</div>';
       return es.slice(0, 12).map(function (e) {
         return '<div class="v4-row"><span class="e">' + (e.photo && e.photo.thumb ? '<img src="' + e.photo.thumb + '" alt="" style="width:26px;height:26px;border-radius:8px;object-fit:cover">' : '🍽️') + '</span>' +
-          '<span class="tx"><b>' + esc(e.name) + (e.qty && e.qty !== 1 ? ' × ' + e.qty : '') + '</b><small>' + memEmoji(e.by) + ' ' + esc(memName(e.by)) + ' · ' + F.ago(e.at) + (e.src === 'ai' ? ' · 🤖 AI 분석' : '') + '</small></span>' +
+          '<span class="tx"><b>' + esc(e.name) + (e.qty && e.qty !== 1 ? ' × ' + e.qty : '') + '</b><small>' + memEmoji(e.by) + ' ' + esc(memName(e.by)) + ' · ' + F.ago(e.at) + (e.src === 'ai' ? ' · 💚 미쁠 분석' : '') + '</small></span>' +
           '<span class="rt"><b>' + Math.round(e.kcal) + '</b>kcal<button type="button" class="v4-x" data-fdel="' + e._id + '" style="display:inline-flex;margin-left:6px;vertical-align:middle">✕</button></span></div>';
       }).join('');
     });
     if (keyBox) {
-      paint(keyBox, ls(LS_AI) ? 'has' : 'none', function () {
-        if (ls(LS_AI)) return '<div class="v4-mini" style="color:#0A7D56;margin-top:6px">🤖 Gemini 키가 등록되어 사진 자동 분석을 쓸 수 있어요. <button type="button" class="v4-tag gray" id="v4AiOff" style="border:none">키 지우기</button></div>';
-        return '<button type="button" class="btn ghost" id="v4AiOn" style="padding:9px;font-size:12px;margin-top:6px">🤖 Gemini API 키 넣고 사진 자동 분석</button>';
+      paint(keyBox, aiKey() ? 'has' : 'none', function () {
+        if (aiKey()) return '<div class="v4-mini" style="color:#0A7D56;margin-top:6px">💚 미쁠 키가 연결되어 사진 자동 분석을 쓸 수 있어요. <button type="button" class="v4-tag gray" id="v4AiSet" style="border:none">키 설정</button></div>';
+        return '<button type="button" class="btn ghost" id="v4AiOn" style="padding:9px;font-size:12px;margin-top:6px">💚 미쁠 키 넣고 사진 자동 분석</button>';
       });
     }
   }
@@ -923,18 +923,21 @@
       var v = V4(); drop(v.food, b.getAttribute('data-fdel')); save(); renderFood();
     });
     document.addEventListener('click', function (e) {
-      if (e.target && e.target.id === 'v4AiOn') {
-        F.openSheet('<h3>🤖 Gemini API 키</h3><div class="sdesc">키를 넣으면 음식 사진을 AI가 보고 칼로리를 추정해요. 키는 이 기기에만 저장돼요.</div>' +
+      if (e.target && (e.target.id === 'v4AiOn' || e.target.id === 'v4AiSet')) {
+        if (global.FAM9AI && global.FAM9AI.keySheet) {
+          global.FAM9AI.keySheet('미쁠 · 음식 사진 분석', '키를 넣으면 미쁠이 음식 사진을 보고 칼로리를 추정해요. 키는 이 기기에만 저장되고, 없어도 대표 음식 표로 계산돼요.', function () { renderFood(); });
+          return;
+        }
+        F.openSheet('<h3>💚 미쁠 API 키</h3><div class="sdesc">키를 넣으면 음식 사진을 미쁠이 보고 칼로리를 추정해요. 키는 이 기기에만 저장돼요.</div>' +
           '<div class="form-row"><label>API 키</label><input class="field" id="v4AiKey" placeholder="AIza..." autocomplete="off"></div>' +
           '<div style="display:flex;gap:8px;margin-top:6px"><button type="button" class="btn ghost" data-sheet-close>취소</button><button type="button" class="btn" id="v4AiSave">저장</button></div>' +
           '<div class="hint">Google AI Studio(aistudio.google.com)에서 무료 키를 만들 수 있어요. 키가 없어도 대표 한식·여행 음식 표로 계산돼요.</div>');
         $('v4AiSave').onclick = function () {
           var k = ($('v4AiKey').value || '').trim();
           if (k.length < 10) { toast('키를 확인해 주세요'); return; }
-          ls(LS_AI, k); F.closeSheet(); renderFood(); toast('Gemini 키를 저장했어요');
+          ls(LS_AI, k); F.closeSheet(); renderFood(); toast('미쁠 키를 저장했어요');
         };
       }
-      if (e.target && e.target.id === 'v4AiOff') { ls(LS_AI, ''); renderFood(); toast('키를 지웠어요'); }
       if (e.target && e.target.id === 'v4FoodSave') saveFoodResult();
     });
   }
@@ -942,11 +945,11 @@
   function analyzeFood() {
     var name = ($('v4FoodName').value || '').trim();
     var qty = Number($('v4FoodQty').value) || 1;
-    var key = ls(LS_AI);
+    var key = aiKey();
     var box = $('v4FoodResult');
     if (!name && !foodPhotoBuf) { toast('음식 이름을 적거나 사진을 올려 주세요'); return; }
     if (key && foodPhotoBuf) {
-      box.innerHTML = '<div class="v4-row"><span class="e">🤖</span><span class="tx"><b>사진을 보고 있어요…</b><small>Gemini가 음식과 양을 추정하는 중</small></span></div>';
+      box.innerHTML = '<div class="v4-row"><span class="e">💚</span><span class="tx"><b>사진을 보고 있어요…</b><small>미쁠이 음식과 양을 추정하는 중</small></span></div>';
       F.mediaUrl(foodPhotoBuf.id).then(function (du) {
         return geminiFood(du, name, key);
       }).then(function (r) {
@@ -974,7 +977,7 @@
     var kc = Math.round(r.kcal * qty), cb = Math.round((r.carb || 0) * qty), pt = Math.round((r.prot || 0) * qty), ft = Math.round((r.fat || 0) * qty);
     foodDraft = { name: r.name, kcal: kc, carb: cb, prot: pt, fat: ft, qty: qty, src: src };
     box.innerHTML = '<div style="border:1px solid #E9EEF2;border-radius:14px;padding:11px;background:#FBFDFC">' +
-      '<div class="v4-row" style="border-bottom:none;padding:0"><span class="e">🍽️</span><span class="tx"><b>' + esc(r.name) + (qty !== 1 ? ' × ' + qty + '인분' : '') + '</b><small>' + (src === 'ai' ? '🤖 사진 AI 분석' : '📋 음식 칼로리 표 기준') + '</small></span><span class="rt"><b style="font-size:15px;color:#0A7D56">' + kc + '</b> kcal</span></div>' +
+      '<div class="v4-row" style="border-bottom:none;padding:0"><span class="e">🍽️</span><span class="tx"><b>' + esc(r.name) + (qty !== 1 ? ' × ' + qty + '인분' : '') + '</b><small>' + (src === 'ai' ? '💚 미쁠 사진 분석' : '📋 음식 칼로리 표 기준') + '</small></span><span class="rt"><b style="font-size:15px;color:#0A7D56">' + kc + '</b> kcal</span></div>' +
       '<div class="v4-mini" style="margin-top:5px">탄수화물 ' + cb + 'g · 단백질 ' + pt + 'g · 지방 ' + ft + 'g</div>' +
       '<div class="v4-mini" style="margin-top:3px">' + kcalTip(kc) + '</div>' +
       '<button type="button" class="btn" id="v4FoodSave" style="margin-top:8px;padding:10px;font-size:13px">오늘 기록에 저장</button></div>';
@@ -996,27 +999,23 @@
     var inp = $('v4FoodName'); if (inp) inp.value = '';
     save(); renderFood(); toast('오늘 먹은 음식으로 기록했어요');
   }
+  /* 사진 분석은 가족포털 공용 미쁠 엔진(FAM9AI)을 그대로 쓴다 — 모델 폴백·키 공유·원인 안내가 한곳에 있다 */
+  function aiKey() {
+    if (global.FAM9AI && global.FAM9AI.key) { var k = global.FAM9AI.key(); if (k) return k; }
+    return ls(LS_AI) || '';
+  }
   function geminiFood(dataUrl, hint, key) {
-    var b64 = String(dataUrl).split(',')[1] || '';
     var prompt = '음식 사진을 보고 음식 이름과 1인분 기준 영양을 추정해. ' +
       (hint ? '사용자가 적은 음식 이름: ' + hint + '. ' : '') +
       '아래 JSON만 출력해: {"name":"음식이름(한국어)","kcal":숫자,"carb":숫자,"prot":숫자,"fat":숫자}';
-    return fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=' + encodeURIComponent(key), {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        contents: [{ parts: [{ text: prompt }, { inline_data: { mime_type: 'image/jpeg', data: b64 } }] }],
-        generationConfig: { temperature: 0.2, maxOutputTokens: 200 }
-      })
-    }).then(function (r) { if (!r.ok) throw new Error('AI ' + r.status); return r.json(); }).then(function (j) {
-      var txt = j && j.candidates && j.candidates[0] && j.candidates[0].content && j.candidates[0].content.parts &&
-        j.candidates[0].content.parts.map(function (p) { return p.text || ''; }).join('') || '';
-      var m = txt.match(/\{[\s\S]*\}/);
+    if (!global.FAM9AI || !global.FAM9AI.ask) return Promise.resolve(null);
+    return global.FAM9AI.ask(prompt, { images: [dataUrl], temperature: 0.2, maxTokens: 300 }).then(function (txt) {
+      var m = String(txt).match(/\{[\s\S]*\}/);
       if (!m) return null;
       var o = JSON.parse(m[0]);
       if (!o || !o.kcal) return null;
       return { name: o.name || hint || '음식', kcal: Number(o.kcal) || 0, carb: Number(o.carb) || 0, prot: Number(o.prot) || 0, fat: Number(o.fat) || 0 };
-    });
+    }).then(null, function () { return null; });
   }
 
   /* ============================================================
@@ -1032,7 +1031,7 @@
       '<div style="display:flex;align-items:baseline;gap:6px;margin:0 0 2px"><span style="font-size:13px;font-weight:900;color:#3C4450;letter-spacing:-.3px">① 가족이 좋아하는 것</span><span class="v4-mini" style="margin:0">음식 · 취미 · 관심사</span></div>' +
       '<div id="v4LikeList"></div>' +
       '<div style="display:flex;align-items:baseline;gap:6px;margin:15px 0 5px;padding-top:12px;border-top:1.5px dashed #E7EDEA"><span style="font-size:13px;font-weight:900;color:#3C4450;letter-spacing:-.3px">② 갖고 싶은 물건 목록</span><span class="v4-mini" style="margin:0">한 사람당 최대 5개</span></div>' +
-      '<div class="fb-desc">사진을 붙이고, 다나와·네이버·쿠팡 <b>최저가 검색</b>이나 <b>AI 최저가 조회</b>(Gemini 키 등록 시)도 해 보세요. 찜·선물 완료 표시도 여기서 해요.</div>' +
+      '<div class="fb-desc">사진을 붙이고, 다나와·네이버·쿠팡 <b>최저가 검색</b>이나 <b>미쁠 최저가 조회</b>(미쁠 키 등록 시)도 해 보세요. 찜·선물 완료 표시도 여기서 해요.</div>' +
       '<div id="v9WishList" style="margin-top:9px"></div>' +
       '<button type="button" class="btn soft" id="v9WishAdd" style="margin-top:8px">＋ 갖고 싶은 물건 올리기</button>' +
       '</div>';

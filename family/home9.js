@@ -10,7 +10,7 @@
    ⑧ 😴 수면시간·피로도·에너지 (원터치 취침/기상 + 자동 추정 → 다마고치 컨디션 연동)
    ⑨ 🎒 등교·귀가 안심 기록 (원터치 + 위치 자동 판정)
    ⑩ 🪄 홈 공동 꾸미기 + 수정 이력 영구 기록
-   ⑪ 🤖 테슬라 로봇 AI 도우미 (Gemini · 우측 하단 플로팅)
+   ⑪ 💚 미쁠 AI 도우미 (초록 ㅅ 캐릭터 · Gemini · 우측 하단 플로팅)
    ============================================================ */
 (function (global) {
   'use strict';
@@ -142,7 +142,7 @@
       '<div class="q9-acts">' +
       '<button type="button" class="btn soft" id="q9ToCheer" style="padding:9px 12px;font-size:12.5px">💬 응원으로 보내기</button>' +
       '<button type="button" class="btn soft" id="q9ToChat" style="padding:9px 12px;font-size:12.5px">📨 채팅으로 보내기</button>' +
-      (global.FAM9AI && global.FAM9AI.key() ? '<button type="button" class="btn ghost" id="q9AiNew" style="padding:9px 12px;font-size:12.5px">🤖 새 추천 받기</button>' : '') +
+      (global.FAM9AI && global.FAM9AI.key() ? '<button type="button" class="btn ghost" id="q9AiNew" style="padding:9px 12px;font-size:12.5px">💚 미쁠에게 새 추천 받기</button>' : '') +
       '</div></div>';
     if (card.__sig !== html) { card.__sig = html; $('v9QuoteBody').innerHTML = html; }
   }
@@ -176,7 +176,7 @@
       var ai = e.target.closest('#q9AiNew');
       if (ai) {
         if (!global.FAM9AI) return;
-        toast('🤖 오늘의 새 말을 추천받는 중…');
+        toast('💚 미쁠이 오늘의 새 말을 고르는 중…');
         global.FAM9AI.ask(
           '우리 가족(아빠 상국·엄마 수향·중학생 지섭·지율이)에게 오늘 보여줄 문구를 JSON으로 만들어줘. ' +
           '형식: {"quote":{"text":"명언 한 문장","by":"이름","src":"출전"},"fam":{"text":"가족끼리 주고받으면 좋은 따뜻한 한마디","from":"누구에게나"}}. ' +
@@ -192,7 +192,7 @@
           var card = $('v9QuoteCard');
           if (card) card.__sig = null;
           renderQuote();
-          toast('🤖 오늘의 문구를 새로 담았어요');
+          toast('💚 미쁠이 오늘의 문구를 새로 담았어요');
         }).catch(function () { toast('추천을 받지 못했어요 — 잠시 후 다시'); });
       }
     });
@@ -227,14 +227,14 @@
       var p = rec.thumb ? { thumb: rec.thumb } : list.filter(function (x) { return x.id === rec.pid; })[0] || null;
       html = '<div class="pod9">' +
         '<div class="pod9-ph" data-v9pod="' + esc(rec.pid || '') + '">' + (p ? '<img src="' + esc(p.thumb || rec.thumb) + '" alt="오늘의 대표사진" loading="lazy">' : '📷') + '</div>' +
-        '<div class="pod9-cap"><b>⭐ 오늘의 대표사진</b>' + '<small>' + (rec.ai ? '🤖 AI가 골랐어요' : (rec.auto ? '좋아요 최다 자동 선정' : memEmoji(rec.by) + ' ' + esc(memName(rec.by)) + ' 님이 선정')) + '</small></div></div>';
+        '<div class="pod9-cap"><b>⭐ 오늘의 대표사진</b>' + '<small>' + (rec.ai ? '💚 미쁠이 골랐어요' : (rec.auto ? '좋아요 최다 자동 선정' : memEmoji(rec.by) + ' ' + esc(memName(rec.by)) + ' 님이 선정')) + '</small></div></div>';
     } else {
       html = '<div class="pod9 empty"><div class="pod9-ph">📷</div><div class="pod9-cap"><b>오늘의 대표사진</b><small>사진을 올리고 오늘의 한 장을 골라 보세요</small></div></div>';
     }
     html += '<div style="display:flex;gap:7px;margin-top:9px">' +
       '<button type="button" class="btn soft" id="v9PodPick" style="flex:1;padding:10px;font-size:13px">🖼️ 오늘의 한 장 고르기</button>' +
       '<button type="button" class="btn soft" id="v9PodUp" style="flex:1;padding:10px;font-size:13px">📷 새 사진 올리기</button>' +
-      '<button type="button" class="btn ghost" id="v9PodAi" style="flex:1;padding:10px;font-size:13px">🤖 AI 추천</button></div>';
+      '<button type="button" class="btn ghost" id="v9PodAi" style="flex:1;padding:10px;font-size:13px">💚 미쁠 추천</button></div>';
     if (body.__sig !== rec && body.__sig !== (rec && rec.pid)) { body.__sig = rec && rec.pid; body.innerHTML = html; }
     else if (!body.__sig) { body.__sig = rec && rec.pid; body.innerHTML = html; }
   }
@@ -283,10 +283,10 @@
       }
       var ai = e.target.closest('#v9PodAi');
       if (ai) {
-        if (!global.FAM9AI || !global.FAM9AI.key()) { global.FAM9AI.keySheet('AI 베스트컷 추천', '오늘 올라온 가족 사진 중 가장 좋은 한 장을 AI가 골라 줘요.', function () { wirePod(); }); return; }
+        if (!global.FAM9AI || !global.FAM9AI.key()) { global.FAM9AI.keySheet('미쁠 베스트컷 추천', '오늘 올라온 가족 사진 중 가장 좋은 한 장을 미쁠이 골라 줘요.', function () { wirePod(); }); return; }
         var list = photoList();
         if (!list.length) { toast('먼저 사진을 올려 주세요'); return; }
-        toast('🤖 AI가 베스트컷을 고르는 중…');
+        toast('💚 미쁠이 베스트컷을 고르는 중…');
         var parts = list.slice(0, 6).map(function (p) { return p.thumb; });
         global.FAM9AI.ask(
           '가족 사진이 순서대로 ' + parts.length + '장 들어 있어요. 오늘의 대표 베스트컷을 1장만 골라줘. 기준: 표정·구도·빛. 답은 "1부터 ' + parts.length + '까지 숫자 하나"만.',
@@ -300,8 +300,8 @@
           save();
           $('v9PodBody').__sig = null;
           renderPod();
-          toast('🤖 AI가 ' + n + '번 사진을 골랐어요');
-        }).catch(function () { toast('AI 추천 실패 — 좋아요 기준으로 자동 선정했어요'); });
+          toast('💚 미쁠이 ' + n + '번 사진을 골랐어요');
+        }).catch(function () { toast('미쁠 추천 실패 — 좋아요 기준으로 자동 선정했어요'); });
         return;
       }
       var open = e.target.closest('[data-v9pod]');
@@ -977,73 +977,150 @@
   }
 
   /* ============================================================
-     ⑪ 테슬라 로봇 + Gemini 도우미
+     ⑪ 미쁠 — 우리 가족 AI 비서 (초록 ㅅ 캐릭터 · 우측 하단 플로팅)
      ============================================================ */
   var chatHist = [];
+  var MIPP_GREET = '안녕하세요! 저는 미쁠이에요 💚 오늘 일정 추천, 숙제 도움, 주말 계획… 무엇이든 물어보세요!';
   var FAM_CTX = '우리 가족: 아빠 상국(육군 준위, 파주 거주, 교대근무), 엄마 수향, 첫째 지섭(중학생, 2013년생), 둘째 지율(2015년생). ' +
-    '너는 우리가족포털의 AI 도우미야. 한국어로 다정하고 간결하게(3문장 이내) 답하고, 가족이 서로 아끼고 재미있게 지내도록 도와줘.';
+    '너는 심상국 가족의 AI 비서 "미쁠"이야. 초록색 ㅅ자 모양의 다정한 마스코트이고, 가족 모두 너를 미쁠이라고 불러. ' +
+    '한국어로 다정하고 간결하게(3문장 이내) 답하고, 가족이 서로 아끼고 재미있게 지내도록 도와줘.';
+
+  /* 미쁠 마스코트 그림: 통통한 초록 ㅅ 몸체 + 동그란 두 눈 + 밝은 미소 */
+  function mippeulSVG(size) {
+    var s = size || 34;
+    return '<svg viewBox="0 0 48 48" width="' + s + '" height="' + s + '" aria-hidden="true" focusable="false">' +
+      '<g stroke="#22C55E" stroke-width="11" stroke-linecap="round" fill="none">' +
+      '<line x1="24" y1="12.5" x2="12.6" y2="35.5"/>' +
+      '<line x1="24" y1="12.5" x2="35.4" y2="35.5"/></g>' +
+      '<circle cx="24" cy="12.5" r="7" fill="#22C55E"/>' +
+      '<ellipse cx="19" cy="19.6" rx="2.6" ry="3.6" fill="#0F172A"/>' +
+      '<ellipse cx="29" cy="19.6" rx="2.6" ry="3.6" fill="#0F172A"/>' +
+      '<circle cx="18.2" cy="18.2" r="0.95" fill="#FFFFFF"/>' +
+      '<circle cx="28.2" cy="18.2" r="0.95" fill="#FFFFFF"/>' +
+      '<path d="M21 25.6 Q24 28.2 27 25.6" stroke="#0F172A" stroke-width="1.6" stroke-linecap="round" fill="none"/>' +
+      '</svg>';
+  }
+  function mippeulAvatar(size) {
+    return '<span class="f9-av" style="width:' + (size || 22) + 'px;height:' + (size || 22) + 'px">' + mippeulSVG((size || 22) - 3) + '</span>';
+  }
+
   function robotBtn() {
     if ($('f9robot')) return;
     var b = document.createElement('button');
     b.type = 'button';
     b.id = 'f9robot';
-    b.setAttribute('aria-label', '가족 AI 도우미');
-    b.innerHTML = '<svg viewBox="0 0 48 48" width="34" height="34"><rect x="12" y="6" width="24" height="26" rx="8" fill="#F3F6F8" stroke="#B9C4CC" stroke-width="1.6"/><rect x="16" y="13" width="16" height="8" rx="4" fill="#0E9F6E"/><circle cx="21" cy="17" r="1.8" fill="#fff"/><circle cx="27" cy="17" r="1.8" fill="#fff"/><rect x="17" y="26" width="14" height="2.4" rx="1.2" fill="#D7DEE3"/><line x1="24" y1="6" x2="24" y2="2.4" stroke="#B9C4CC" stroke-width="1.6"/><circle cx="24" cy="2.4" r="1.6" fill="#FFC24B"/><rect x="8" y="18" width="4" height="10" rx="2" fill="#D7DEE3"/><rect x="36" y="18" width="4" height="10" rx="2" fill="#D7DEE3"/></svg>';
+    b.setAttribute('aria-label', '미쁠 AI 도우미');
+    b.title = '미쁠 — 우리 가족 AI 비서';
+    b.innerHTML = mippeulSVG(38);
     document.body.appendChild(b);
     b.addEventListener('click', robotClick);
   }
-  function robotClick() {
-    if (!global.FAM9AI || !global.FAM9AI.key()) {
-      global.FAM9AI.keySheet('가족 AI 도우미 (테슬라 로봇)', 'Gemini API 키를 등록하면 가족포털 어디서나 AI 도우미와 이야기할 수 있어요. 키는 이 기기에만 저장돼요.', function () {
-        openChat();
-      });
+  function robotClick() { openChat(); }
+  function openChat() {
+    if ($('f9chat')) {
+      $('f9chat').classList.remove('hidden');
+      var old = $('f9chatIn');
+      if (old) old.focus();
       return;
     }
-    openChat();
-  }
-  function openChat() {
-    if ($('f9chat')) { $('f9chat').classList.remove('hidden'); return; }
     var wrap = document.createElement('div');
     wrap.id = 'f9chat';
-    wrap.innerHTML = '<div class="f9chat-head">🤖 가족 AI 도우미 <button type="button" id="f9chatX">✕</button></div>' +
+    wrap.innerHTML = '<div class="f9chat-head">' +
+        '<span class="f9chat-av">' + mippeulSVG(21) + '</span>' +
+        '<span class="f9chat-title">미쁠<small>우리 가족 AI 비서</small></span>' +
+        '<button type="button" class="f9h" id="f9chatKey" title="키 설정" aria-label="키 설정">🔑</button>' +
+        '<button type="button" class="f9h" id="f9chatNew" title="새 대화" aria-label="새 대화">🧹</button>' +
+        '<button type="button" class="f9h" id="f9chatX" title="닫기" aria-label="닫기">✕</button>' +
+      '</div>' +
       '<div class="f9chat-body" id="f9chatBody"></div>' +
-      '<div class="f9chat-foot"><input id="f9chatIn" placeholder="무엇이든 물어보세요…" autocomplete="off"><button type="button" id="f9chatGo">보내기</button></div>';
+      '<div class="f9chat-foot"><input id="f9chatIn" placeholder="미쁠에게 무엇이든 물어보세요…" autocomplete="off"><button type="button" id="f9chatGo">보내기</button></div>';
     document.body.appendChild(wrap);
     $('f9chatX').addEventListener('click', function () { wrap.classList.add('hidden'); });
+    $('f9chatKey').addEventListener('click', function () {
+      if (!global.FAM9AI) { toast('미쁠 모듈을 불러오지 못했어요 — 새로고침해 주세요'); return; }
+      global.FAM9AI.keySheet('미쁠 AI 키 설정', '미쁠이 대답하려면 Gemini 키가 필요해요. 키는 이 기기에만 저장되고 가족에게 공유되지 않아요.', function () {
+        pushMsg('ai', '키를 저장했어요. 이제 무엇이든 물어보세요! 💚');
+      });
+    });
+    $('f9chatNew').addEventListener('click', function () {
+      chatHist = [];
+      var body = $('f9chatBody');
+      if (body) body.innerHTML = '';
+      pushMsg('ai', MIPP_GREET);
+      toast('새 대화를 시작했어요 🧹');
+    });
+
     var send = function () {
       var inp = $('f9chatIn');
       var q = (inp.value || '').trim();
       if (!q) return;
+      if (!global.FAM9AI) { pushError('미쁠 모듈을 불러오지 못했어요. 페이지를 새로고침해 주세요.'); return; }
       inp.value = '';
       pushMsg('me', q);
-      pushMsg('ai', '생각 중…');
-      var hist = chatHist.map(function (h) { return { role: h.r === 'me' ? 'user' : 'model', parts: [{ text: h.t }] }; });
-      global.FAM9AI.ask(FAM_CTX + '\n대화 기록:\n' + hist.map(function (h) { return (h.role === 'user' ? '가족: ' : '도우미: ') + h.parts[0].text; }).join('\n') + '\n가족: ' + q)
+      var thinking = pushMsg('ai', '생각 중…');
+      var hist = chatHist.map(function (h) { return (h.r === 'me' ? '가족: ' : '미쁠: ') + h.t; }).join('\n');
+      global.FAM9AI.ask(FAM_CTX + (hist ? '\n대화 기록:\n' + hist : '') + '\n가족: ' + q)
         .then(function (txt) {
           chatHist.push({ r: 'me', t: q }, { r: 'ai', t: txt });
           if (chatHist.length > 12) chatHist = chatHist.slice(-12);
-          var body = $('f9chatBody');
-          if (body && body.lastChild) body.lastChild.remove();
+          if (thinking && thinking.parentNode) thinking.parentNode.removeChild(thinking);
           pushMsg('ai', txt);
         })
-        .catch(function () {
-          var body = $('f9chatBody');
-          if (body && body.lastChild) body.lastChild.remove();
-          pushMsg('ai', '미안해요, 지금은 답을 못 받았어요. 잠시 후 다시 물어봐 주세요.');
+        .catch(function (err) {
+          if (thinking && thinking.parentNode) thinking.parentNode.removeChild(thinking);
+          var msg = (err && (err.friendly || err.message)) || '지금은 답을 못 받았어요.';
+          pushError(msg);
         });
     };
     $('f9chatGo').addEventListener('click', send);
     $('f9chatIn').addEventListener('keydown', function (e) { if (e.key === 'Enter') send(); });
-    pushMsg('ai', '안녕하세요! 가족 AI 도우미예요. 오늘 일정 추천, 숙제 도움, 주말 계획 등 무엇이든 물어보세요 😊');
+
+    pushMsg('ai', MIPP_GREET);
+    if (!global.FAM9AI || !global.FAM9AI.key()) {
+      pushError('아직 Gemini 키가 없어서 대화를 못 해요. 키를 한 번만 넣어 주시면 바로 시작할 수 있어요.');
+    }
   }
   function pushMsg(who, t) {
     var body = $('f9chatBody');
-    if (!body) return;
+    if (!body) return null;
+    var row = document.createElement('div');
+    row.className = 'f9-row ' + who;
+    if (who === 'ai') row.innerHTML = mippeulAvatar(22);
     var div = document.createElement('div');
     div.className = 'f9-msg ' + who;
     div.textContent = t;
-    body.appendChild(div);
+    row.appendChild(div);
+    body.appendChild(row);
     body.scrollTop = body.scrollHeight;
+    return row;
+  }
+  /* 오류는 원인을 그대로 보여 주고, 바로 키 설정을 열 수 있게 한다 */
+  function pushError(msg) {
+    var body = $('f9chatBody');
+    if (!body) return null;
+    var row = document.createElement('div');
+    row.className = 'f9-row ai';
+    row.innerHTML = mippeulAvatar(22);
+    var div = document.createElement('div');
+    div.className = 'f9-msg ai err';
+    var p = document.createElement('div');
+    p.textContent = msg;
+    div.appendChild(p);
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'f9-err-btn';
+    b.textContent = '🔑 키 설정 열기';
+    b.addEventListener('click', function () {
+      if (!global.FAM9AI) { toast('미쁠 모듈을 불러오지 못했어요 — 새로고침해 주세요'); return; }
+      global.FAM9AI.keySheet('미쁠 AI 키 설정', '키를 넣으면 미쁠이 다시 대답할 수 있어요. 키는 이 기기에만 저장돼요.', function () {
+        pushMsg('ai', '키를 저장했어요. 다시 물어봐 주세요! 💚');
+      });
+    });
+    div.appendChild(b);
+    row.appendChild(div);
+    body.appendChild(row);
+    body.scrollTop = body.scrollHeight;
+    return row;
   }
 
   /* ============================================================
@@ -1153,7 +1230,7 @@
       /* 미쁠 조언 */
       '<div class="sb9-adv"><div class="sb9-h">💡 미쁠의 맞춤 조언</div>' +
       '<div id="sb9AdvTxt">' + esc(sb.advice && sb.advice.text || sbRuleAdvice(sb)) + '</div>' +
-      '<button type="button" class="btn ghost" id="sb9AiAdv" style="margin-top:7px;padding:8px 12px;font-size:12px">🤖 AI 맞춤 조언 새로 받기' + (global.FAM9AI && global.FAM9AI.key() ? '' : ' (키 등록 필요)') + '</button></div>';
+      '<button type="button" class="btn ghost" id="sb9AiAdv" style="margin-top:7px;padding:8px 12px;font-size:12px">💚 미쁠에게 맞춤 조언 받기' + (global.FAM9AI && global.FAM9AI.key() ? '' : ' (키 등록 필요)') + '</button></div>';
     if (box.__sig !== html) { box.__sig = html; box.innerHTML = html; }
   }
   function sbRuleAdvice(sb) {
@@ -1359,9 +1436,9 @@
       }
       var adv = e.target.closest('#sb9AiAdv');
       if (adv) {
-        if (!global.FAM9AI || !global.FAM9AI.key()) { global.FAM9AI.keySheet('AI 맞춤 조언', '상벌점 패턴을 보고 미쁠이 AI가 따뜻한 조언을 만들어 줘요.', function () { wireSb(); }); return; }
+        if (!global.FAM9AI || !global.FAM9AI.key()) { global.FAM9AI.keySheet('미쁠 맞춤 조언', '상벌점 패턴을 보고 미쁠이가 따뜻한 조언을 만들어 줘요.', function () { wireSb(); }); return; }
         var sb2 = sbOf();
-        toast('🤖 상벌점 패턴을 분석하는 중…');
+        toast('💚 미쁠이 상벌점 패턴을 보는 중…');
         var lines = sbRows(sb2, function (r) { return r.st === 'ok'; }).slice(0, 20).map(function (r) {
           return memName(r.to) + ' · ' + catName(sb2, r.cat) + ' (' + r.pts + '점) — ' + memName(r.from);
         }).join('\n');
@@ -1374,7 +1451,7 @@
           save();
           $('v9SbBody').__sig = null;
           renderSb();
-        }).catch(function () { toast('AI 조언 실패 — 잠시 후 다시'); });
+        }).catch(function () { toast('미쁠 조언 실패 — 잠시 후 다시'); });
       }
     });
   }
@@ -1718,19 +1795,31 @@
       '.lg9-row{display:flex;align-items:baseline;gap:6px;font-size:12px;padding:5px 2px;border-bottom:1px dashed #EDF1F4;flex-wrap:wrap}',
       '.lg9-row b{font-weight:800}',
       '.lg9-row .at{margin-left:auto;color:#9AA4AF;font-size:10.5px;flex:none}',
-      '#f9robot{position:fixed;right:14px;bottom:calc(148px + var(--safe-b,0px));z-index:60;width:52px;height:52px;border-radius:50%;background:#fff;border:1.5px solid #E3E9ED;box-shadow:0 8px 22px rgba(20,24,29,.14);display:flex;align-items:center;justify-content:center;animation:f9bob 3.2s ease-in-out infinite}',
-      '@keyframes f9bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}',
-      '#f9chat{position:fixed;right:12px;bottom:calc(96px + var(--safe-b,0px));z-index:75;width:min(340px,calc(100vw - 24px));background:#fff;border-radius:20px;border:1.5px solid #E3E9ED;box-shadow:0 16px 40px rgba(20,24,29,.18);overflow:hidden;display:flex;flex-direction:column;max-height:70vh}',
-      '#f9chat.hidden{display:none}',
-      '.f9chat-head{display:flex;align-items:center;gap:7px;padding:12px 14px;background:linear-gradient(135deg,#0E9F6E,#12B886);color:#fff;font-weight:800;font-size:14px}',
-      '.f9chat-head button{margin-left:auto;color:#fff;font-size:15px}',
-      '.f9chat-body{flex:1;overflow:auto;padding:11px;display:flex;flex-direction:column;gap:7px;min-height:160px}',
-      '.f9-msg{max-width:84%;padding:8px 11px;border-radius:14px;font-size:12.5px;line-height:1.5;white-space:pre-wrap;word-break:keep-all}',
-      '.f9-msg.me{align-self:flex-end;background:#0E9F6E;color:#fff;border-bottom-right-radius:5px}',
-      '.f9-msg.ai{align-self:flex-start;background:#F1F4F5;color:#14181D;border-bottom-left-radius:5px}',
-      '.f9chat-foot{display:flex;gap:6px;padding:9px;border-top:1px solid #EDF1F4}',
-      '.f9chat-foot input{flex:1;padding:10px 12px;border:1.5px solid #E3E9ED;border-radius:12px;outline:none}',
-      '.f9chat-foot button{padding:0 14px;border-radius:12px;background:#0E9F6E;color:#fff;font-weight:800}'
+      '#f9robot{position:fixed;right:14px;bottom:calc(148px + var(--safe-b,0px));z-index:60;width:56px;height:56px;border-radius:50%;background:linear-gradient(180deg,#F2FDF8,#E4F9EF);border:1.5px solid #A7F3D0;box-shadow:0 10px 24px rgba(6,148,88,.20);display:flex;align-items:center;justify-content:center;animation:f9bob 3.2s ease-in-out infinite}',
+'#f9robot svg{display:block;pointer-events:none}',
+'#f9robot:active{transform:scale(.93)}',
+'@keyframes f9bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}',
+'#f9chat{position:fixed;right:12px;bottom:calc(96px + var(--safe-b,0px));z-index:75;width:min(340px,calc(100vw - 24px));background:#fff;border-radius:20px;border:1.5px solid #D7EDE2;box-shadow:0 16px 40px rgba(20,24,29,.18);overflow:hidden;display:flex;flex-direction:column;max-height:70vh}',
+'#f9chat.hidden{display:none}',
+'.f9chat-head{display:flex;align-items:center;gap:7px;padding:10px 12px;background:linear-gradient(135deg,#0E9F6E,#12B886);color:#fff}',
+'.f9chat-av{flex:none;width:26px;height:26px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center}',
+'.f9chat-title{display:flex;flex-direction:column;line-height:1.15;font-weight:900;font-size:13.5px}',
+'.f9chat-title small{font-weight:700;font-size:9.5px;opacity:.9}',
+'.f9chat-head .f9h{width:27px;height:27px;border-radius:9px;background:rgba(255,255,255,.22);color:#fff;font-size:12px;line-height:1;display:flex;align-items:center;justify-content:center;flex:none}',
+'.f9chat-head .f9h:active{background:rgba(255,255,255,.4)}',
+'#f9chatKey{margin-left:auto}',
+'.f9chat-body{flex:1;overflow:auto;padding:11px;display:flex;flex-direction:column;gap:7px;min-height:160px}',
+'.f9-row{display:flex;align-items:flex-end;gap:6px;width:100%}',
+'.f9-row.me{justify-content:flex-end}',
+'.f9-av{flex:none;border-radius:50%;background:#E7F8F1;border:1px solid #C8F0DC;display:flex;align-items:center;justify-content:center;margin-bottom:2px}',
+'.f9-msg{max-width:82%;padding:8px 11px;border-radius:14px;font-size:12.5px;line-height:1.5;white-space:pre-wrap;word-break:keep-all}',
+'.f9-msg.me{background:#0E9F6E;color:#fff;border-bottom-right-radius:5px}',
+'.f9-msg.ai{background:#F1F4F5;color:#14181D;border-bottom-left-radius:5px}',
+'.f9-msg.err{background:#FFF4F2;border:1px solid #FFD9D2;color:#7A271A}',
+'.f9-err-btn{margin-top:7px;padding:6px 10px;border-radius:9px;background:#0E9F6E;color:#fff;font-size:11.5px;font-weight:800}',
+'.f9chat-foot{display:flex;gap:6px;padding:9px;border-top:1px solid #EDF1F4}',
+'.f9chat-foot input{flex:1;padding:10px 12px;border:1.5px solid #E3E9ED;border-radius:12px;outline:none}',
+'.f9chat-foot button{padding:0 14px;border-radius:12px;background:#0E9F6E;color:#fff;font-weight:800}'
     ].join('');
     document.head.appendChild(s);
   }

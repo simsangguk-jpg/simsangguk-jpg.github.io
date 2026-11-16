@@ -1,18 +1,16 @@
 /* ============================================================
    우리가족포털 V9 · 생활 업그레이드 (life9.js)
    ① 위시리스트 V9 — 작성 버그 수정(시트 저장 경로 재구성) + 개인 5개 제한
-      + 사진 첨부 + 네이버·다나와·쿠팡·구글쇼핑 최저가 검색 + Gemini AI 최저가
+      + 사진 첨부 + 네이버·다나와·쿠팡·구글쇼핑 최저가 검색 + 미쁠 최저가
    ② 용돈기입장 V9 — 매일 간단 입력(받은/쓴 돈·목적) + 잔액 자동 계산
       + 일자별 내역 영구 저장(23:59 구글드라이브 백업에 그대로 포함)
    ③ 과거 데이터 날짜별 조회(아카이브) + 수동 JSON 백업 다운로드
-   ④ FAM9AI — 가족포털 공용 Gemini 엔진(모델 폴백, 키는 이 기기에만 저장)
+   ④ FAM9AI — 미쁠(가족 AI 비서) Gemini 엔진(모델·게이트웨이 폴백, 키는 이 기기에만 저장)
    ============================================================ */
 (function (global) {
   'use strict';
 
   var F = null, ON = false;
-  var LS_AI = 'sgf9_gemini_v1';
-  var MODELS = ['gemini-3.8-flash', 'gemini-3.5-flash-lite', 'gemini-3.6-flash', 'gemini-3.1-pro-preview'];
 
   function $(id) { return document.getElementById(id); }
   function d() { return F && F.doc(); }
@@ -53,73 +51,378 @@
   /* ============================================================
      ④ FAM9AI · 공용 Gemini 엔진
      ============================================================ */
+  /* ------------------------------------------------------------
+     공용 미쁠 Gemini 엔진
+     상국포털(work/portal_plain_v2.html)의 검증된 window._sgGem 로직을 그대로 옮겼다:
+       · 모델 순차 폴백 → ListModels 자동 탐색 → Vertex 게이트웨이 폴백
+       · thinkingConfig { thinkingLevel:'LOW' } · 파라미터 거부 시 slim 재시도 · 429/503 1회 재시도
+       · 오류를 삼키지 않고 사람이 읽을 수 있는 한국어 원인으로 돌려준다
+     ------------------------------------------------------------ */
   function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
   function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
 
-  function callModel(model, body) {
-    var key = lsGet(LS_AI) || '';
-    if (!key) return Promise.reject(new Error('no-key'));
-    return fetch('https://generativelanguage.googleapis.com/v1beta/models/' + model + ':generateContent?key=' + encodeURIComponent(key), {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body)
-    }).then(function (r) {
-      if (!r.ok) return r.text().then(function (t) {
-        var err = new Error('HTTP ' + r.status + ' ' + t.slice(0, 140));
-        err.status = r.status;
-        throw err;
-      });
-      return r.json();
-    }).then(function (j) {
-      var parts = (j && j.candidates && j.candidates[0] && j.candidates[0].content && j.candidates[0].content.parts) || [];
-      var text = parts.map(function (p) { return p.text || ''; }).join('').trim();
-      if (!text) throw new Error('empty');
-      return text;
-    });
+  var LS_AI = 'sgf9_gemini_v1';
+  var LS_BEST = 'sgf9_gemini_best_v1';
+  var GEM_HOST = 'https://generativelanguage.googleapis.com/v1beta';
+  var GEM_VERTEX = 'https://aiplatform.googleapis.com/v1/publishers/google/models/';
+  var MODELS = ['gemini-3.8-flash', 'gemini-3.5-flash-lite', 'gemini-3.6-flash', 'gemini-3.1-pro-preview', 'gemini-3-flash-preview', 'gemini-2.5-flash-lite', 'gemini-2.5-flash'];
+  var LEGACY_MODELS = { 'gemini-2.5-pro': 1, 'gemini-2.5-flash': 1, 'gemini-2.0-flash': 1, 'gemini-1.5-flash': 1, 'gemini-1.5-pro': 1, 'gemini-2.0-flash-lite': 1 };
+
+  /* 키는 한 곳에만 두지 않는다. 가족포털과 상국포털은 같은 주소(simsangguk-jpg.github.io)를
+     쓰기 때문에 한 번 등록한 키를 서로 빌려 쓸 수 있다. */
+  var KEY_SLOTS = [
+    ['sgf9_gemini_v1', '이 기기에 저장한 미쁠 키'],
+    ['sgf4_gemini_v1', '가족포털 음식분석 키'],
+    ['sg_gemini_key_v1', '상국포털에 등록한 키']
+  ];
+  function keyClean(raw) {
+    var v = String(raw == null ? '' : raw).trim();
+    if (!v) return '';
+    if (v.charAt(0) === '"' || v.charAt(0) === '{') {
+      try {
+        var j = JSON.parse(v);
+        if (typeof j === 'string') v = j.trim();
+        else if (j && typeof j.key === 'string') v = j.key.trim();
+        else if (j && typeof j.value === 'string') v = j.value.trim();
+      } catch (e) {}
+    }
+    return v.length >= 10 ? v : '';
   }
+  function findKey() {
+    for (var i = 0; i < KEY_SLOTS.length; i++) {
+      var v = keyClean(lsGet(KEY_SLOTS[i][0]));
+      if (v) return { key: v, slot: KEY_SLOTS[i][0], label: KEY_SLOTS[i][1] };
+    }
+    return null;
+  }
+  function maskKey(k) { return k ? String(k).slice(0, 4) + '…' + String(k).slice(-4) : ''; }
+
+  var AI = (function () {
+    var S = { lastModel: '', best: keyClean(lsGet(LS_BEST)), dead: {}, slim: {} };
+
+    function sleep(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
+    function note(o, m) { if (o && typeof o.onNote === 'function') { try { o.onNote(m); } catch (e) {} } }
+    function txt(e) { return String((e && e.message) || ''); }
+    function fail(msg, code, extra) {
+      var e = new Error(msg);
+      if (code != null) e.code = code;
+      if (extra) { for (var k in extra) if (Object.prototype.hasOwnProperty.call(extra, k)) e[k] = extra[k]; }
+      return e;
+    }
+
+    function keyFatal(e) {
+      var m = txt(e);
+      if (/API_KEY_SERVICE_BLOCKED|SERVICE_BLOCKED|SERVICE_DISABLED|PERMISSION_DENIED/i.test(m)) return false;
+      return /API_KEY_INVALID|API key not valid|API key expired|API_KEY_EXPIRED|UNAUTHENTICATED|invalid authentication|API key is invalid/i.test(m);
+    }
+    function modelGone(e) {
+      var c = e && e.code, m = txt(e);
+      return c === 404 || (c === 400 && /not found|not supported|does not exist|unsupported model|invalid model/i.test(m));
+    }
+    function paramReject(e) {
+      var c = e && e.code, m = txt(e);
+      if (c !== 400 || keyFatal(e) || modelGone(e)) return false;
+      return /generation_?config|temperature|top_?p|top_?k|thinking|candidate_?count|unknown name|invalid json|cannot find field/i.test(m);
+    }
+    function busy(e) {
+      var c = e && e.code, m = txt(e);
+      return c === 0 || c === 429 || c === 500 || c === 502 || c === 503 || /RESOURCE_EXHAUSTED|overloaded|temporarily|UNAVAILABLE|DEADLINE|rate limit/i.test(m);
+    }
+
+    function pick(j) {
+      var c = j && j.candidates && j.candidates[0];
+      var ps = (c && c.content && c.content.parts) || [];
+      var out = '', i;
+      for (i = 0; i < ps.length; i++) if (ps[i] && typeof ps[i].text === 'string') out += ps[i].text;
+      out = out.trim();
+      if (out) return out;
+      var why = '';
+      if (j && j.promptFeedback && j.promptFeedback.blockReason) why = '차단: ' + j.promptFeedback.blockReason;
+      else if (c && c.finishReason) why = c.finishReason;
+      throw fail('빈 응답' + (why ? ' (' + why + ')' : ' (안전 필터 가능)'));
+    }
+
+    function request(o, model, slim, vertex) {
+      var base = vertex ? GEM_VERTEX : (GEM_HOST + '/models/');
+      var url = base + encodeURIComponent(model) + ':generateContent?key=' + encodeURIComponent(o.key);
+      var parts = [{ text: o.prompt }];
+      (o.images || []).forEach(function (du) {
+        if (!du) return;
+        var m = String(du).match(/^data:([^;]+);base64,(.*)$/);
+        if (m) parts.push({ inline_data: { mime_type: m[1], data: m[2] } });
+      });
+      var body = { contents: [{ role: 'user', parts: parts }] };
+      if (o.system) body.systemInstruction = { parts: [{ text: o.system }] };
+      if (!slim) {
+        body.generationConfig = {
+          temperature: o.temperature != null ? o.temperature : 0.4,
+          maxOutputTokens: o.maxTokens || 2048,
+          topP: 0.9,
+          thinkingConfig: { thinkingLevel: 'LOW' }
+        };
+      }
+      return fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+        cache: 'no-store'
+      }).then(function (res) {
+        return res.text().then(function (raw) {
+          var j = {};
+          try { j = raw ? JSON.parse(raw) : {}; } catch (e) {}
+          if (!res.ok) {
+            var msg = (j && j.error && j.error.message) ? j.error.message : String(raw || ('HTTP ' + res.status));
+            throw fail(String(msg).slice(0, 300), res.status, { apiStatus: (j && j.error && j.error.status) || '' });
+          }
+          return pick(j);
+        });
+      }, function (netErr) {
+        throw fail('네트워크 오류: ' + ((netErr && netErr.message) || '요청 실패'), 0);
+      });
+    }
+
+    /* 한 모델: 파라미터 거부 → generationConfig 없이 재시도, 혼잡(429/5xx) → 1.5초 뒤 1회 재시도 */
+    function attempt(o, model, vertex) {
+      function go(n) {
+        return request(o, model, !!S.slim[model], vertex).catch(function (e) {
+          if (paramReject(e) && !S.slim[model]) { S.slim[model] = 1; return go(n); }
+          if (busy(e) && n < 1) { return sleep(1500).then(function () { return go(n + 1); }); }
+          throw e;
+        });
+      }
+      return go(0);
+    }
+
+    function rank(id) {
+      var m = /gemini-(\d+)(?:[.\-](\d+))?/.exec(id);
+      var s = m ? ((+m[1]) * 100 + (m[2] ? (+m[2]) * 10 : 0)) : 0;
+      if (/thinking|deep-research/.test(id)) return -100;
+      if (/flash-lite/.test(id)) s += 6;
+      else if (/flash/.test(id)) s += 9;
+      else if (/pro/.test(id)) s += 7;
+      if (/preview|exp|experimental/.test(id)) s -= 3;
+      return s;
+    }
+
+    function listModels(key) {
+      return fetch(GEM_HOST + '/models?pageSize=200&key=' + encodeURIComponent(key), { cache: 'no-store' })
+        .then(function (res) { return res.text(); })
+        .then(function (raw) {
+          var j = {};
+          try { j = raw ? JSON.parse(raw) : {}; } catch (e) {}
+          var arr = (j && j.models) || [], out = [], i, m, id, meth;
+          for (i = 0; i < arr.length; i++) {
+            m = arr[i] || {};
+            id = String(m.name || '').replace(/^models\//, '');
+            if (!/^gemini/.test(id)) continue;
+            meth = (m.supportedGenerationMethods || m.supportedActions || []).join(',');
+            if (meth.indexOf('generateContent') === -1) continue;
+            if (/(^|-)tts|image|live|transcribe|embed|video|veo|omni|banana|audio-dialog/.test(id)) continue;
+            if (rank(id) < 0) continue;
+            out.push(id);
+          }
+          out.sort(function (a, b) { return rank(b) - rank(a); });
+          return out;
+        });
+    }
+
+    function generate(o) {
+      o = o || {};
+      if (!o.key) return Promise.reject(fail('Gemini API 키가 등록되어 있지 않아요.'));
+      var tried = {};
+
+      function chain() {
+        var out = [], seen = {};
+        function add(m) { if (m && !seen[m]) { seen[m] = 1; out.push(m); } }
+        add(S.best);
+        add(o.first);
+        for (var i = 0; i < MODELS.length; i++) add(MODELS[i]);
+        return out;
+      }
+
+      function runList(list, vertex) {
+        var i = 0, lastErr = null;
+        return new Promise(function (resolve, reject) {
+          function next() {
+            var m = null, c;
+            while (i < list.length) {
+              c = list[i++];
+              if (!tried[c] && !(S.dead[c] && !vertex)) { m = c; break; }
+            }
+            if (!m) return reject(lastErr || fail('모든 모델 호출에 실패했어요.'));
+            tried[m] = 1;
+            attempt(o, m, !!vertex).then(function (t) {
+              S.lastModel = m; S.best = m; delete S.dead[m];
+              try { localStorage.setItem(LS_BEST, m); } catch (e) {}
+              resolve(t);
+            }).catch(function (e) {
+              if (keyFatal(e)) {
+                var k = fail(e.message, e.code, { fatal: true, keyError: true });
+                return reject(k);
+              }
+              if (modelGone(e)) S.dead[m] = 1;
+              lastErr = e;
+              next();
+            });
+          }
+          next();
+        });
+      }
+
+      return runList(chain(), false).then(null, function (e) {
+        if (e && e.fatal) throw e;
+        note(o, '🔎 기본 후보가 모두 막혀 쓸 수 있는 모델을 자동 조회해요…');
+        return listModels(o.key).then(function (found) {
+          var extra = [], i;
+          for (i = 0; i < found.length && extra.length < 8; i++) if (!tried[found[i]]) extra.push(found[i]);
+          if (!extra.length) throw (e || fail('사용 가능한 모델을 찾지 못했어요.'));
+          note(o, '🔎 자동 선택: ' + extra[0]);
+          return runList(extra, false);
+        }, function () {
+          throw (e || fail('모델 목록을 조회하지 못했어요.'));
+        });
+      }).then(null, function (e) {
+        if (e && e.fatal) return Promise.reject(e);
+        note(o, '🔎 마지막으로 다른 게이트웨이 경로를 시도해요…');
+        return runList(['gemini-3.8-flash', 'gemini-3.6-flash', 'gemini-3.5-flash-lite', 'gemini-3.1-pro-preview', 'gemini-3-flash-preview'], true);
+      });
+    }
+
+    /* 원인을 사람 말로: 이 문장이 채팅창과 연결 테스트에 그대로 보인다 */
+    function friendly(e) {
+      var m = txt(e);
+      if (!e) return '알 수 없는 이유로 답을 못 받았어요.';
+      if (e.noKey) return '아직 Gemini 키가 없어요. 🔑 키 설정에서 키를 넣어 주세요.';
+      if (e.code === 0) return '인터넷 연결 때문에 못 받았어요. 연결을 확인하고 다시 물어봐 주세요.';
+      if (/API key not valid|API_KEY_INVALID|API key expired|API_KEY_EXPIRED|invalid authentication|UNAUTHENTICATED/i.test(m)) return 'Gemini 키가 올바르지 않거나 만료됐어요. 🔑 키 설정에서 새 키로 바꿔 주세요.';
+      if (/API_KEY_SERVICE_BLOCKED|SERVICE_BLOCKED/i.test(m)) return '이 키에서는 Gemini API 사용이 막혀 있어요. Google AI Studio에서 새 키를 만들어 주세요.';
+      if (/SERVICE_DISABLED|has not been used in project|is disabled|PERMISSION_DENIED/i.test(m)) return '이 키의 프로젝트에서 Gemini API가 꺼져 있어요. Google AI Studio에서 다시 만들어 주세요.';
+      if (e.code === 429 || /RESOURCE_EXHAUSTED|quota|rate limit/i.test(m)) return '오늘 쓸 수 있는 무료 사용량을 다 썼어요. 내일 다시 하거나 다른 키를 넣어 주세요.';
+      if (e.code === 503 || e.code === 500 || e.code === 502 || /overloaded|UNAVAILABLE/i.test(m)) return 'Gemini가 잠시 붐비고 있어요. 30초쯤 뒤에 다시 물어봐 주세요.';
+      if (/빈 응답|blockReason|SAFETY/i.test(m)) return '안전 필터에 걸려 답을 못 만들었어요. 말을 조금 바꿔 물어봐 주세요.';
+      if (/Failed to fetch|NetworkError|Load failed|네트워크/i.test(m)) return '네트워크가 막혀 있어요(비행기모드·와이파이 차단 등). 연결을 확인해 주세요.';
+      if (/모든 모델|모델 목록|모든 모델 호출/.test(m)) return '지금 쓸 수 있는 Gemini 모델이 없어요. 키를 새로 만들어 주세요.';
+      return '답을 못 받았어요' + (m ? ' (' + m.slice(0, 120) + ')' : '') + '.';
+    }
+
+    return { generate: generate, list: listModels, state: S, friendly: friendly, request: request };
+  })();
+
   function ask(prompt, opts) {
     opts = opts || {};
-    var parts = [{ text: prompt }];
-    var imgs = (opts.images && opts.images.length) ? opts.images : (opts.imageDataUrl ? [opts.imageDataUrl] : []);
-    imgs.forEach(function (du) {
-      var m = String(du).match(/^data:([^;]+);base64,(.*)$/);
-      if (m) parts.push({ inline_data: { mime_type: m[1], data: m[2] } });
-    });
-    var body = {
-      contents: [{ role: 'user', parts: parts }],
-      generationConfig: { temperature: opts.temperature != null ? opts.temperature : 0.4 }
-    };
-    var i = 0;
-    function tryNext() {
-      if (i >= MODELS.length) return Promise.reject(new Error('all-models-failed'));
-      var model = MODELS[i++];
-      return callModel(model, body).catch(function (e) {
-        if (e.status === 404 || e.status === 400 || e.status === 429) return tryNext();
-        throw e;
-      });
+    var found = opts.key ? { key: keyClean(opts.key), label: '직접 넣은 키' } : findKey();
+    if (!found || !found.key) {
+      var nk = new Error('아직 Gemini 키가 없어요. 🔑 키 설정에서 키를 넣어 주세요.');
+      nk.noKey = true; nk.friendly = nk.message;
+      return Promise.reject(nk);
     }
-    return tryNext();
+    var imgs = (opts.images && opts.images.length) ? opts.images : (opts.imageDataUrl ? [opts.imageDataUrl] : []);
+    return AI.generate({
+      key: found.key,
+      prompt: prompt,
+      system: opts.system,
+      images: imgs,
+      temperature: opts.temperature,
+      maxTokens: opts.maxTokens,
+      first: opts.model && !LEGACY_MODELS[opts.model] ? opts.model : '',
+      onNote: opts.onNote
+    }).then(null, function (e) {
+      var err = new Error(AI.friendly(e));
+      err.friendly = err.message;
+      err.raw = (e && e.message) || '';
+      err.code = e && e.code;
+      err.noKey = !!(e && e.noKey);
+      throw err;
+    });
   }
+
+  /* 연결 테스트: 지금 넣은 키로 실제 모델을 한 번 부른다 */
+  function testKey(k) {
+    var key = keyClean(k) || (findKey() || {}).key;
+    if (!key) {
+      var e0 = new Error('Gemini 키를 먼저 넣어 주세요.');
+      e0.friendly = e0.message; e0.noKey = true;
+      return Promise.reject(e0);
+    }
+    var t0 = Date.now();
+    return AI.generate({
+      key: key,
+      prompt: '연결 확인이야. "미쁠 연결 성공"이라고만 답해줘.',
+      system: '너는 연결 시험용 도우미야. 인사나 설명 없이 "미쁠 연결 성공"만 답해.',
+      temperature: 0,
+      maxTokens: 64
+    }).then(function (t) {
+      return { ok: true, model: AI.state.lastModel, ms: Date.now() - t0, text: String(t) };
+    }, function (e) {
+      var err = new Error(AI.friendly(e));
+      err.friendly = err.message;
+      err.code = e && e.code;
+      err.noKey = !!(e && e.noKey);
+      throw err;
+    });
+  }
+
+  function keySheet(title, intro, cb) {
+    var found = findKey();
+    F.openSheet('<h3>💚 ' + esc(title || '미쁠 AI 키 설정') + '</h3>' +
+      '<div class="sdesc">' + esc(intro || '키는 이 기기에만 저장되고 가족에게 공유되지 않아요.') + '</div>' +
+      '<div class="form-row"><label>Gemini API 키</label><input class="field" id="f9aiKey" placeholder="AIza… 또는 AQ…" autocapitalize="none" autocomplete="off" spellcheck="false" value="' + esc(found ? found.key : '') + '"></div>' +
+      '<div class="hint" id="f9aiState" style="min-height:17px">' + (found
+        ? '✅ ' + esc(found.label) + '를 쓰고 있어요 (' + esc(maskKey(found.key)) + ')'
+        : '아직 등록된 키가 없어요. 아래에서 무료 키를 만들 수 있어요.') + '</div>' +
+      '<div style="display:flex;gap:7px;margin-top:8px;flex-wrap:wrap">' +
+      '<button type="button" class="btn ghost" data-sheet-close style="flex:0 0 auto">취소</button>' +
+      '<button type="button" class="btn ghost" id="f9aiTest" style="flex:1">🔌 연결 테스트</button>' +
+      '<button type="button" class="btn" id="f9aiSave" style="flex:1">저장</button></div>' +
+      (found && found.slot === LS_AI ? '<button type="button" class="btn ghost" id="f9aiDel" style="margin-top:7px;padding:8px;font-size:12px;color:#B42318">저장된 키 지우기</button>' : '') +
+      '<a class="hint" style="display:block;margin-top:8px" href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">🔑 무료 키 발급받기 (Google AI Studio)</a>');
+
+    var st = $('f9aiState');
+    function say(msg, color) { if (st) { st.innerHTML = msg; st.style.color = color || ''; } }
+
+    $('f9aiTest').onclick = function () {
+      var k = ($('f9aiKey').value || '').trim();
+      if (!k) { say('키를 먼저 넣어 주세요.', '#B42318'); return; }
+      var b = $('f9aiTest');
+      b.disabled = true; b.textContent = '🔌 확인 중…';
+      say('실제로 모델에 한 번 물어보는 중이에요…', '#79838F');
+      testKey(k).then(function (r) {
+        lsSet(LS_AI, k);
+        say('✅ 연결 성공 · ' + esc(r.model || '') + ' · ' + (r.ms / 1000).toFixed(1) + '초 · "' + esc(String(r.text).slice(0, 20)) + '"', '#0A7D56');
+        toast('미쁠 연결 성공! 💚');
+        b.disabled = false; b.textContent = '🔌 연결 테스트';
+      }, function (e) {
+        say('❌ ' + esc(e.friendly || e.message || '연결에 실패했어요.'), '#B42318');
+        b.disabled = false; b.textContent = '🔌 연결 테스트';
+      });
+    };
+    $('f9aiSave').onclick = function () {
+      var k = ($('f9aiKey').value || '').trim();
+      if (!k) { say('키를 넣어 주세요.', '#B42318'); return; }
+      lsSet(LS_AI, k);
+      F.closeSheet();
+      toast('미쁠 키를 저장했어요 💚');
+      if (cb) cb();
+    };
+    if ($('f9aiDel')) $('f9aiDel').onclick = function () {
+      lsSet(LS_AI, '');
+      F.closeSheet();
+      toast('저장된 키를 지웠어요');
+    };
+  }
+
   global.FAM9AI = {
     ask: ask,
-    key: function () { return lsGet(LS_AI) || ''; },
+    key: function () { return (findKey() || {}).key || ''; },
+    keyInfo: findKey,
+    keyLabel: function () { var f = findKey(); return f ? f.label : ''; },
+    mask: maskKey,
     setKey: function (k) { lsSet(LS_AI, String(k || '').trim()); },
     clearKey: function () { lsSet(LS_AI, ''); },
-    keySheet: function (title, intro, cb) {
-      F.openSheet('<h3>🤖 ' + esc(title || 'Gemini API 키 등록') + '</h3>' +
-        '<div class="sdesc">' + esc(intro || '키는 이 기기에만 저장되고 가족에게 공유되지 않아요.') + '</div>' +
-        '<div class="form-row"><label>Gemini API 키</label><input class="field" id="f9aiKey" placeholder="AIza… 또는 AQ…" autocapitalize="none"></div>' +
-        '<div style="display:flex;gap:8px;margin-top:6px"><button type="button" class="btn ghost" data-sheet-close>취소</button><button type="button" class="btn" id="f9aiSave">저장</button></div>' +
-        '<a class="hint" style="display:block;margin-top:8px" href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">🔑 무료 키 발급받기 (Google AI Studio)</a>');
-      $('f9aiSave').onclick = function () {
-        var k = ($('f9aiKey').value || '').trim();
-        if (!k) { toast('키를 넣어 주세요'); return; }
-        global.FAM9AI.setKey(k);
-        F.closeSheet();
-        toast('Gemini 키를 저장했어요');
-        if (cb) cb();
-      };
-    }
+    test: testKey,
+    friendly: function (e) { return AI.friendly(e); },
+    state: AI.state,
+    keySheet: keySheet
   };
 
   /* ============================================================
@@ -157,7 +460,7 @@
   function secWish() {
     return '<div class="card" id="v9Wish" style="border:1.5px solid #DCEFE5;background:linear-gradient(180deg,#F6FCF9,#FFFFFF)">' +
       '<div class="card-head"><h2>🎁 갖고 싶은 물건 목록</h2><span class="sub" id="v9WishN">0개</span></div>' +
-      '<div class="fb-desc">한 사람당 <b>최대 5개</b>까지 올릴 수 있어요. 사진을 붙이고, 최저가를 바로 검색하거나 <b>AI 최저가 조회</b>(Gemini 키 등록 시)도 돼요.</div>' +
+      '<div class="fb-desc">한 사람당 <b>최대 5개</b>까지 올릴 수 있어요. 사진을 붙이고, 최저가를 바로 검색하거나 <b>미쁠 최저가 조회</b>(미쁠 키 등록 시)도 돼요.</div>' +
       '<div id="v9WishList" style="margin-top:9px"></div>' +
       '<button type="button" class="btn soft" id="v9WishAdd" style="margin-top:4px">＋ 위시리스트에 올리기</button></div>';
   }
@@ -184,7 +487,7 @@
         '<div class="v4-row" style="border-bottom:none;padding:0"><span class="e">' +
         (e.photo && e.photo.thumb ? '<img src="' + e.photo.thumb + '" alt="" style="width:44px;height:44px;border-radius:11px;object-fit:cover">' : '🎁') + '</span>' +
         '<span class="tx"><b>' + esc(e.name) + '</b>' +
-        '<small>' + (e.price ? esc(e.price) + ' · ' : '') + (e.ai && e.ai.price ? '<span style="color:#0A7D56;font-weight:800">🤖 ' + esc(e.ai.price) + '</span>' + (e.ai.shop ? ' (' + esc(e.ai.shop) + ')' : '') + ' · ' : '') +
+        '<small>' + (e.price ? esc(e.price) + ' · ' : '') + (e.ai && e.ai.price ? '<span style="color:#0A7D56;font-weight:800">💚 미쁠 ' + esc(e.ai.price) + '</span>' + (e.ai.shop ? ' (' + esc(e.ai.shop) + ')' : '') + ' · ' : '') +
         memEmoji(e.by) + ' ' + esc(memName(e.by)) + (e.memo ? ' · ' + esc(e.memo) : '') + '</small></span>' +
         (e.got ? '<span class="v4-tag">선물 완료 🎉</span>' : '') + '</div>' +
         '<div class="v4-links">' +
@@ -192,7 +495,7 @@
         '<a class="nv" href="' + l.naver + '" target="_blank" rel="noopener">네이버쇼핑</a>' +
         '<a class="cp" href="' + l.coupang + '" target="_blank" rel="noopener">쿠팡</a>' +
         '<a class="v4-tag gray" style="text-decoration:none" href="' + l.google + '" target="_blank" rel="noopener">구글쇼핑</a>' +
-        '<button type="button" class="v4-tag" data-v9ai="' + e._id + '" style="border:none">🤖 AI 최저가</button>' +
+        '<button type="button" class="v4-tag" data-v9ai="' + e._id + '" style="border:none">💚 미쁠 최저가</button>' +
         '<button type="button" class="v4-tag ' + (mineDib ? '' : 'gray') + '" data-v9dib="' + e._id + '" style="border:none">' + (mineDib ? '❤️ 찜함' : '🤍 찜하기') + (dibsN ? ' ' + dibsN : '') + '</button>' +
         '<button type="button" class="v4-tag ' + (e.got ? '' : 'gray') + '" data-v9got="' + e._id + '" style="border:none">사주기</button>' +
         (e.by === mid() ? '<button type="button" class="v4-tag gray" data-v9del="' + e._id + '" style="border:none">삭제</button>' : '') +
@@ -235,8 +538,8 @@
   function aiPrice(id) {
     var v = V9(), e = v.wish[id];
     if (!e) return;
-    if (!global.FAM9AI.key()) { global.FAM9AI.keySheet('AI 최저가 조회', 'AI가 물건 이름을 보고 최저가를 추정해 알려 줘요.', function () { aiPrice(id); }); return; }
-    toast('🤖 AI가 최저가를 찾아 보는 중…');
+    if (!global.FAM9AI.key()) { global.FAM9AI.keySheet('미쁠 최저가 조회', '미쁠이 물건 이름을 보고 최저가를 추정해 알려 줘요.', function () { aiPrice(id); }); return; }
+    toast('💚 미쁠이 최저가를 찾아 보는 중…');
     global.FAM9AI.ask(
       '아래는 가족 위시리스트에 올라온 물건이야. 한국 온라인 시장(네이버쇼핑·다나와·쿠팡 기준)에서의 대략적인 최저가를 추정해서 "숫자원(예: 89,000원)" 형식과 어느 쇼핑몰이 가장 싼지 한 줄로만 알려줘.\n물건: ' + e.name + (e.price ? '\n원하는 가격대: ' + e.price : '')
     ).then(function (txt) {
@@ -247,7 +550,7 @@
       e2.ai = { price: m ? m[0].replace(/\s/g, '') : txt.slice(0, 40), shop: (String(txt).match(/(쿠팡|네이버|다나와|구글|Coupang)/i) || [''])[0], at: now() };
       save(); box_sig_reset(); renderWish();
     }).catch(function (err) {
-      toast('AI 조회 실패: ' + (err && err.message === 'no-key' ? '키 먼저 등록' : '잠시 후 다시'));
+      toast('미쁠 조회 실패 — ' + ((err && (err.friendly || err.message)) || '잠시 후 다시 시도해 주세요'));
     });
   }
   function wireWish() {
