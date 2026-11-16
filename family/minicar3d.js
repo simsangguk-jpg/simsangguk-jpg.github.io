@@ -944,7 +944,7 @@
     var top = st.top / 60 * (bo ? 1.35 : 1);
     var acc = st.acc * (bo ? 1.7 : 1);
     car.s += acc * dt;
-    if (car.s > top) car.s -= (car.s - top) * Math.min(1, dt * 3.2);
+    if (car.s > top) car.s -= (car.s - top) * Math.min(1, dt * 5.5);
     car.s = Math.max(0, car.s);
     car.boostT = Math.max(0, car.boostT - dt);
 
@@ -959,6 +959,9 @@
       if (!car.manualT) {
         var tgt = clamp(-curv * 26 + (car.lineBias || 0) * 0.5, -1.0, 1.0);
         car.lane += (tgt - car.lane) * Math.min(1, dt * 2.4);
+      }
+      if (car.boosts > 0 && car.boostT <= 0 && Math.abs(curv) < 0.05 && Math.random() < dt * 0.5) {
+        car.boosts--; car.boostT = 1.2;
       }
     }
     var off = Math.abs(car.lane * 0.5) > HW * 0.85;
