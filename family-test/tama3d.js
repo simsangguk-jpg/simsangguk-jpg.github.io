@@ -819,10 +819,10 @@
         return '<button type="button" class="t9-key' + (on ? ' on' : '') + (owns ? '' : ' lock') + '" data-t9furn="' + k + '">' + (owns ? '' : '🔒 ') + esc(FURN[k].n) + '</button>';
       }).join('') + '</div></div>' +
       '<button type="button" class="t9-shoplink" data-t9shop="1">🛍️ 포인트 상점에서 가구 사기 · 🪙 ' + goldOf() + 'G</button>' : '';
-    var basic = '<div class="t9-grp"><div class="t9-glb">🛋️ 기본 가구</div><div class="t9-keys c4">' +
+    var basic = isMine() ? '<div class="t9-grp"><div class="t9-glb">🛋️ 기본 가구</div><div class="t9-keys c4">' +
       Object.keys(FURN).filter(function (k) { return FURN[k].free; }).map(function (k) {
         return '<button type="button" class="t9-key' + (r.items && r.items[k] ? ' on' : '') + '" data-t9furn="' + k + '">' + esc(FURN[k].n) + '</button>';
-      }).join('') + '</div></div>';
+      }).join('') + '</div></div>' : '';
     var colors = isMine() ? (
       '<div class="t9-grp"><div class="t9-glb">🎨 벽지</div><div class="t9-keys c3">' + WALLS.map(function (w) {
         return '<button type="button" class="t9-key' + (r.wall === w[0] ? ' on' : '') + '" data-t9wall="' + w[0] + '"><i style="background:' + w[0] + '"></i>' + esc(w[1]) + '</button>';

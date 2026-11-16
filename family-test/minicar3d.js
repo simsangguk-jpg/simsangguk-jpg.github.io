@@ -89,18 +89,18 @@
     mclaren: { n: '맥라렌', em: '🟠', color: '#FF7A1A', note: '눈물방울형' }
   };
   var MODELS = {
-    revuelto: { n: '레부엘토', brand: 'lambo', len: 0.96, wid: 0.47, nose: 0.070, hood: 0.115, roof: 0.265, roofA: 0.03, roofB: -0.17, deck: 0.200, tail: 0.225, wr: 0.115, base: { top: 352, acc: 3.6, grip: 1.00, stab: 0.95 } },
-    aventador: { n: '아벤타도르 SVJ', brand: 'lambo', len: 0.95, wid: 0.48, nose: 0.075, hood: 0.120, roof: 0.262, roofA: 0.00, roofB: -0.19, deck: 0.205, tail: 0.230, wr: 0.118, base: { top: 350, acc: 3.4, grip: 0.99, stab: 0.93 } },
-    sf90: { n: 'SF90 스트라달레', brand: 'ferrari', len: 0.94, wid: 0.46, nose: 0.082, hood: 0.128, roof: 0.280, roofA: 0.05, roofB: -0.15, deck: 0.212, tail: 0.228, wr: 0.115, base: { top: 340, acc: 3.9, grip: 1.01, stab: 0.98 } },
-    gtb296: { n: '296 GTB', brand: 'ferrari', len: 0.90, wid: 0.45, nose: 0.088, hood: 0.132, roof: 0.288, roofA: 0.04, roofB: -0.14, deck: 0.214, tail: 0.222, wr: 0.113, base: { top: 330, acc: 3.7, grip: 1.02, stab: 0.99 } },
-    gt3rs: { n: '911 GT3 RS', brand: 'porsche', len: 0.92, wid: 0.47, nose: 0.100, hood: 0.136, roof: 0.300, roofA: -0.01, roofB: -0.23, deck: 0.240, tail: 0.250, wr: 0.117, base: { top: 296, acc: 3.5, grip: 1.08, stab: 1.08 } },
-    taycan: { n: '타이칸 터보 S', brand: 'porsche', len: 0.95, wid: 0.47, nose: 0.090, hood: 0.140, roof: 0.302, roofA: 0.02, roofB: -0.21, deck: 0.235, tail: 0.240, wr: 0.116, base: { top: 260, acc: 3.9, grip: 1.03, stab: 1.03 } },
-    r8: { n: 'R8 V10 퍼포먼스', brand: 'audi', len: 0.90, wid: 0.46, nose: 0.085, hood: 0.126, roof: 0.272, roofA: 0.03, roofB: -0.14, deck: 0.218, tail: 0.232, wr: 0.114, base: { top: 331, acc: 3.4, grip: 1.01, stab: 0.97 } },
-    etrongt: { n: 'RS e-tron GT', brand: 'audi', len: 0.95, wid: 0.47, nose: 0.090, hood: 0.140, roof: 0.300, roofA: 0.03, roofB: -0.19, deck: 0.235, tail: 0.240, wr: 0.116, base: { top: 250, acc: 3.8, grip: 1.02, stab: 1.01 } },
-    models: { n: '모델 S 플레이드', brand: 'tesla', len: 0.98, wid: 0.48, nose: 0.100, hood: 0.145, roof: 0.308, roofA: 0.01, roofB: -0.24, deck: 0.240, tail: 0.248, wr: 0.117, base: { top: 322, acc: 4.0, grip: 1.00, stab: 1.00 } },
-    model3: { n: '모델 3 퍼포먼스', brand: 'tesla', len: 0.92, wid: 0.46, nose: 0.100, hood: 0.140, roof: 0.304, roofA: 0.00, roofB: -0.20, deck: 0.232, tail: 0.242, wr: 0.114, base: { top: 261, acc: 3.7, grip: 1.01, stab: 1.01 } },
-    m720s: { n: '720S', brand: 'mclaren', len: 0.93, wid: 0.46, nose: 0.078, hood: 0.120, roof: 0.268, roofA: 0.05, roofB: -0.14, deck: 0.208, tail: 0.222, wr: 0.115, base: { top: 341, acc: 3.6, grip: 1.02, stab: 0.96 } },
-    artura: { n: '아투라', brand: 'mclaren', len: 0.90, wid: 0.45, nose: 0.082, hood: 0.124, roof: 0.272, roofA: 0.05, roofB: -0.13, deck: 0.206, tail: 0.218, wr: 0.113, base: { top: 330, acc: 3.5, grip: 1.02, stab: 0.97 } }
+    revuelto: { n: '레부엘토', brand: 'lambo', len: 0.96, wid: 0.47, nose: 0.070, hood: 0.115, roof: 0.265, roofA: 0.03, roofB: -0.17, deck: 0.200, tail: 0.225, wr: 0.098, base: { top: 352, acc: 3.6, grip: 1.00, stab: 0.95 } },
+    aventador: { n: '아벤타도르 SVJ', brand: 'lambo', len: 0.95, wid: 0.48, nose: 0.075, hood: 0.120, roof: 0.262, roofA: 0.00, roofB: -0.19, deck: 0.205, tail: 0.230, wr: 0.100, base: { top: 350, acc: 3.4, grip: 0.99, stab: 0.93 } },
+    sf90: { n: 'SF90 스트라달레', brand: 'ferrari', len: 0.94, wid: 0.46, nose: 0.082, hood: 0.128, roof: 0.280, roofA: 0.05, roofB: -0.15, deck: 0.212, tail: 0.228, wr: 0.098, base: { top: 340, acc: 3.9, grip: 1.01, stab: 0.98 } },
+    gtb296: { n: '296 GTB', brand: 'ferrari', len: 0.90, wid: 0.45, nose: 0.088, hood: 0.132, roof: 0.288, roofA: 0.04, roofB: -0.14, deck: 0.214, tail: 0.222, wr: 0.096, base: { top: 330, acc: 3.7, grip: 1.02, stab: 0.99 } },
+    gt3rs: { n: '911 GT3 RS', brand: 'porsche', len: 0.92, wid: 0.47, nose: 0.100, hood: 0.136, roof: 0.300, roofA: -0.01, roofB: -0.23, deck: 0.240, tail: 0.250, wr: 0.099, base: { top: 296, acc: 3.5, grip: 1.08, stab: 1.08 } },
+    taycan: { n: '타이칸 터보 S', brand: 'porsche', len: 0.95, wid: 0.47, nose: 0.090, hood: 0.140, roof: 0.302, roofA: 0.02, roofB: -0.21, deck: 0.235, tail: 0.240, wr: 0.098, base: { top: 260, acc: 3.9, grip: 1.03, stab: 1.03 } },
+    r8: { n: 'R8 V10 퍼포먼스', brand: 'audi', len: 0.90, wid: 0.46, nose: 0.085, hood: 0.126, roof: 0.272, roofA: 0.03, roofB: -0.14, deck: 0.218, tail: 0.232, wr: 0.097, base: { top: 331, acc: 3.4, grip: 1.01, stab: 0.97 } },
+    etrongt: { n: 'RS e-tron GT', brand: 'audi', len: 0.95, wid: 0.47, nose: 0.090, hood: 0.140, roof: 0.300, roofA: 0.03, roofB: -0.19, deck: 0.235, tail: 0.240, wr: 0.098, base: { top: 250, acc: 3.8, grip: 1.02, stab: 1.01 } },
+    models: { n: '모델 S 플레이드', brand: 'tesla', len: 0.98, wid: 0.48, nose: 0.100, hood: 0.145, roof: 0.308, roofA: 0.01, roofB: -0.24, deck: 0.240, tail: 0.248, wr: 0.099, base: { top: 322, acc: 4.0, grip: 1.00, stab: 1.00 } },
+    model3: { n: '모델 3 퍼포먼스', brand: 'tesla', len: 0.92, wid: 0.46, nose: 0.100, hood: 0.140, roof: 0.304, roofA: 0.00, roofB: -0.20, deck: 0.232, tail: 0.242, wr: 0.097, base: { top: 261, acc: 3.7, grip: 1.01, stab: 1.01 } },
+    m720s: { n: '720S', brand: 'mclaren', len: 0.93, wid: 0.46, nose: 0.078, hood: 0.120, roof: 0.268, roofA: 0.05, roofB: -0.14, deck: 0.208, tail: 0.222, wr: 0.098, base: { top: 341, acc: 3.6, grip: 1.02, stab: 0.96 } },
+    artura: { n: '아투라', brand: 'mclaren', len: 0.90, wid: 0.45, nose: 0.082, hood: 0.124, roof: 0.272, roofA: 0.05, roofB: -0.13, deck: 0.206, tail: 0.218, wr: 0.096, base: { top: 330, acc: 3.5, grip: 1.02, stab: 0.97 } }
   };
   var MODEL_BY_BRAND = {};
   Object.keys(MODELS).forEach(function (k) {
@@ -342,7 +342,7 @@
   function profilePts(m) {
     var L = m.len / 2;
     return [
-      [-L, 0.055],
+      [-L, 0.062],
       [-L, m.tail],
       [-L * 0.86, m.deck],
       [m.roofB, m.deck],
@@ -352,7 +352,7 @@
       [L * 0.58, m.hood * 0.93],
       [L * 0.90, m.nose],
       [L, m.nose * 0.86],
-      [L, 0.045]
+      [L, 0.058]
     ];
   }
   function carLabel(text, accent) {
@@ -407,6 +407,25 @@
     var body = new THREE.Mesh(geo, bodyMat);
     body.position.y = 0.03;
     g.add(body);
+
+    /* --- 사이드 미러 · 락커 패널 · 범퍼 (자동차로 읽히게 하는 디테일) --- */
+    [-1, 1].forEach(function (sx) {
+      var arm = new THREE.Mesh(new THREE.BoxGeometry(W * 0.07, 0.014, 0.02), trimMat);
+      arm.position.set(sx * (W / 2 + 0.015), m.hood + 0.015, m.roofA + 0.05);
+      g.add(arm);
+      var mir = new THREE.Mesh(new THREE.BoxGeometry(W * 0.085, 0.032, 0.045), bodyMat);
+      mir.position.set(sx * (W / 2 + 0.045), m.hood + 0.018, m.roofA + 0.05);
+      g.add(mir);
+    });
+    var rocker = new THREE.Mesh(new THREE.BoxGeometry(W * 0.94, 0.03, m.len * 0.46), trimMat);
+    rocker.position.set(0, 0.055, 0.01);
+    g.add(rocker);
+    var bumper = new THREE.Mesh(new THREE.BoxGeometry(W * 0.92, 0.055, 0.07), trimMat);
+    bumper.position.set(0, m.tail - 0.10, -m.len * 0.475);
+    g.add(bumper);
+    var lip = new THREE.Mesh(new THREE.BoxGeometry(W * 0.96, 0.022, 0.09), trimMat);
+    lip.position.set(0, 0.062, m.len * 0.45);
+    g.add(lip);
 
     /* --- 유리창: 지붕 아래를 살짝 넓게 감싸 옆에서도 창이 보이게 --- */
     var glass = new THREE.Mesh(new THREE.BoxGeometry(W * 1.004, 0.085, Math.abs(m.roofB - m.roofA) * 0.86), new THREE.MeshLambertMaterial({ color: 0x9FD4EA, transparent: true, opacity: 0.92 }));
@@ -661,7 +680,8 @@
     race.cars.forEach(function (car) {
       var g = buildCar(car.cfg);
       var label = carLabel(car.name + ' · ' + MODELS[car.cfg.model].n.split(' ')[0], car.isMe ? '#7CDFB0' : '#FFD37A');
-      label.position.set(0, 0.78, 0);
+      label.position.set(0, 0.50, 0);
+      label.scale.set(0.86, 0.215, 1);
       g.add(label);
       car.group = g;
       carGroups.push(g);
@@ -1088,8 +1108,8 @@
     var next = race.results[mine.rank];  /* 바로 아래(내가 이긴 상대) */
     var above = race.results[mine.rank - 2]; /* 바로 위(나를 이긴 상대) */
     var short = function (r) {
-      var m = MODELS[r.car.cfg.model];
-      return r.car.name + '(' + (m ? m.n.split(' ')[0] : '') + ')';
+      var mm = MODELS[r.car.cfg.model];
+      return r.car.name + '(' + (mm && BRANDS[mm.brand] ? BRANDS[mm.brand].n : '') + ')';
     };
     if (mine.rank === 1) {
       if (race.mode === 'solo') {
@@ -1233,6 +1253,15 @@
     /* 바퀴 */
     var tire = st.t, bk = st.br;
     var R = (m.wr + tire.r + bk.r) * sc;
+    /* 휠하우스(아치) — 바퀴가 차체에 파인 듯 */
+    [-m.len * 0.31, m.len * 0.31].forEach(function (wx) {
+      var c = P(wx, m.wr + tire.r + bk.r);
+      x.fillStyle = 'rgba(18,24,30,.90)';
+      x.beginPath();
+      x.arc(c[0], c[1], R * 1.20, Math.PI, Math.PI * 2);
+      x.closePath();
+      x.fill();
+    });
     [-m.len * 0.31, m.len * 0.31].forEach(function (wx) {
       var c = P(wx, m.wr + tire.r + bk.r);
       x.fillStyle = tire.tread === 'off' ? '#15181B' : '#22262B';
@@ -1282,6 +1311,15 @@
       x.beginPath();
       x.arc(c[0] - R * 0.3, c[1] + R * 0.12, Math.max(1.6, R * 0.16), 0, Math.PI * 2);
       x.fill();
+    });
+    /* 휀더(흙받이) 아치 — 바퀴 윗부분을 차체색으로 덮어 자동차처럼 */
+    x.strokeStyle = shade(col, 0.92);
+    x.lineWidth = Math.max(2, 0.022 * sc);
+    [-m.len * 0.31, m.len * 0.31].forEach(function (wx) {
+      var c = P(wx, m.wr + tire.r + bk.r);
+      x.beginPath();
+      x.arc(c[0], c[1], R * 1.10, Math.PI * 1.02, Math.PI * 1.98);
+      x.stroke();
     });
 
     /* 배기 불꽃(파워트레인) */
@@ -1412,12 +1450,12 @@
     var items = rows.map(function (m) {
       var rec = v.minicar[m.id];
       var direct = !!(rec && rec.cfg && (rec.laps || rec.best));
-      var co = direct ? normCfg(rec.cfg) : presetFor(m.id);
+      var co = (m.id === mid() && cfg) ? normCfg(cfg) : (direct ? normCfg(rec.cfg) : presetFor(m.id));
       var mm = MODELS[co.model] || MODELS.sf90;
       return {
         id: m.id, name: m.name, emoji: m.emoji || '🧑', mine: m.id === mid(),
         best: (rec && rec.best) || 0, wins: (rec && rec.wins) || 0, races: (rec && rec.races) || 0,
-        direct: direct, label: (BRANDS[mm.brand] ? BRANDS[mm.brand].n : '') + ' ' + mm.n
+        direct: (m.id === mid() && cfg) ? true : direct, label: (BRANDS[mm.brand] ? BRANDS[mm.brand].n : '') + ' ' + mm.n
       };
     });
     items.sort(function (a, b) {
@@ -1666,7 +1704,7 @@
         return '<div class="rl' + (r.car.isMe ? ' me' : '') + '"><span class="no">' + r.rank + '</span>' +
           '<span class="nm">' + esc(r.car.name) + ' · ' + esc(mm ? mm.n : '') + '</span>' +
           '<span class="tm">' + fmtMs(Math.round(r.time * 1000)) +
-          (r.rank === 1 ? '' : (r.gap >= 0 ? ' <span style="color:#C0392B">+' + r.gap.toFixed(2) + 's</span>' : ' <span style="color:#0A7D56">' + r.gap.toFixed(2) + 's</span>')) +
+          (r.car.isMe ? '' : (r.gap >= 0 ? ' <span style="color:#C0392B">+' + r.gap.toFixed(2) + 's</span>' : ' <span style="color:#0A7D56">' + r.gap.toFixed(2) + 's</span>')) +
           '</span></div>';
       }).join('') +
       '<div class="rb"><button type="button" class="main" id="mcAgain">🔄 다시 대결</button><button type="button" id="mcToGarage">🔧 조립으로</button></div>' +
@@ -1705,7 +1743,7 @@
     var txt = '<span>' + myRank() + '위/' + race.cars.length + '대</span>' +
       '<span>🏁 ' + Math.min(race.laps, meCar.lap) + '/' + race.laps + '랩</span>' +
       '<span>⏱ ' + fmtMs(Math.round(race.t * 1000)) + '</span>' +
-      '<span>' + Math.round(meCar.s * 60) + ' km/h</span>' +
+      '<span>' + Math.min(Math.round(meCar.st.top), Math.round(meCar.s * 60)) + ' km/h</span>' +
       '<span>⚡ ' + meCar.boosts + '</span>' +
       (meCar.best ? '<span>🏆 ' + fmtMs(meCar.best) + '</span>' : '');
     if (txt === hudTxt) return;
@@ -1723,9 +1761,9 @@
     if (race) race.cars.forEach(placeGroup);
     if (camera && race && race.me.group) {
       var cg = race.me.group;
-      var back = new THREE.Vector3(0, 0, -1).applyQuaternion(cg.quaternion).multiplyScalar(3.8);
-      camera.position.lerp(new THREE.Vector3(cg.position.x + back.x, cg.position.y + 1.75, cg.position.z + back.z), 1 - Math.exp(-6 * dt));
-      camera.lookAt(cg.position.x, cg.position.y + 0.32, cg.position.z);
+      var back = new THREE.Vector3(0, 0, -1).applyQuaternion(cg.quaternion).multiplyScalar(2.85);
+      camera.position.lerp(new THREE.Vector3(cg.position.x + back.x, cg.position.y + 1.15, cg.position.z + back.z), 1 - Math.exp(-6 * dt));
+      camera.lookAt(cg.position.x, cg.position.y + 0.15, cg.position.z);
     }
     renderer.render(scene, camera);
     raceHud();
