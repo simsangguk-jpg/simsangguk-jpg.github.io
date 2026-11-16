@@ -10,28 +10,38 @@
     body { font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; background: #ffffff; color: #111827; padding: 10px; }
     a { text-decoration: none; color: inherit; }
     .w-box { max-width: 480px; margin: 0 auto; }
-    .w-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+    .w-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; gap: 6px; }
     .w-title { font-size: 14px; font-weight: 900; color: #111827; }
-    .w-time { font-size: 11px; font-weight: 700; color: #6b7280; }
+    .w-time { font-size: 11px; font-weight: 700; color: #6b7280; white-space: nowrap; }
     .w-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }
     .w-tile { display: block; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 12px; padding: 9px 10px; }
     .w-tile:active { opacity: 0.8; }
     .w-lbl { font-size: 10.5px; font-weight: 800; color: #6b7280; margin-bottom: 3px; }
     .w-val { font-size: 13px; font-weight: 800; color: #111827; line-height: 1.25; }
-    .w-sub { font-size: 11px; color: #4b5563; margin-top: 2px; line-height: 1.25; }
+    .w-sub { font-size: 11px; color: #4b5563; margin-top: 2px; line-height: 1.3; }
     .w-full { grid-column: 1 / -1; }
     .w-tip { background: #eff6ff; border-color: #bfdbfe; }
+    .w-money { background: #ecfdf5; border-color: #a7f3d0; }
     .w-links { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; margin-top: 7px; }
     .w-btn { display: block; text-align: center; background: #f3f4f6; border: 1px solid #e5e7eb; border-radius: 9px; padding: 6px 4px; font-size: 10.5px; font-weight: 800; color: #1f2937; }
     .w-btn.green { background: #ecfdf5; border-color: #a7f3d0; color: #047857; }
     .w-btn.red { background: #fef2f2; border-color: #fecaca; color: #b91c1c; }
+    .w-brief { display: flex; gap: 8px; align-items: flex-start; background: linear-gradient(135deg,#F0FDF4 0%,#F6FFFB 100%); border: 1px solid #C8F0DA; border-radius: 12px; padding: 8px 10px; margin-bottom: 7px; }
+    .w-brief svg { flex: 0 0 auto; width: 30px; height: 30px; border-radius: 50%; }
+    .w-brief .t { font-size: 11px; font-weight: 700; color: #134E3A; line-height: 1.45; }
+    .w-brief .t b { color: #04724D; font-weight: 900; }
   </style>
 </head>
 <body>
   <div class="w-box">
     <div class="w-head">
-      <div class="w-title">🟢 상국포털 스마트 위젯 <span style="font-size:10px;font-weight:700;color:#15803d;">11/16 20:30 동기화</span></div>
+      <div class="w-title">🟢 상국포털 스마트 위젯 <span style="font-size:10px;font-weight:700;color:#15803d;">V52 · 11/16 22:45 동기화</span></div>
       <div id="wDate" class="w-time"></div>
+    </div>
+
+    <div class="w-brief">
+      <svg viewBox="0 0 48 48" aria-label="미쁠"><circle cx="24" cy="24" r="23" fill="#2FD07E"/><circle cx="24" cy="24" r="20" fill="#3BE08F"/><circle cx="17.5" cy="16.6" r="2.6" fill="#0C3B27"/><circle cx="30.5" cy="16.6" r="2.6" fill="#0C3B27"/><path d="M14.6 33 L24 25.4 L33.4 33" fill="none" stroke="#fff" stroke-width="3.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div class="t">오늘 근무 1일차 마감 — 내일 <b>05:50 기상 · 06:39 출발</b>이면 08:10 도착입니다. <b>컬리 결제는 14:00 마감</b>, 오후 4시부터 이슬비 85%라 우산을 차에 두세요.</div>
     </div>
 
     <div class="w-grid">
@@ -43,7 +53,7 @@
 
       <a class="w-tile" href="https://weather.naver.com/today/02480580" target="_blank" rel="noopener noreferrer">
         <div class="w-lbl">🌦️ 내일(11/17) 파주 날씨 ↗</div>
-        <div class="w-val">🌦️ 가랑비 10~16℃</div>
+        <div class="w-val">🌦️ 오후 이슬비 10~16℃</div>
         <div class="w-sub">오후 4시~ 강수 <b style="color:#1d4ed8;">85%</b> · 미세먼지 <b style="color:#15803d;">좋음</b> · 연천 8~14℃</div>
       </a>
 
@@ -59,6 +69,12 @@
           • [필수] 근무 2일차 · 14시 컬리 결제 마감 · 우산·방수 겉옷 트렁크에<br>
           • [추천] 아나운서 1분 낭독 · 우아한 말하기(고진감래) · 러닝 30분(비 오면 실내)
         </div>
+      </a>
+
+      <a class="w-tile w-full w-money" href="https://feelyour15.tistory.com/manage/revenue/adsense" target="_blank" rel="noopener noreferrer">
+        <div class="w-lbl" style="color:#047857;">💰 수익 현황 (누르면 애드센스)</div>
+        <div class="w-val" style="font-size:12px;">애드센스 <b>$98.77</b> · 애드포스트 <b>30,719원</b></div>
+        <div class="w-sub" style="color:#065f46;font-weight:700;">최근 7일 +$2.12 · $100까지 $1.23 · 전환가능 1,219원(12/12 29,500원 지급 예정)</div>
       </a>
 
       <a class="w-tile" href="https://finance.naver.com/" target="_blank" rel="noopener noreferrer">
@@ -77,7 +93,7 @@
         <div class="w-lbl">✍️ 최신 발행 콘텐츠 (터치 시 이동)</div>
         <div class="w-sub" style="margin-top:0;color:#111827;font-weight:700;line-height:1.45;">
           • <a href="https://feelyour15.tistory.com/181" target="_blank" rel="noopener noreferrer">티스토리 #181 갤럭시 워치 울트라2 vs 워치9 ↗</a><br>
-          • <a href="https://blog.naver.com/simsangguk/224479223401" target="_blank" rel="noopener noreferrer">네이버 11호 다이소 자석 타월 걸이 ↗</a><br>
+          • <a href="https://blog.naver.com/simsangguk" target="_blank" rel="noopener noreferrer">네이버 12호 다이소 3,000원 2WAY 스테인리스 욕실 정리대 ↗</a><br>
           • <a href="https://youtube.com/shorts/ny_ljSd-3d4" target="_blank" rel="noopener noreferrer">쇼츠 비누가 벽에서 뜨는 49초 정리 ↗</a>
         </div>
       </div>
@@ -85,12 +101,12 @@
 
     <div class="w-links">
       <a class="w-btn green" href="https://feelyour15.tistory.com" target="_blank" rel="noopener noreferrer">📝 티스토리</a>
+      <a class="w-btn green" href="https://feelyour15.tistory.com/manage" target="_blank" rel="noopener noreferrer">⚙️ 관리자</a>
       <a class="w-btn green" href="https://blog.naver.com/simsangguk" target="_blank" rel="noopener noreferrer">🧹 네이버</a>
       <a class="w-btn red" href="https://www.youtube.com/@%EB%AF%B8%EC%81%A0-f2x" target="_blank" rel="noopener noreferrer">📺 유튜브</a>
       <a class="w-btn" href="https://cshop.naver.com/sim0369" target="_blank" rel="noopener noreferrer">🛍️ 크샵</a>
       <a class="w-btn red" href="https://www.yna.co.kr/news?site=navi_latest" target="_blank" rel="noopener noreferrer">🚨 속보</a>
       <a class="w-btn" href="https://news.naver.com/" target="_blank" rel="noopener noreferrer">📰 뉴스</a>
-      <a class="w-btn" href="https://keep.google.com/" target="_blank" rel="noopener noreferrer">🗒️ 메모장</a>
       <a class="w-btn" href="https://simsangguk-jpg.github.io/" target="_blank" rel="noopener noreferrer">🔐 포털전체</a>
     </div>
   </div>
