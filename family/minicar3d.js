@@ -985,7 +985,8 @@
   function startRace() {
     stop();
     start2D();                                  /* 먼저 2D로 즉시 그려 화면이 비지 않게 */
-    if (!hasWebGL()) { setModeLabel('2d'); return; }
+    var force2D = /[?&]mc2d=1/.test(String((global.location && global.location.search) || ''));  /* 2D 모드 강제(점검용) */
+    if (force2D || !hasWebGL()) { showLayer('2d'); setModeLabel('2d'); return; }
     loadThree(function (err) {
       if (err) { if (mode !== '3d') { showLayer('2d'); setModeLabel('2d'); } return; }
       if (!init3D()) { if (mode !== '3d') { showLayer('2d'); setModeLabel('2d'); } return; }
