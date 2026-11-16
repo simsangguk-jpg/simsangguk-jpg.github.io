@@ -977,6 +977,8 @@
         return;
       }
       if (e.target.closest('[data-t9shop]')) {
+        /* 상점으로 갈 때는 내 방 화면을 먼저 닫아 두 패널이 겹치지 않게 */
+        hideMine();
         if (global.GAME4 && global.GAME4.pane) global.GAME4.pane('shop');
         return;
       }
@@ -999,6 +1001,7 @@
         var meta = FURN[k];
         if (meta && meta.shop && !shopOwned(meta.shop)) {
           toast('🔒 포인트 상점에서 ' + meta.n.replace(/^\S+\s/, '') + '을(를) 먼저 사 주세요');
+          hideMine();
           if (global.GAME4 && global.GAME4.pane) global.GAME4.pane('shop');
           return;
         }
