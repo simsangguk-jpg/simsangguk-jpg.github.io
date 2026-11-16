@@ -479,10 +479,19 @@
   /* ---------------- mount & render ---------------- */
   function ensureSections() {
     var all = $('view-all');
-    if (all && !$('v9Wish')) {
+    if (!all) return;
+    var anchor = $('v4Tube') || all.children[1] || null;
+    /* V11: 위시리스트는 💗 좋아하는 것과 한 카드로 통합됐다(extra4.js).
+       그 카드가 없는 예전 화면에서만 따로 그려 준다. */
+    if (!$('v9Wish')) {
       var div = document.createElement('div');
-      div.innerHTML = secWish() + secArchive();
-      all.insertBefore(div, all.querySelector('#v4Tube') || all.children[1] || null);
+      div.innerHTML = secWish();
+      all.insertBefore(div.firstChild, anchor);
+    }
+    if (!$('v9Arch')) {
+      var divA = document.createElement('div');
+      divA.innerHTML = secArchive();
+      all.insertBefore(divA.firstChild, anchor);
     }
     var lifeMoney = $('life-money');
     if (lifeMoney && !$('v9Money')) {

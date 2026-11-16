@@ -200,9 +200,9 @@
     {
       t: '마음·선물', c: '#F0659B', items: [
         { e: '🧠', n: '마음 돌봄', v: 'all', s: 'v5Mind' },
-        { e: '💗', n: '좋아하는 것', v: 'all', s: 'v4Like' },
+        /* 좋아하는 것 + 위시리스트는 한 카드로 통합(V11) — 목차도 한 항목만 둔다 */
+        { e: '🎁', n: '좋아하는 것·위시', v: 'all', s: 'v9Wish' },
         { e: '🤝', n: '고민·조언', v: 'all', s: 'v4Worry' },
-        { e: '🎁', n: '위시리스트', v: 'all', s: 'v4Wish' },
         { e: '🛍️', n: '포인트 상점', v: 'play', pane: 'shop' }
       ]
     },
@@ -235,7 +235,7 @@
       '<div class="v4-mini" style="margin:-4px 0 10px">우리 가족 기능을 6가지 갈래로 모았어요. 오른쪽 아래 <b>＋</b> 버튼을 누르면 어디서든 바로 뛰어갈 수 있어요.</div>',
       catsHtml(),
       '</div>',
-      secVisit(), secGeo(), secNotif(), secMem(), secFood(), secLike(), secWorry(), secWish(), secTube()
+      secVisit(), secGeo(), secNotif(), secMem(), secFood(), secLike(), secWorry(), secTube()
     ].join('');
   }
 
@@ -1022,10 +1022,20 @@
   /* ============================================================
      ⑦ 좋아하는 것
      ============================================================ */
+  /* V11 · 💗 좋아하는 것 + 🎁 갖고 싶은 물건 = 한 카드
+     - ① 가족이 좋아하는 것(DOC.v4.like)  ② 갖고 싶은 물건 목록(DOC.v9.wish · renderWish가 채운다)
+     - 카드 id는 life9.js의 위시리스트가 그대로 찾는 'v9Wish'를 쓴다(목차 이동 지점도 여기) */
   function secLike() {
-    return '<div class="card" id="v4Like"><div class="card-head"><h2>💗 우리가 좋아하는 것</h2><span class="sub">서로 알아 가기</span></div>' +
+    return '<div class="card" id="v9Wish" style="border:1.5px solid #F7DCE9;background:linear-gradient(180deg,#FFF8FB,#FFFFFF)">' +
+      '<div class="card-head"><h2>💗 좋아하는 것 &amp; 🎁 갖고 싶은 물건</h2><span class="sub" id="v9WishN">0개</span></div>' +
+      '<div class="v4-mini" style="margin:-3px 0 11px">서로 좋아하는 것을 알아 두고, 갖고 싶은 물건은 아래 목록에 올려 두면 선물·여행 계획에 바로 쓸 수 있어요.</div>' +
+      '<div style="display:flex;align-items:baseline;gap:6px;margin:0 0 2px"><span style="font-size:13px;font-weight:900;color:#3C4450;letter-spacing:-.3px">① 가족이 좋아하는 것</span><span class="v4-mini" style="margin:0">음식 · 취미 · 관심사</span></div>' +
       '<div id="v4LikeList"></div>' +
-      '<div class="hint">각자 좋아하는 음식·취미·관심사를 적어 두면 선물·여행 계획에 도움이 돼요.</div></div>';
+      '<div style="display:flex;align-items:baseline;gap:6px;margin:15px 0 5px;padding-top:12px;border-top:1.5px dashed #E7EDEA"><span style="font-size:13px;font-weight:900;color:#3C4450;letter-spacing:-.3px">② 갖고 싶은 물건 목록</span><span class="v4-mini" style="margin:0">한 사람당 최대 5개</span></div>' +
+      '<div class="fb-desc">사진을 붙이고, 다나와·네이버·쿠팡 <b>최저가 검색</b>이나 <b>AI 최저가 조회</b>(Gemini 키 등록 시)도 해 보세요. 찜·선물 완료 표시도 여기서 해요.</div>' +
+      '<div id="v9WishList" style="margin-top:9px"></div>' +
+      '<button type="button" class="btn soft" id="v9WishAdd" style="margin-top:8px">＋ 갖고 싶은 물건 올리기</button>' +
+      '</div>';
   }
   function renderLike() {
     var v = V4(), box = $('v4LikeList');
@@ -1034,10 +1044,13 @@
     paint(box, JSON.stringify(v.like), function () {
       return ms.map(function (m) {
         var r = v.like[m.id] || {};
-        var body = [['🍚', '음식', r.food], ['🎮', '취미', r.hobby], ['✨', '관심사', r.interest], ['🌈', '요즘 바람', r.wish]].filter(function (x) { return x[2]; })
+        var body = [['🍚', '음식', r.food], ['🎮', '취미', r.hobby], ['✨', '관심사', r.interest]].filter(function (x) { return x[2]; })
           .map(function (x) { return '<small>' + x[0] + ' ' + x[1] + ' · ' + esc(x[2]) + '</small>'; }).join('');
-        return '<div class="v4-row"><span class="e">' + (m.emoji || '🧑') + '</span><span class="tx"><b>' + esc(m.name) + '</b>' + (body || '<small>아직 비어 있어요 — 눌러서 알려 주세요</small>') + '</span>' +
-          '<button type="button" class="v4-tag gray" data-like="' + m.id + '" style="border:none">' + (r.food ? '수정' : '적기') + '</button></div>';
+        /* V11 이전에 '요즘 바라는 것'에 적어 둔 값은 지우지 않고 작게 남겨 보여 준다 */
+        var legacy = r.wish ? '<small style="color:#A6AFB9">🌈 요즘 바라는 것 · ' + esc(r.wish) + ' <span style="color:#C3CAD2">(예전 기록)</span></small>' : '';
+        var filled = !!(r.food || r.hobby || r.interest);
+        return '<div class="v4-row"><span class="e">' + (m.emoji || '🧑') + '</span><span class="tx"><b>' + esc(m.name) + '</b>' + (body || legacy || '<small>아직 비어 있어요 — 눌러서 알려 주세요</small>') + (body && legacy ? legacy : '') + '</span>' +
+          '<button type="button" class="v4-tag gray" data-like="' + m.id + '" style="border:none">' + (filled ? '수정' : '적기') + '</button></div>';
       }).join('');
     });
   }
@@ -1049,11 +1062,13 @@
       '<div class="form-row"><label>좋아하는 음식</label><input class="field" id="v4LkFood" maxlength="40" value="' + esc(r.food || '') + '"></div>' +
       '<div class="form-row"><label>취미</label><input class="field" id="v4LkHobby" maxlength="40" value="' + esc(r.hobby || '') + '"></div>' +
       '<div class="form-row"><label>관심사</label><input class="field" id="v4LkInterest" maxlength="40" value="' + esc(r.interest || '') + '"></div>' +
-      '<div class="form-row"><label>요즘 바라는 것</label><input class="field" id="v4LkWish" maxlength="40" value="' + esc(r.wish || '') + '"></div>' +
+      /* V11: '요즘 바라는 것' 입력은 위시리스트와 겹쳐서 안내 문구로 바꿨다(예전 값은 보관) */
+      '<div class="form-row"><label>갖고 싶은 물건</label><div class="hint" style="margin:0">🎁 갖고 싶은 물건은 이 카드의 <b>② 갖고 싶은 물건 목록</b>에 올려 주세요.' +
+      (r.wish ? '<br><span style="color:#A6AFB9">예전에 적어 둔 “' + esc(r.wish) + '” 은 지우지 않고 그대로 보관돼 있어요.</span>' : '') + '</div></div>' +
       '<div style="display:flex;gap:8px;margin-top:6px"><button type="button" class="btn ghost" data-sheet-close>취소</button><button type="button" class="btn" id="v4LkSave">저장</button></div>');
     $('v4LkSave').onclick = function () {
-      var vv = V4();
-      vv.like[id] = { food: ($('v4LkFood').value || '').trim(), hobby: ($('v4LkHobby').value || '').trim(), interest: ($('v4LkInterest').value || '').trim(), wish: ($('v4LkWish').value || '').trim(), at: now() };
+      var vv = V4(), prev = vv.like[id] || {};
+      vv.like[id] = { food: ($('v4LkFood').value || '').trim(), hobby: ($('v4LkHobby').value || '').trim(), interest: ($('v4LkInterest').value || '').trim(), wish: prev.wish || '', at: now() };
       save(); renderLike(); F.closeSheet(); toast('저장했어요');
     };
   }
@@ -1133,6 +1148,7 @@
       coupang: 'https://www.coupang.com/np/search?q=' + q
     };
   }
+  /* 구버전 카드(V11에서 화면에는 그리지 않는다 — 위 통합 카드로 이동). DOC.v4.wish 읽기·이관 호환용으로만 남긴다. */
   function secWish() {
     return '<div class="card" id="v4Wish"><div class="card-head"><h2>🎁 갖고 싶은 선물 위시리스트</h2><span class="sub" id="v4WishN">0개</span></div>' +
       '<div class="fb-desc">갖고 싶은 것을 올려 두면 다나와·네이버·쿠팡 <b>최저가 검색</b>으로 바로 넘어가요.</div>' +
@@ -1280,6 +1296,9 @@
     document.addEventListener('click', function (e) {
       var t = e.target.closest('[data-jump]');
       if (t) { try { jump(JSON.parse(t.getAttribute('data-jump'))); } catch (err) {} return; }
+      /* V11: 좋아하는 것 '적기·수정' 버튼 — 예전에는 연결이 빠져 있어 눌러도 반응이 없었다 */
+      var lk = e.target.closest('[data-like]');
+      if (lk) { likeSheet(lk.getAttribute('data-like')); return; }
     });
     var ma = $('v4MemAdd');
     if (ma) ma.addEventListener('click', memSheet);
