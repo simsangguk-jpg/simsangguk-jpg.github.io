@@ -246,8 +246,10 @@
     piano: { n: '🎹 피아노', shop: 'f_piano' },
     fish: { n: '🐠 어항', shop: 'f_fish' }
   };
-  var WALLS = [['#EAF7F1', '민트'], ['#FFEFE5', '피치'], ['#E9F0FF', '하늘'], ['#F5EFFA', '라벤더'], ['#FFF8E1', '크림'], ['#ECEFF1', '회색']];
-  var FLOORS = [['#E7D3BC', '원목'], ['#D9E2D4', '연두 카펫'], ['#EDEDED', '차량 타일'], ['#F3E2CE', '코르크'], ['#DCE7F5', '블루']];
+  var WALLS = [['#EAF7F1', '민트'], ['#FFEFE5', '피치'], ['#E9F0FF', '하늘'], ['#F5EFFA', '라벤더'], ['#FFF8E1', '크림'], ['#ECEFF1', '회색'],
+    /* 옛 마이룸 벽 색(자료 호환) */ ['#FFF0F5', '핑크'], ['#EEF5FF', '하늘벽'], ['#F7F1E6', '베이지']];
+  var FLOORS = [['#E7D3BC', '원목'], ['#D9E2D4', '연두 카펫'], ['#EDEDED', '차량 타일'], ['#F3E2CE', '코르크'], ['#DCE7F5', '블루'],
+    /* 옛 마이룸 바닥 색 */ ['#E3E8EC', '타일'], ['#F3E1DA', '러그'], ['#DDE7DC', '잔디']];
   var LIGHTS = [['warm', '🌅 따뜻한'], ['white', '💡 밝은'], ['night', '🌙 무드']];
 
   function buildRoom() {
@@ -374,24 +376,25 @@
     applyLight(r.light);
   }
   function applyLight(mode) {
-    if (!roomG || !roomG.userData.pl || !scene) return;
+    if (!scene) return;
     scene.children.forEach(function (o) {
       if (o.isAmbientLight || o.isDirectionalLight || o.isHemisphereLight) scene.remove(o);
     });
     var amb, dir;
     if (mode === 'night') {
-      amb = new THREE.AmbientLight(0x8A93B8, 0.55);
-      dir = new THREE.DirectionalLight(0x6E7FB0, 0.35);
+      amb = new THREE.AmbientLight(0x8A93B8, 0.62);
+      dir = new THREE.DirectionalLight(0x6E7FB0, 0.42);
     } else if (mode === 'white') {
-      amb = new THREE.AmbientLight(0xFFFFFF, 0.85);
+      amb = new THREE.AmbientLight(0xFFFFFF, 0.88);
       dir = new THREE.DirectionalLight(0xFFFFFF, 0.55);
     } else {
-      amb = new THREE.AmbientLight(0xFFE8CC, 0.75);
-      dir = new THREE.DirectionalLight(0xFFD9A0, 0.45);
+      amb = new THREE.AmbientLight(0xFFE8CC, 0.80);
+      dir = new THREE.DirectionalLight(0xFFD9A0, 0.48);
     }
     dir.position.set(3, 6, 4);
     scene.add(amb); scene.add(dir);
-    roomG.userData.pl.intensity = mode === 'night' ? 1.2 : 0.9;
+    /* 무드등을 놓았을 때만 점등(없어도 방은 밝게 보이게) */
+    if (roomG && roomG.userData.pl) roomG.userData.pl.intensity = mode === 'night' ? 1.2 : 0.9;
   }
 
   /* ---------------- 다마고치 만들기 ---------------- */
@@ -889,6 +892,21 @@
       '<button type="button" class="btn soft hidden" id="t9EditBtn" style="margin-top:9px">✏️ 이름·종류 다시 정하기</button>' +
       '</div>';
   }
+  /* 놀이 탭 서브메뉴 순서 통일 — 3D 놀이터 · 다마고치·내 방 · 미니카 · 퀴즈 … */
+  var NAV_ORDER = ['3d', 'tama3d', 'minicar', 'quiz', 'card', 'shop', 'yut'];
+  function reorderNav() {
+    var nav = $('pgNav');
+    if (!nav) return;
+    var btns = Array.prototype.slice.call(nav.querySelectorAll('[data-pane]'));
+    btns.sort(function (a, b) {
+      var ia = NAV_ORDER.indexOf(a.getAttribute('data-pane'));
+      var ib = NAV_ORDER.indexOf(b.getAttribute('data-pane'));
+      if (ia < 0) ia = 90; if (ib < 0) ib = 90;
+      return ia - ib;
+    });
+    btns.forEach(function (b) { nav.appendChild(b); });
+  }
+
   function syncPane() {
     ensureScene();
     resize3D();
@@ -920,6 +938,7 @@
     btn.textContent = '🥚 다마고치 · 내 방';
     var qb = nav.querySelector('[data-pane="quiz"]');
     if (qb) nav.insertBefore(btn, qb); else nav.appendChild(btn);
+    reorderNav();
     el.addEventListener('click', function (e) {
       var sp = e.target.closest('[data-t9sp]');
       if (sp) { window.__t9sp = sp.getAttribute('data-t9sp'); setupUI(); return; }

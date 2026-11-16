@@ -408,9 +408,9 @@
     body.position.y = 0.03;
     g.add(body);
 
-    /* --- 유리창: 지붕 아래를 살짝 안쪽으로 --- */
-    var glass = new THREE.Mesh(new THREE.BoxGeometry(W * 0.80, 0.10, Math.abs(m.roofB - m.roofA) * 0.72), new THREE.MeshLambertMaterial({ color: 0x9FD4EA, transparent: true, opacity: 0.92 }));
-    glass.position.set(0, (m.roof + m.deck) / 2 + 0.02, ((m.roofA + m.roofB) / 2) * 0.9);
+    /* --- 유리창: 지붕 아래를 살짝 넓게 감싸 옆에서도 창이 보이게 --- */
+    var glass = new THREE.Mesh(new THREE.BoxGeometry(W * 1.004, 0.085, Math.abs(m.roofB - m.roofA) * 0.86), new THREE.MeshLambertMaterial({ color: 0x9FD4EA, transparent: true, opacity: 0.92 }));
+    glass.position.set(0, m.roof - 0.048, ((m.roofA + m.roofB) / 2) * 0.92);
     g.add(glass);
 
     /* --- 휠 (타이어·림·캘리퍼 색이 그대로 보인다) --- */
@@ -511,12 +511,13 @@
     var led = !!st.d.led;
     var lMat = new THREE.MeshBasicMaterial({ color: led ? 0xEAF8FF : 0xFFF1C9 });
     [-1, 1].forEach(function (sx) {
-      var lamp = new THREE.Mesh(new THREE.BoxGeometry(W * 0.20, 0.032, 0.03), lMat);
-      lamp.position.set(sx * W * 0.30, m.nose + 0.045, m.len * 0.485);
+      var lampY = clamp(m.nose * 0.72, 0.05, 0.16);
+      var lamp = new THREE.Mesh(new THREE.BoxGeometry(W * 0.20, 0.028, 0.03), lMat);
+      lamp.position.set(sx * W * 0.30, lampY, m.len * 0.487);
       g.add(lamp);
       if (led) {
-        var glow = new THREE.Mesh(new THREE.BoxGeometry(W * 0.21, 0.05, 0.008), new THREE.MeshBasicMaterial({ color: 0x9BE8FF, transparent: true, opacity: 0.55 }));
-        glow.position.set(sx * W * 0.30, m.nose + 0.045, m.len * 0.50);
+        var glow = new THREE.Mesh(new THREE.BoxGeometry(W * 0.21, 0.045, 0.008), new THREE.MeshBasicMaterial({ color: 0x9BE8FF, transparent: true, opacity: 0.55 }));
+        glow.position.set(sx * W * 0.30, lampY, m.len * 0.50);
         g.add(glow);
       }
     });
@@ -1030,11 +1031,12 @@
       list.push({ id: m.id, name: m.name, isMe: false, cfg: co.cfg, direct: co.direct, rec: co.rec });
     });
     var n = list.length;
-    var lanes = n === 1 ? [0] : (n === 2 ? [-0.7, 0.7] : (n === 3 ? [-1.1, 0, 1.1] : [-1.35, -0.45, 0.45, 1.35]));
-    /* 내 차는 가운데(2대면 안쪽)로 */
-    var order = [list[0]].concat(list.slice(1));
-    var cars = order.map(function (o, i) {
-      var lane = n === 1 ? 0 : lanes[i];
+    var laneSet = n === 1 ? [0] : (n === 2 ? [-0.55, 0.55] : (n === 3 ? [-1.1, 0, 1.1] : [-1.35, -0.45, 0.45, 1.35]));
+    /* 내 차가 가운데(짝수면 안쪽)로 오도록 가까운 차선부터 배정 */
+    var sorted = laneSet.slice().sort(function (a, b) { return Math.abs(a) - Math.abs(b); });
+    var myLane = sorted.shift();
+    var cars = list.map(function (o, i) {
+      var lane = i === 0 ? myLane : sorted[i - 1];
       return newCar(o.id, o.name, o.isMe, o.cfg, lane);
     });
     var rival = null;
@@ -1765,6 +1767,17 @@
     btn.textContent = '🏎️ 미니카';
     var qb = nav.querySelector('[data-pane="quiz"]');
     if (qb) nav.insertBefore(btn, qb); else nav.appendChild(btn);
+    /* 순서 통일: 3D 놀이터 · 다마고치·내 방 · 미니카 · 퀴즈 … */
+    (function () {
+      var ORDER = ['3d', 'tama3d', 'minicar', 'quiz', 'card', 'shop', 'yut'];
+      var btns = Array.prototype.slice.call(nav.querySelectorAll('[data-pane]'));
+      btns.sort(function (a, b) {
+        var ia = ORDER.indexOf(a.getAttribute('data-pane')), ib = ORDER.indexOf(b.getAttribute('data-pane'));
+        if (ia < 0) ia = 90; if (ib < 0) ib = 90;
+        return ia - ib;
+      });
+      btns.forEach(function (b) { nav.appendChild(b); });
+    })();
     el.addEventListener('click', function (e) {
       var t = e.target;
       if (!t || !t.closest) return;
