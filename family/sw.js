@@ -1,10 +1,10 @@
-/* 상국수향지섭지율포털 Service Worker · V9 (2026-11-16 · 전면 대개편: 3D 다마고치·미니카, 상벌점, 기분 보드 등)
+/* 상국수향지섭지율포털 Service Worker · V10 (2026-11-16 · 구글 포토 가족 앨범: 오늘의 대표사진·자동재생 영상·공유 앨범)
    - /family/ 범위만 담당한다(상국포털 본체 캐시와 섞이지 않게 별도 캐시 이름 사용)
-   - install 단계에서 확장 모듈(extra4.js·game4.js·play3d.js·mind5.js·cal7.js·extra7.js·tama3d.js·minicar3d.js·life9.js·home9.js)까지 모두 프리캐시한다
+   - install 단계에서 확장 모듈(extra4.js·game4.js·play3d.js·mind5.js·cal7.js·extra7.js·extra8.js·tama3d.js·minicar3d.js·life9.js·home9.js)까지 모두 프리캐시한다
    - 화면(HTML)은 네트워크 우선: 새로 배포한 내용이 앱에서도 바로 뜨도록
    - 그 밖의 정적 파일은 네트워크 우선, 실패 시 캐시
 */
-const SW_VERSION = 'family-portal-v9-2026-11-16';
+const SW_VERSION = 'family-portal-v10-2026-11-16';
 const OFFLINE_HTML = new URL('index.html', self.registration.scope).href;
 const PRECACHE = [
   './',
@@ -15,6 +15,7 @@ const PRECACHE = [
   './mind5.js',
   './cal7.js',
   './extra7.js',
+  './extra8.js',
   './home8.js',
   './tama3d.js',
   './minicar3d.js',
