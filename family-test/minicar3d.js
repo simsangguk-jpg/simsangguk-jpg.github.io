@@ -1269,12 +1269,12 @@
     /* 바퀴 */
     var tire = st.t, bk = st.br;
     var R = (m.wr + tire.r + bk.r) * sc;
-    /* 휠하우스(아치) — 바퀴가 차체에 파인 듯 */
+    /* 휠하우스 그림자(바퀴 뒤쪽만 살짝) */
     [-m.len * 0.31, m.len * 0.31].forEach(function (wx) {
       var c = P(wx, m.wr + tire.r + bk.r);
-      x.fillStyle = 'rgba(18,24,30,.90)';
+      x.fillStyle = 'rgba(18,24,30,.35)';
       x.beginPath();
-      x.arc(c[0], c[1], R * 1.20, Math.PI, Math.PI * 2);
+      x.arc(c[0], c[1], R * 1.06, Math.PI * 1.05, Math.PI * 1.95);
       x.closePath();
       x.fill();
     });
@@ -1329,8 +1329,8 @@
       x.fill();
     });
     /* 휀더(흙받이) 아치 — 바퀴 윗부분을 차체색으로 덮어 자동차처럼 */
-    x.strokeStyle = shade(col, 0.92);
-    x.lineWidth = Math.max(2, 0.022 * sc);
+    x.strokeStyle = shade(col, 0.85);
+    x.lineWidth = Math.max(1.5, 0.014 * sc);
     [-m.len * 0.31, m.len * 0.31].forEach(function (wx) {
       var c = P(wx, m.wr + tire.r + bk.r);
       x.beginPath();
