@@ -190,11 +190,11 @@
       ]
     },
     {
-      t: '놀이터·다마고치·마이룸', c: '#8B7CF6', items: [
+      t: '놀이터·다마고치·미니카', c: '#8B7CF6', items: [
         { e: '🧸', n: '3D 놀이터', v: 'play', pane: '3d' },
-        { e: '🥚', n: '다마고치', v: 'play', pane: 'tama' },
-        { e: '🃏', n: '카드 가방', v: 'play', pane: 'card' },
-        { e: '🛏️', n: '마이룸', v: 'play', pane: 'room' }
+        { e: '🥚', n: '다마고치·내 방', v: 'play', pane: 'tama3d' },
+        { e: '🏎️', n: '미니카', v: 'play', pane: 'minicar' },
+        { e: '🃏', n: '카드 가방', v: 'play', pane: 'card' }
       ]
     },
     {

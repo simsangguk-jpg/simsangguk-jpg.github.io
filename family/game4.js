@@ -1,7 +1,10 @@
 /* ============================================================
    상국수향지섭지율포털 V4 · 놀이 확장 (game4.js)
    🥚 다마고치·RPG 육성   🃏 일기 포켓몬 카드   🧮 수학·영어 퀴즈
-   🛍️ 포인트 상점·악세사리 선물·교환(3D 반영)   🛏️ 마이룸 꾸미기   🎋 가족 윷놀이
+   🛍️ 포인트 상점·악세사리 선물·교환(3D 반영)   🎋 가족 윷놀이
+   - V14: 미니룸(🛏️ 마이룸)과 2D 다마고치는 '🥚 3D 다마고치 · 내 방'(tama3d.js)으로
+     통합됐다. 이 파일은 퀴즈·카드·상점(가구 포함)·윷놀이를 맡고,
+     옛 마이룸 자료(DOC.game.m[].room)는 지우지 않고 그대로 둔다.
    - 본체는 window.FAM 다리만 쓴다. 새 데이터는 DOC.game 에만 만든다.
    ============================================================ */
 (function (global) {
@@ -160,13 +163,13 @@
      ============================================================ */
   var PANES = [
     { id: '3d', e: '🧸', n: '3D 놀이터' },
-    { id: 'tama', e: '🥚', n: '다마고치' },
     { id: 'quiz', e: '🧮', n: '퀴즈' },
     { id: 'card', e: '🃏', n: '카드 가방' },
     { id: 'shop', e: '🛍️', n: '상점·악세사리' },
-    { id: 'room', e: '🛏️', n: '마이룸' },
     { id: 'yut', e: '🎋', n: '윷놀이' }
   ];
+  /* V14: '🥚 다마고치'(2D)와 '🛏️ 마이룸'은 '🥚 3D 다마고치 · 내 방'(tama3d.js)으로 통합했다.
+     자료(DOC.game.m[].room, .lv, .gold …)는 그대로 남아 있고, 방 가구는 3D 방으로 복사해 온다. */
 
   function buildPanes() {
     var nav = $('pgNav');
@@ -187,13 +190,11 @@
       el.className = 'hidden';
       view.appendChild(el);
     });
-    $('pgPane-tama').innerHTML = paneTama();
     $('pgPane-quiz').innerHTML = paneQuiz();
     $('pgPane-card').innerHTML = paneCard();
     $('pgPane-shop').innerHTML = paneShop();
-    $('pgPane-room').innerHTML = paneRoom();
     $('pgPane-yut').innerHTML = paneYut();
-    wireTama(); wireQuiz(); wireShop(); wireRoom(); wireYut();
+    wireQuiz(); wireShop(); wireYut();
   }
 
   function pane(id) {
@@ -598,7 +599,7 @@
     return '<div class="card"><div class="card-head"><h2>🛍️ 포인트 상점</h2><span class="sub" id="g4ShopGold">0G</span></div>' +
       '<div class="v4-mini" style="margin:-4px 0 8px">퀴즈·일기·돌보기로 모은 골드로 사요. 사면 내 3D 캐릭터에 바로 입혀져요.</div>' +
       '<div class="g4-sec">👒 모자 · 🕶️ 안경 · 🎒 가방 · 🧥 옷</div><div class="g4-shop" id="g4ShopList"></div>' +
-      '<div class="g4-sec">🛏️ 마이룸 가구 <span class="n">사면 방에 배치할 수 있어요</span></div><div class="g4-shop" id="g4DecorList"></div>' +
+      '<div class="g4-sec">🛋️ 방 가구 <span class="n">사면 3D 내 방에 놓을 수 있어요</span></div><div class="g4-shop" id="g4DecorList"></div>' +
       '<div class="hint">가족에게 선물하기: 아이템을 <b>길게 눌러</b> 선물하거나, 아래 선물함에서 받은 것을 확인하세요.</div></div>' +
       '<div class="card"><div class="card-head"><h2>🎁 선물함</h2><span class="sub" id="g4GiftSub">0개</span></div><div id="g4GiftList"></div></div>';
   }
@@ -650,9 +651,8 @@
         else { c.look[it.k] = id; toast(it.n + josa(it.n, '을', '를') + ' 입었어요 — 3D 놀이터에도 반영!'); }
         syncLook(true);
       } else {
-        roomSel = id;
-        toast(it.n + josa(it.n, '을', '를') + ' 방에 배치하려면 마이룸에서 칸을 눌러 주세요');
-        pane('room');
+        toast(it.n + josa(it.n, '을', '를') + ' 샀어요 — 「3D 다마고치 · 내 방」에서 놓아 보세요');
+        if (global.TAMA3D && global.TAMA3D.render) setTimeout(function () { try { global.TAMA3D.render(); } catch (e) {} }, 60);
       }
       c.at = now();
       save(); renderShop(); renderTama(); return;
@@ -1211,7 +1211,12 @@
     mount: mount,
     render: render,
     onView: onView,
-    pane: function (id) { if ($('pgNav') && $('pgNav').__g4) pane(id); },
+    pane: function (id) {
+      /* V14: 통합된 3D 다마고치·내 방 / 미니카는 각 모듈이 화면을 맡는다 */
+      if (id === 'tama3d' && global.TAMA3D) { global.TAMA3D.show(); return; }
+      if (id === 'minicar' && global.MINICAR3D) { global.MINICAR3D.show(); return; }
+      if ($('pgNav') && $('pgNav').__g4) pane(id);
+    },
     awardCard: awardCard,
     cards: function () { return CARDS; }
   };

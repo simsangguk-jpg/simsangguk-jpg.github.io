@@ -1,10 +1,10 @@
-/* 상국수향지섭지율포털 Service Worker · V13 (2026-11-16 · 3D 다마고치 선택 창·돌보기 버튼 키 그리드 정리)
+/* 상국수향지섭지율포털 Service Worker · V14 (2026-11-16 · 다마고치·내 방 통합 / 미니카 실차 브랜드·가족 대결)
    - /family/ 범위만 담당한다(상국포털 본체 캐시와 섞이지 않게 별도 캐시 이름 사용)
    - install 단계에서 확장 모듈(extra4.js·game4.js·play3d.js·mind5.js·cal7.js·extra7.js·extra8.js·tama3d.js·minicar3d.js·life9.js·home9.js)까지 모두 프리캐시한다
    - 화면(HTML)은 네트워크 우선: 새로 배포한 내용이 앱에서도 바로 뜨도록
    - 그 밖의 정적 파일은 네트워크 우선, 실패 시 캐시
 */
-const SW_VERSION = 'family-portal-v13-2026-11-16';
+const SW_VERSION = 'family-portal-v14-2026-11-16';
 const OFFLINE_HTML = new URL('index.html', self.registration.scope).href;
 const PRECACHE = [
   './',
