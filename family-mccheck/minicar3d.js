@@ -17,7 +17,7 @@
   var renderer = null, scene = null, camera = null, raf3 = 0, last3 = 0;
   var raf2 = 0, last2 = 0, ctx2d = null, c2d = null, roadCv = null, roadW = 0, roadH = 0;
   var trackG = null, carG = null, carBuiltCfg = null, curve3 = null;
-  var curve = null, trackLen = 0, SEG = 260, HW = 1.05;
+  var curve = null, trackLen = 0, SEG = 260, HW = 0.85;
   var mode = 'none';                /* '3d' | '2d' | 'none' */
   var lastHud = 0, hudTxt = '';
   var run = { on: false, u: 0, s: 0, y: 0, lane: 0, vy: 0, air: false, lap: 1, lapT: 0, lastLap: 0, best: 0, boosts: 0, boostT: 0, shake: 0 };
@@ -207,7 +207,7 @@
     g.setIndex(idx);
     g.computeVertexNormals();
     trackG = new THREE.Group();
-    trackG.add(new THREE.Mesh(g, new THREE.MeshLambertMaterial({ color: 0x3E4650 })));
+    trackG.add(new THREE.Mesh(g, new THREE.MeshLambertMaterial({ color: 0x5A6470 })));
     /* 가드레일 */
     var railPos = [], railIdx = [];
     for (i = 0; i <= SEG; i++) {
@@ -351,12 +351,12 @@
       renderer.setPixelRatio(Math.min(2, global.devicePixelRatio || 1));
       renderer.setClearColor(0xCDE8FF);
       scene = new THREE.Scene();
-      scene.add(new THREE.AmbientLight(0xFFFFFF, 0.85));
-      var dir = new THREE.DirectionalLight(0xFFF3DC, 0.65);
+      scene.add(new THREE.AmbientLight(0xFFFFFF, 0.95));
+      var dir = new THREE.DirectionalLight(0xFFF6E4, 0.55);
       dir.position.set(8, 14, 6);
       scene.add(dir);
       camera = new THREE.PerspectiveCamera(55, 2, 0.1, 200);
-      camera.position.set(0, 4, -8);
+      camera.position.set(0, 3.4, -7);
       buildTrack();
       resize3D();
       return true;
@@ -483,9 +483,9 @@
     var u = ((run.u % 1) + 1) % 1;
     var p = curve.getPointAt(u), t = curve.getTangentAt(u);
     var nx = -t.z, nz = t.x, nl = len2(nx, nz); nx /= nl; nz /= nl;
-    var q = proj2D({ x: p.x + nx * run.lane * 0.55, z: p.z + nz * run.lane * 0.55 }, w, h);
+    var q = proj2D({ x: p.x + nx * run.lane * 0.5, z: p.z + nz * run.lane * 0.5 }, w, h);
     var ang = Math.atan2(t.z, t.x);
-    var L = Math.max(16, 1.45 * q.s), Wd = Math.max(9, 0.78 * q.s);
+    var L = Math.max(13, 1.15 * q.s), Wd = Math.max(8, 0.62 * q.s);
     ctx2d.save();
     ctx2d.translate(q.x, q.y);
     ctx2d.rotate(ang);
@@ -584,7 +584,7 @@
     var curv = curveCurvature(u);
     var drift = curv * run.s * run.s * 0.16 * (1.25 - st.grip) * (1 - st.st * 0.45);
     run.lane = clamp(run.lane + drift * dt, -1.3, 1.3);
-    var offRoad = Math.abs(run.lane) > 1.12;
+    var offRoad = Math.abs(run.lane) > 1.28;
     if (offRoad) run.s *= 1 - Math.min(0.9, dt * 2.2);
     run.shake = offRoad ? 1 : Math.max(0, run.shake - dt * 3);
 
@@ -629,7 +629,7 @@
     var p = drv().getPointAt(u), t = drv().getTangentAt(u);
     var nx = -t.z, nz = t.x, nl = len2(nx, nz); nx /= nl; nz /= nl;
     var y = run.air ? run.y : p.y;
-    carG.position.set(p.x + nx * run.lane * 0.55, y + 0.02 + run.shake * Math.sin(now() * 0.06) * 0.03, p.z + nz * run.lane * 0.55);
+    carG.position.set(p.x + nx * run.lane * 0.5, y + 0.02 + run.shake * Math.sin(now() * 0.06) * 0.03, p.z + nz * run.lane * 0.5);
     carG.rotation.y = Math.atan2(t.x, t.z) + run.lane * 0.35 + run.shake * Math.sin(now() * 0.05) * 0.05;
     carG.rotation.x = run.air ? clamp(-run.vy * 0.15, -0.5, 0.5) : 0;
     var wl = carG.userData.wheels;
@@ -644,9 +644,9 @@
     step(dt);
     placeCar();
     if (carG && camera) {
-      var back = new THREE.Vector3(0, 0, -1).applyQuaternion(carG.quaternion).multiplyScalar(5.2);
-      camera.position.lerp(new THREE.Vector3(carG.position.x + back.x, carG.position.y + 2.6, carG.position.z + back.z), 1 - Math.exp(-6 * dt));
-      camera.lookAt(carG.position.x, carG.position.y + 0.4, carG.position.z);
+      var back = new THREE.Vector3(0, 0, -1).applyQuaternion(carG.quaternion).multiplyScalar(6.4);
+      camera.position.lerp(new THREE.Vector3(carG.position.x + back.x, carG.position.y + 3.3, carG.position.z + back.z), 1 - Math.exp(-6 * dt));
+      camera.lookAt(carG.position.x, carG.position.y + 0.5, carG.position.z);
     }
     renderer.render(scene, camera);
     raceHud();
