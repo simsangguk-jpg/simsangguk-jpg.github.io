@@ -1,0 +1,30 @@
+{
+  "name": "상국수향지섭지율포털",
+  "short_name": "우리가족포털",
+  "description": "상국·수향·지섭·지율 우리 가족 전용 공간",
+  "lang": "ko",
+  "dir": "ltr",
+  "start_url": "/family/",
+  "scope": "/family/",
+  "id": "/family/",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
+  "orientation": "portrait",
+  "background_color": "#F5F7F8",
+  "theme_color": "#0E9F6E",
+  "categories": ["lifestyle", "social"],
+  "icons": [
+    {
+      "src": "./icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
