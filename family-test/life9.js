@@ -126,7 +126,7 @@
     }
     function busy(e) {
       var c = e && e.code, m = txt(e);
-      return c === 0 || c === 429 || c === 500 || c === 502 || c === 503 || /RESOURCE_EXHAUSTED|overloaded|temporarily|UNAVAILABLE|DEADLINE|rate limit/i.test(m);
+      return c === 0 || c === 429 || c === 500 || c === 502 || c === 503 || /RESOURCE_EXHAUSTED|overloaded|temporarily|UNAVAILABLE|DEADLINE|rate limit|응답 시간 초과/i.test(m);
     }
 
     function pick(j) {
@@ -142,6 +142,8 @@
       throw fail('빈 응답' + (why ? ' (' + why + ')' : ' (안전 필터 가능)'));
     }
 
+    var REQ_MS = 20000;   /* 한 요청이 이보다 오래 걸리면 끊고 다음 모델로 넘어간다 */
+    var BUDGET_MS = 45000; /* 한 번의 질문에 쓰는 전체 시간 — 이 시간이 지나면 반드시 답을 준다 */
     function request(o, model, slim, vertex) {
       var base = vertex ? GEM_VERTEX : (GEM_HOST + '/models/');
       var url = base + encodeURIComponent(model) + ':generateContent?key=' + encodeURIComponent(o.key);
@@ -161,13 +163,22 @@
           thinkingConfig: { thinkingLevel: 'LOW' }
         };
       }
-      return fetch(url, {
+      var init = {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),
         cache: 'no-store'
-      }).then(function (res) {
+      };
+      var ctrl = null, timer = null;
+      if (typeof AbortController === 'function') {
+        ctrl = new AbortController();
+        init.signal = ctrl.signal;
+        timer = setTimeout(function () { try { ctrl.abort(); } catch (e) {} }, o.timeoutMs || REQ_MS);
+      }
+      function done() { if (timer) { clearTimeout(timer); timer = null; } }
+      return fetch(url, init).then(function (res) {
         return res.text().then(function (raw) {
+          done();
           var j = {};
           try { j = raw ? JSON.parse(raw) : {}; } catch (e) {}
           if (!res.ok) {
@@ -175,8 +186,10 @@
             throw fail(String(msg).slice(0, 300), res.status, { apiStatus: (j && j.error && j.error.status) || '' });
           }
           return pick(j);
-        });
+        }, function (e) { done(); throw e; });
       }, function (netErr) {
+        done();
+        if (netErr && netErr.name === 'AbortError') throw fail('응답 시간 초과(' + Math.round(REQ_MS / 1000) + '초)', 0);
         throw fail('네트워크 오류: ' + ((netErr && netErr.message) || '요청 실패'), 0);
       });
     }
@@ -229,6 +242,7 @@
     function generate(o) {
       o = o || {};
       if (!o.key) return Promise.reject(fail('Gemini API 키가 등록되어 있지 않아요.'));
+      var deadline = Date.now() + (o.budgetMs || BUDGET_MS);
       var tried = {};
 
       function chain() {
@@ -245,6 +259,7 @@
         return new Promise(function (resolve, reject) {
           function next() {
             var m = null, c;
+            if (Date.now() > deadline) return reject(lastErr || fail('응답이 너무 늦어 시간 안에 답을 못 받았어요.'));
             while (i < list.length) {
               c = list[i++];
               if (!tried[c] && !(S.dead[c] && !vertex)) { m = c; break; }
@@ -271,6 +286,7 @@
 
       return runList(chain(), false).then(null, function (e) {
         if (e && e.fatal) throw e;
+        if (Date.now() > deadline) throw e;
         note(o, '🔎 기본 후보가 모두 막혀 쓸 수 있는 모델을 자동 조회해요…');
         return listModels(o.key).then(function (found) {
           var extra = [], i;
@@ -283,6 +299,7 @@
         });
       }).then(null, function (e) {
         if (e && e.fatal) return Promise.reject(e);
+        if (Date.now() > deadline) return Promise.reject(e || fail('응답이 너무 늦어 시간 안에 답을 못 받았어요.'));
         note(o, '🔎 마지막으로 다른 게이트웨이 경로를 시도해요…');
         return runList(['gemini-3.8-flash', 'gemini-3.6-flash', 'gemini-3.5-flash-lite', 'gemini-3.1-pro-preview', 'gemini-3-flash-preview'], true);
       });
@@ -293,6 +310,7 @@
       var m = txt(e);
       if (!e) return '알 수 없는 이유로 답을 못 받았어요.';
       if (e.noKey) return '아직 Gemini 키가 없어요. 🔑 키 설정에서 키를 넣어 주세요.';
+      if (/응답 시간 초과|응답이 너무 늦어/.test(m)) return 'Gemini 응답이 너무 늦어 그만 기다렸어요. 잠시 뒤 다시 물어봐 주세요.';
       if (e.code === 0) return '인터넷 연결 때문에 못 받았어요. 연결을 확인하고 다시 물어봐 주세요.';
       if (/API key not valid|API_KEY_INVALID|API key expired|API_KEY_EXPIRED|invalid authentication|UNAUTHENTICATED/i.test(m)) return 'Gemini 키가 올바르지 않거나 만료됐어요. 🔑 키 설정에서 새 키로 바꿔 주세요.';
       if (/API_KEY_SERVICE_BLOCKED|SERVICE_BLOCKED/i.test(m)) return '이 키에서는 Gemini API 사용이 막혀 있어요. Google AI Studio에서 새 키를 만들어 주세요.';
@@ -350,7 +368,9 @@
       prompt: '연결 확인이야. "미쁠 연결 성공"이라고만 답해줘.',
       system: '너는 연결 시험용 도우미야. 인사나 설명 없이 "미쁠 연결 성공"만 답해.',
       temperature: 0,
-      maxTokens: 64
+      maxTokens: 64,
+      timeoutMs: 12000,
+      budgetMs: 26000
     }).then(function (t) {
       return { ok: true, model: AI.state.lastModel, ms: Date.now() - t0, text: String(t) };
     }, function (e) {
