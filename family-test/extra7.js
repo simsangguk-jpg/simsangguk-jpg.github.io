@@ -204,7 +204,7 @@
 
   function renderPhotos() {
     renderStrip('p7strip1', 0, '📷 가족 미니 앨범');
-    renderStrip('p7strip2', 1, '📸 오늘의 가족 사진');
+    renderStrip('p7strip2', 1, '📸 요즘 가족 사진');
     renderStrip('p7strip3', 2, '💛 함께한 순간들');
   }
 

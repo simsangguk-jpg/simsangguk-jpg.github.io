@@ -111,7 +111,7 @@
       '<div class="p8-hero-box" data-p8open="' + esc(r.pid) + '" data-p8kind="' + esc(r.kind) + '" role="button" tabindex="0">' +
         '<img src="' + esc(r.img) + '" alt="오늘의 가족 사진" loading="lazy">' +
         (r.kind === 'video' ? '<span class="p8-play">▶</span>' : '') +
-        (isToday ? '<span class="p8-badge">오늘의 대표사진</span>' : '') +
+        (isToday ? '<span class="p8-badge">구글 포토 · 오늘</span>' : '') +
       '</div>' +
       '<div class="p8-hero-cap"><b>' + cap + '</b><small>' + (who ? who + ' · ' : '') + 'Google 포토 가족 앨범</small></div>' +
       '<div class="p8-btns">' +

@@ -1812,7 +1812,7 @@ async function mediaUrl(id) {
   var raw = await fetchText(CFG.ph + id);
   if (!(raw || '').trim()) throw new Error('empty');
   var obj = await decryptText(raw);
-  return obj.img;
+  return obj.img || obj.src;   /* V10: 영상은 src 키로도 저장될 수 있다 */
 }
 function mediaTargets() {
   var out = [], b = DOC.chat || {};
