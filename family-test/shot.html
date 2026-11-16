@@ -1,0 +1,23 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8">
+<title>V11 캡처 프레임</title>
+<style>html,body{margin:0;background:#fff}
+#stage{position:relative;overflow:hidden;background:#fff}
+#stage iframe{position:absolute;left:0;border:0;display:block}</style></head>
+<body><div id="stage"></div>
+<script>
+/* 테스트 사본 전용 캡처 프레임: 앱을 w 폭으로 h 높이만큼만 보여 주고, 문서 y=top 지점부터 잘라 보여 준다 */
+var q = new URLSearchParams(location.search);
+var w = Number(q.get('w') || 1280), top = Number(q.get('top') || 0), h = Number(q.get('h') || 992);
+var st = document.getElementById('stage');
+st.style.width = w + 'px'; st.style.height = h + 'px';
+var f = document.createElement('iframe');
+f.id = 'fr';
+f.src = './index.html?harness=1';
+f.style.width = w + 'px';
+f.style.height = '8000px';
+f.style.top = (-top) + 'px';
+st.appendChild(f);
+f.addEventListener('load', function () {
+  try { f.contentDocument.head.insertAdjacentHTML('beforeend', '<style>#tabbar,#v4Fab{display:none !important}</style>'); } catch (e) {}
+});
+</script></body></html>
