@@ -34,8 +34,15 @@
   function mid() { return me() ? me().id : ''; }
   function len2(x, z) { var l = Math.sqrt(x * x + z * z); return l || 1; }
   function cloneCfg(c) {
-    var o = defaultCfg(), k;
-    for (k in o) { if (c && typeof c[k] === 'string') o[k] = c[k]; }
+    var o = defaultCfg();
+    if (!c) return o;
+    if (BODIES[c.body]) o.body = c.body;
+    if (MOTORS[c.motor]) o.motor = c.motor;
+    if (GEARS[c.gear]) o.gear = c.gear;
+    if (TIRES[c.tire]) o.tire = c.tire;
+    if (BATTS[c.batt]) o.batt = c.batt;
+    if (AERO[c.aero]) o.aero = c.aero;
+    if (typeof c.color === 'string' && /^#[0-9A-Fa-f]{3,8}$/.test(c.color)) o.color = c.color;
     return o;
   }
   function V9() {
@@ -65,7 +72,7 @@
 
   /* ---------------- 부품 카탈로그 ---------------- */
   function defaultCfg() {
-    return { body: 'sports', color: '#E5484D', motor: 'std', gear: 'bal', tire: 'std', batt: 'std', aero: 'none' };
+    return { body: 'sports', color: '#E5484D', motor: 'std', gear: 'bal', tire: 'std', batt: 's', aero: 'none' };
   }
   var BODIES = {
     sports: { n: '스포츠형', w: 0.46, h: 0.11, low: 0.85 },
@@ -390,8 +397,13 @@
     var cx = (BBOX.minx + BBOX.maxx) / 2, cz = (BBOX.minz + BBOX.maxz) / 2;
     return { x: w / 2 + (p.x - cx) * s, y: h / 2 + (p.z - cz) * s, s: s };
   }
+  function showLayer(which) {
+    var a = $('mcCanvas'), b = $('mcCanvas2D');
+    if (a) a.classList.toggle('hidden', which === '2d');
+    if (b) b.classList.toggle('hidden', which !== '2d');
+  }
   function bind2D() {
-    var cv = $('mcCanvas');
+    var cv = $('mcCanvas2D');
     if (!cv) return false;
     var wrap = $('mcCanvasWrap');
     var w = (wrap && wrap.clientWidth) || 320, h = (wrap && wrap.clientHeight) || 240;
@@ -473,7 +485,7 @@
     var nx = -t.z, nz = t.x, nl = len2(nx, nz); nx /= nl; nz /= nl;
     var q = proj2D({ x: p.x + nx * run.lane * 0.55, z: p.z + nz * run.lane * 0.55 }, w, h);
     var ang = Math.atan2(t.z, t.x);
-    var L = Math.max(13, 1.0 * q.s), Wd = Math.max(8, 0.52 * q.s);
+    var L = Math.max(16, 1.45 * q.s), Wd = Math.max(9, 0.78 * q.s);
     ctx2d.save();
     ctx2d.translate(q.x, q.y);
     ctx2d.rotate(ang);
@@ -525,7 +537,7 @@
   }
   function loop2D(ts) {
     raf2 = requestAnimationFrame(loop2D);
-    var cv = $('mcCanvas');
+    var cv = $('mcCanvas2D');
     if (!cv || !paneOn) { stop2D(); return; }
     if (!ctx2d || cv.getContext('2d') !== ctx2d || !c2d) { if (!bind2D()) return; }
     var dt = Math.min(0.05, (ts - (last2 || ts)) / 1000);
@@ -535,6 +547,7 @@
     raceHud();
   }
   function start2D() {
+    showLayer('2d');
     if (!bind2D()) return;
     mode = '2d';
     setModeLabel('2d');
@@ -569,9 +582,9 @@
 
     var u = run.u;
     var curv = curveCurvature(u);
-    var drift = curv * run.s * run.s * 0.55 * (1.25 - st.grip) * (1 - st.st * 0.45);
-    run.lane = clamp(run.lane + drift * dt, -1.45, 1.45);
-    var offRoad = Math.abs(run.lane) > HW * 0.92;
+    var drift = curv * run.s * run.s * 0.16 * (1.25 - st.grip) * (1 - st.st * 0.45);
+    run.lane = clamp(run.lane + drift * dt, -1.3, 1.3);
+    var offRoad = Math.abs(run.lane) > 1.12;
     if (offRoad) run.s *= 1 - Math.min(0.9, dt * 2.2);
     run.shake = offRoad ? 1 : Math.max(0, run.shake - dt * 3);
 
@@ -796,9 +809,9 @@
     x.fillStyle = 'rgba(38,52,64,.62)';
     x.font = '700 ' + Math.max(9, 10 * k) + 'px -apple-system,system-ui,sans-serif';
     x.textAlign = 'left';
-    x.fillText(bn + ' · ' + mn + ' · ' + gn, 10, H - 20);
+    x.fillText(bn + ' · ' + mn + ' · ' + gn, 10, H - 24);
     x.fillStyle = 'rgba(38,52,64,.45)';
-    x.fillText(tn + ' · 공력 ' + an, 10, H - 7);
+    x.fillText(tn + ' · 공력 ' + an, 10, H - 10);
   }
   function shade(hex, f) {
     var h = String(hex || '#888').replace('#', '');
@@ -825,13 +838,13 @@
       '.mc-chip{flex:1 1 0;min-width:0;padding:8px 2px;border-radius:11px;background:#F3F6F8;border:1.5px solid transparent;font-size:11.5px;font-weight:800;color:#5C6673;white-space:nowrap;text-align:center;transition:.14s}',
       '.mc-chip.on{background:#E7F8F1;border-color:#0E9F6E;color:#0B7A54;box-shadow:0 2px 8px rgba(14,159,110,.18)}',
       '.mc-chip:active{transform:scale(.97)}',
-      '.mc-color{flex:none;width:26px;height:26px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px #DDE4EA;transition:.14s}',
+      '.mc-color{flex:none;width:26px;height:26px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1.5px rgba(60,72,84,.32);transition:.14s}',
       '.mc-color.on{box-shadow:0 0 0 2.5px #0E9F6E}',
       '.mc-stats{margin-top:9px;padding:9px 10px;border-radius:12px;background:#F7FAFC;border:1px solid #E6EDF2;font-size:11px;font-weight:700;color:#4E5A66;line-height:1.6}',
       '.mc-stats b{color:#0B7A54;font-weight:900}',
       '.mc-canvas-wrap{position:relative;width:100%;height:270px;min-height:270px;border-radius:14px;overflow:hidden;background:linear-gradient(#CDE8FF,#EAF6FF);touch-action:none}',
-      '.mc-canvas-wrap canvas{display:block;width:100%;height:100%}',
-      '.mc-hud{position:absolute;left:8px;right:8px;top:8px;display:flex;gap:5px;flex-wrap:wrap;font-size:10.5px;font-weight:900;color:#20303C;pointer-events:none}',
+      '.mc-canvas-wrap canvas{display:block;position:absolute;left:0;top:0;width:100%;height:100%}',
+      '.mc-hud{position:absolute;z-index:3;left:8px;right:8px;top:8px;display:flex;gap:5px;flex-wrap:wrap;font-size:10.5px;font-weight:900;color:#20303C;pointer-events:none}',
       '.mc-hud span{background:rgba(255,255,255,.87);padding:3px 8px;border-radius:20px;box-shadow:0 1px 5px rgba(20,30,40,.12)}',
       '.mc-ctrl{display:grid;grid-template-columns:1.4fr 1fr;gap:6px;margin-top:9px}',
       '.mc-btn{padding:11px 6px;border-radius:12px;background:#F1F4F5;font-size:12px;font-weight:800;color:#3C4450;border:0}',
@@ -914,9 +927,12 @@
     /* 새 캔버스를 만들지 않고 기존 캔버스 DOM을 그대로 옮겨 쓴다(renderer 재사용) */
     var keep = $('mcCanvas');
     if (keep && keep.parentNode) keep.parentNode.removeChild(keep);
+    var keep2 = $('mcCanvas2D');
+    if (keep2 && keep2.parentNode) keep2.parentNode.removeChild(keep2);
     box.innerHTML =
       '<div class="mc-canvas-wrap" id="mcCanvasWrap">' +
       '<canvas id="mcCanvas"></canvas>' +
+      '<canvas id="mcCanvas2D"></canvas>' +
       '<div class="mc-hud" id="mcHud"></div>' +
       '</div>' +
       '<div class="mc-ctrl">' +
@@ -928,10 +944,9 @@
       '<button type="button" class="mc-btn back" id="mcBack" style="width:100%;margin-top:6px">🔧 조립으로</button>' +
       '<div class="mc-mode" id="mcMode"></div>' +
       '<div class="hint">오르막 위 점프대는 <b>속도가 붙었을 때</b> 활공 점프가 나와요. 커브에서는 차선 이동(◀ ▶)으로 안쪽을 타세요. 최고 랩타임은 가족 DB에 저장돼요(현재 최고: ' + fmtMs(rec && rec.best) + ').</div>';
-    if (keep) {
-      var wrap = $('mcCanvasWrap');
-      if (wrap) wrap.insertBefore(keep, wrap.firstChild);
-    }
+    var wrapEl = $('mcCanvasWrap');
+    if (wrapEl && keep) wrapEl.insertBefore(keep, wrapEl.firstChild);
+    if (wrapEl && keep2) wrapEl.insertBefore(keep2, $('mcHud'));
     hudTxt = ''; lastHud = 0;
     wireRace();
   }
@@ -957,10 +972,11 @@
     start2D();                                  /* 먼저 2D로 즉시 그려 화면이 비지 않게 */
     if (!hasWebGL()) { setModeLabel('2d'); return; }
     loadThree(function (err) {
-      if (err) { if (mode !== '3d') setModeLabel('2d'); return; }
-      if (!init3D()) { if (mode !== '3d') setModeLabel('2d'); return; }
+      if (err) { if (mode !== '3d') { showLayer('2d'); setModeLabel('2d'); } return; }
+      if (!init3D()) { if (mode !== '3d') { showLayer('2d'); setModeLabel('2d'); } return; }
       stop2D();
       mode = '3d';
+      showLayer('3d');
       ensureCar();
       resize3D();
       setModeLabel('3d');
@@ -981,6 +997,7 @@
   function backToGarage() {
     stop3D(); stop2D();
     mode = 'none';
+    showLayer('none');
     var race = $('mcRace');
     if (race) race.classList.add('hidden');
     var gar = $('mcGarage');
@@ -1081,7 +1098,7 @@
   global.addEventListener('resize', function () {
     if (!paneOn) return;
     if (mode === '3d') resize3D();
-    else { roadCv = null; if ($('mcCanvas') && bind2D()) draw2D(); }
+    else { roadCv = null; if ($('mcCanvas2D') && bind2D()) draw2D(); }
   });
 
   global.MINICAR3D = {
