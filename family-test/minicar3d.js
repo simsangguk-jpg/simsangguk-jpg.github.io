@@ -421,10 +421,10 @@
     rocker.position.set(0, 0.055, 0.01);
     g.add(rocker);
     var bumper = new THREE.Mesh(new THREE.BoxGeometry(W * 0.92, 0.055, 0.07), trimMat);
-    bumper.position.set(0, m.tail - 0.10, -m.len * 0.475);
+    bumper.position.set(0, m.tail - 0.10, -m.len * 0.5 - 0.005);
     g.add(bumper);
     var lip = new THREE.Mesh(new THREE.BoxGeometry(W * 0.96, 0.022, 0.09), trimMat);
-    lip.position.set(0, 0.062, m.len * 0.45);
+    lip.position.set(0, 0.062, m.len * 0.47);
     g.add(lip);
 
     /* --- 유리창: 지붕 아래를 살짝 넓게 감싸 옆에서도 창이 보이게 --- */
@@ -532,18 +532,18 @@
     [-1, 1].forEach(function (sx) {
       var lampY = clamp(m.nose * 0.72, 0.05, 0.16);
       var lamp = new THREE.Mesh(new THREE.BoxGeometry(W * 0.20, 0.028, 0.03), lMat);
-      lamp.position.set(sx * W * 0.30, lampY, m.len * 0.487);
+      lamp.position.set(sx * W * 0.30, lampY, m.len * 0.5 + 0.006);
       g.add(lamp);
       if (led) {
         var glow = new THREE.Mesh(new THREE.BoxGeometry(W * 0.21, 0.045, 0.008), new THREE.MeshBasicMaterial({ color: 0x9BE8FF, transparent: true, opacity: 0.55 }));
-        glow.position.set(sx * W * 0.30, lampY, m.len * 0.50);
+        glow.position.set(sx * W * 0.30, lampY, m.len * 0.5 + 0.02);
         g.add(glow);
       }
     });
     /* 테일램프 */
     [-1, 1].forEach(function (sx) {
       var tl = new THREE.Mesh(new THREE.BoxGeometry(W * 0.24, 0.028, 0.025), new THREE.MeshBasicMaterial({ color: 0xE5484D }));
-      tl.position.set(sx * W * 0.28, m.tail - 0.035, -m.len * 0.498);
+      tl.position.set(sx * W * 0.28, m.tail - 0.045, -m.len * 0.5 - 0.006);
       g.add(tl);
     });
     /* --- 파워트레인: 배기/언더글로우 --- */
@@ -559,11 +559,11 @@
         var px = (pp - (pipes - 1) / 2) * 0.075;
         var pipe = new THREE.Mesh(new THREE.CylinderGeometry(0.022, 0.022, 0.05, 8), new THREE.MeshLambertMaterial({ color: 0xB9C2CA }));
         pipe.rotation.x = Math.PI / 2;
-        pipe.position.set(px, 0.085, -m.len * 0.50);
+        pipe.position.set(px, 0.085, -m.len * 0.5 - 0.02);
         g.add(pipe);
         var fl = new THREE.Mesh(new THREE.ConeGeometry(0.028, 0.13, 8), new THREE.MeshBasicMaterial({ color: c.power === 'v8' ? 0xFF8A3D : 0xFFC24B, transparent: true, opacity: 0.9 }));
         fl.rotation.x = -Math.PI / 2;
-        fl.position.set(px, 0.085, -m.len * 0.50 - 0.09);
+        fl.position.set(px, 0.085, -m.len * 0.5 - 0.10);
         fl.scale.set(0.001, 0.001, 0.001);
         g.add(fl); flames.push(fl);
       }
@@ -680,8 +680,8 @@
     race.cars.forEach(function (car) {
       var g = buildCar(car.cfg);
       var label = carLabel(car.name + ' · ' + MODELS[car.cfg.model].n.split(' ')[0], car.isMe ? '#7CDFB0' : '#FFD37A');
-      label.position.set(0, 0.50, 0);
-      label.scale.set(0.86, 0.215, 1);
+      label.position.set(0, 0.44, 0);
+      label.scale.set(0.72, 0.18, 1);
       g.add(label);
       car.group = g;
       carGroups.push(g);
@@ -1118,7 +1118,8 @@
       return next ? '🏆 1위! ' + short(next) + '보다 ' + Math.abs(next.gap).toFixed(2) + '초 빨랐어요!' : '🏆 1위! 완주했어요!';
     }
     if (above) {
-      return '🥈 ' + mine.rank + '위 · ' + short(above) + '보다 ' + Math.abs(above.gap).toFixed(2) + '초 느렸어요. 부품을 더 맞춰 보세요!';
+      var md = ['🥇', '🥈', '🥉', '4️⃣'][mine.rank - 1] || '';
+      return md + ' ' + mine.rank + '위 · ' + short(above) + '보다 ' + Math.abs(above.gap).toFixed(2) + '초 느렸어요. 부품을 더 맞춰 보세요!';
     }
     return mine.rank + '위';
   }
