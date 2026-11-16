@@ -925,13 +925,13 @@
       id: id, name: name, isMe: !!isMe, cfg: conf, st: st,
       u: 0, s: 0, lane: lane || 0, lap: 1, lapT: 0, best: 0,
       boostT: 0, boosts: st.boosts, finished: false, finishT: 0,
-      air: false, vy: 0, y: 0, shake: 0, group: null, place: 0, manualT: 0
+      air: false, vy: 0, y: 0, shake: 0, group: null, place: 0, manualT: 0, lineBias: 0
     };
   }
   function progressOf(c) { return (c.lap - 1) + c.u; }
   function aiSteer(car, dt, curv) {
     /* 커브 안쪽을 노리고, 곧은 구간에서 부스트 */
-    var target = clamp(-curv * 26, -1.15, 1.15);
+    var target = clamp(-curv * 26 + (car.lineBias || 0), -1.2, 1.2);
     car.lane += (target - car.lane) * Math.min(1, dt * 1.6);
     if (car.boosts > 0 && car.boostT <= 0 && Math.abs(curv) < 0.05 && Math.random() < dt * 0.55) {
       car.boosts--; car.boostT = 1.2;
@@ -957,7 +957,7 @@
       /* 내 차: 기본은 코스 안쪽을 따라가는 보조 핸들링, 좌우 버튼을 누르면 그동안은 수동 */
       car.manualT = Math.max(0, (car.manualT || 0) - dt);
       if (!car.manualT) {
-        var tgt = clamp(-curv * 26, -0.9, 0.9);
+        var tgt = clamp(-curv * 26 + (car.lineBias || 0) * 0.5, -0.95, 0.95);
         car.lane += (tgt - car.lane) * Math.min(1, dt * 1.25);
       }
     }
@@ -1065,7 +1065,9 @@
     var myLane = sorted.shift();
     var cars = list.map(function (o, i) {
       var lane = i === 0 ? myLane : sorted[i - 1];
-      return newCar(o.id, o.name, o.isMe, o.cfg, lane);
+      var c = newCar(o.id, o.name, o.isMe, o.cfg, lane);
+      c.lineBias = (i - (n - 1) / 2) * 0.22;
+      return c;
     });
     var rival = null;
     if (modeSel === 'duel' && cars[1]) rival = cars[1];
