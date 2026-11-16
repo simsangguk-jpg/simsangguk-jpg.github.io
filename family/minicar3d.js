@@ -957,8 +957,8 @@
       /* 내 차: 기본은 코스 안쪽을 따라가는 보조 핸들링, 좌우 버튼을 누르면 그동안은 수동 */
       car.manualT = Math.max(0, (car.manualT || 0) - dt);
       if (!car.manualT) {
-        var tgt = clamp(-curv * 26 + (car.lineBias || 0) * 0.5, -0.95, 0.95);
-        car.lane += (tgt - car.lane) * Math.min(1, dt * 1.25);
+        var tgt = clamp(-curv * 26 + (car.lineBias || 0) * 0.5, -1.0, 1.0);
+        car.lane += (tgt - car.lane) * Math.min(1, dt * 2.4);
       }
     }
     var off = Math.abs(car.lane * 0.5) > HW * 0.85;
@@ -1096,6 +1096,8 @@
       return { car: c, time: projectedTime(c, t0) };
     }).sort(function (a, b) { return a.time - b.time; });
     race.results.forEach(function (r, i) { r.rank = i + 1; r.gap = r.time - t0; });
+    var win = race.results[0] ? race.results[0].time : t0;
+    race.results.forEach(function (r) { r.toWin = r.time - win; });
     var mine = race.results.filter(function (r) { return r.car.isMe; })[0];
     race.rank = mine ? mine.rank : 1;
     /* 전적 저장 */
@@ -1715,7 +1717,7 @@
         return '<div class="rl' + (r.car.isMe ? ' me' : '') + '"><span class="no">' + r.rank + '</span>' +
           '<span class="nm">' + esc(r.car.name) + ' · ' + esc(mm ? mm.n : '') + '</span>' +
           '<span class="tm">' + fmtMs(Math.round(r.time * 1000)) +
-          (r.car.isMe ? '' : (r.gap >= 0 ? ' <span style="color:#C0392B">+' + r.gap.toFixed(2) + 's</span>' : ' <span style="color:#0A7D56">' + r.gap.toFixed(2) + 's</span>')) +
+          (r.rank === 1 ? '' : ' <span style="color:' + (r.car.isMe ? '#C0392B' : '#5C6673') + '">+' + (r.toWin || 0).toFixed(2) + 's</span>') +
           '</span></div>';
       }).join('') +
       '<div class="rb"><button type="button" class="main" id="mcAgain">🔄 다시 대결</button><button type="button" id="mcToGarage">🔧 조립으로</button></div>' +
