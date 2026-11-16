@@ -596,8 +596,8 @@
     var u = run.u;
     var curv = curveCurvature(u);
     var drift = curv * run.s * run.s * 0.07 * (1.25 - st.grip) * (1 - st.st * 0.45);
-    run.lane = clamp(run.lane + drift * dt, -1.3, 1.3);
-    var offRoad = Math.abs(run.lane) > 1.25;
+    run.lane = clamp(run.lane + drift * dt, -1.9, 1.9);
+    var offRoad = Math.abs(run.lane * 0.5) > HW * 0.92;
     if (offRoad) run.s *= 1 - Math.min(0.9, dt * 2.2);
     run.shake = offRoad ? 1 : Math.max(0, run.shake - dt * 3);
 
@@ -626,8 +626,11 @@
         var rec = recOf(true);
         if (rec && (!rec.best || lapMs < rec.best)) {
           rec.best = lapMs; rec.cfg = cloneCfg(cfg); rec.at = now();
+          rec.laps = (rec.laps || 0) + 1;
           save();
           toast('🏁 신기록! 최고 랩 ' + fmtMs(lapMs));
+          var hint = document.querySelector('#mcRace .hint');
+          if (hint) hint.innerHTML = hint.innerHTML.replace(/현재 최고: [^)]*\)/, '현재 최고: ' + fmtMs(lapMs) + ')');
         }
       }
       run.lap++;
@@ -976,8 +979,8 @@
       if (run.boosts <= 0) { toast('부스트가 없어요 — 다음 랩에 충전돼요'); return; }
       run.boosts--; run.boostT = 1.6;
     };
-    if (bL) bL.onclick = function () { run.lane = clamp(run.lane - 0.28, -1.4, 1.4); };
-    if (bR) bR.onclick = function () { run.lane = clamp(run.lane + 0.28, -1.4, 1.4); };
+    if (bL) bL.onclick = function () { run.lane = clamp(run.lane - 0.3, -1.8, 1.8); };
+    if (bR) bR.onclick = function () { run.lane = clamp(run.lane + 0.3, -1.8, 1.8); };
     if (bBack) bBack.onclick = function () { backToGarage(); };
   }
   function startRace() {
