@@ -980,10 +980,297 @@
      ⑪ 미쁠 — 우리 가족 AI 비서 (초록 ㅅ 캐릭터 · 우측 하단 플로팅)
      ============================================================ */
   var chatHist = [];
-  var MIPP_GREET = '안녕하세요! 저는 미쁠이에요 💚 오늘 일정 추천, 숙제 도움, 주말 계획… 무엇이든 물어보세요!';
+  var MIPP_GREET = '안녕하세요! 저는 미쁠이에요 💚 기분·일정·용돈·근무표까지 포털에 기록된 우리 가족 이야기를 보고 답해 드려요. 무엇이든 물어보세요!';
   var FAM_CTX = '우리 가족: 아빠 상국(육군 준위, 파주 거주, 교대근무), 엄마 수향, 첫째 지섭(중학생, 2013년생), 둘째 지율(2015년생). ' +
     '너는 심상국 가족의 AI 비서 "미쁠"이야. 초록색 ㅅ자 모양의 다정한 마스코트이고, 가족 모두 너를 미쁠이라고 불러. ' +
-    '한국어로 다정하고 간결하게(3문장 이내) 답하고, 가족이 서로 아끼고 재미있게 지내도록 도와줘.';
+    '한국어로 다정하고 간결하게(보통 2~4문장) 답하고, 가족이 서로 아끼고 재미있게 지내도록 도와줘. ' +
+    '아래에 [지금]·[가족 특징]·[가족별 기록]·[일정] 같은 우리가족포털 실시간 기록이 함께 주어지면 그것을 근거로 답해. ' +
+    '포털에 실제로 있는 값(이름·기분·날짜·금액·근무표)은 그대로 인용하고, 기록이 없는 항목은 지어내지 말고 "아직 포털에 기록이 없어요"라고 솔직히 말해. ' +
+    '추측해서 답할 때는 "제 짐작으로는"이라고 밝혀.';
+
+  /* ============================================================
+     ⑪-2 실시간 가족 데이터 문맥 (buildLiveFamContext)
+     - 미쁠에게 물을 때마다 '지금 이 순간'의 가족 DB(DOC)를 다시 읽어 요약한다
+       (기분·상태·위치·목표·수면·용돈·상벌점·좋아하는 것·위시·펫·일정·근무표·할일·공지·채팅·XP)
+     - 목록은 최신 N건만 넣고 나머지는 "외 N건"으로 줄여 토큰을 아낀다
+     - 화면에 보이는 값을 그대로 옮겨 적는다(가공·추측 없음)
+     ============================================================ */
+  var LIVE_LIM = { cal: 15, pastCal: 3, todo: 10, chat: 5, notice: 4, money: 4, wish: 8, cheer: 3, plan: 4, shift: 14 };
+  var BIRTH_BY_NAME = { '지섭': '2013-10-10', '지율': '2015-08-26' };
+  var GRADE_BY_NAME = { '지섭': '중학생', '지율': '초등학생' };
+
+  function clipTxt(s, n) {
+    var t = String(s == null ? '' : s).replace(/\s+/g, ' ').trim();
+    return t.length > n ? t.slice(0, n) + '…' : t;
+  }
+  function liveStamp(ts) {
+    if (!ts) return '';
+    var x = new Date(ts), t = new Date();
+    if (x.toDateString() === t.toDateString()) return '오늘 ' + F.hhmm(ts);
+    if (x.toDateString() === new Date(t.getTime() - 86400000).toDateString()) return '어제 ' + F.hhmm(ts);
+    return (x.getMonth() + 1) + '/' + x.getDate() + ' ' + F.hhmm(ts);
+  }
+  function wonNum(n) { return Number(n || 0).toLocaleString('ko-KR') + '원'; }
+  function liveList(node) {
+    var out = [];
+    Object.keys(node || {}).forEach(function (k) {
+      var it = node[k];
+      if (it && typeof it === 'object' && !it.del) out.push(it);
+    });
+    return out;
+  }
+  function dayMs(ds) {
+    var p = String(ds || '').slice(0, 10).split('-');
+    if (p.length < 3) return NaN;
+    return new Date(Number(p[0]), Number(p[1]) - 1, Number(p[2])).getTime();
+  }
+  function wdKo(dt) { return ['일', '월', '화', '수', '목', '금', '토'][dt.getDay()]; }
+  function mdKo(dt) { return (dt.getMonth() + 1) + '/' + dt.getDate() + '(' + wdKo(dt) + ')'; }
+  function liveStatusKo(st) {
+    switch (st && st.s) {
+      case 'home': return '🏠 집에 있어요';
+      case 'depart': return '🚗 출발했어요';
+      case 'soon': return '🚙 곧 도착해요';
+      case 'eta': return '⏰ ' + (st.eta || '') + ' 도착 예정';
+      case 'late': return '🌙 오늘은 늦어요';
+      case 'out': return '👋 외출 중이에요';
+      default: return '';
+    }
+  }
+  /* 생일까지 남은 날 — 포털 디데이와 같은 기준(월·일)으로 센다 */
+  function birthLeft(ds) {
+    var p = String(ds || '').split('-');
+    if (p.length < 3) return null;
+    var t = new Date(); t.setHours(0, 0, 0, 0);
+    var d0 = new Date(t.getFullYear(), Number(p[1]) - 1, Number(p[2]));
+    if (d0.getTime() < t.getTime()) d0 = new Date(t.getFullYear() + 1, Number(p[1]) - 1, Number(p[2]));
+    return Math.round((d0.getTime() - t.getTime()) / 86400000);
+  }
+  function liveMoney(v, id) {
+    var days = (v.moneyD || {})[id] || {}, bal = 0, got = 0, spent = 0, items = [];
+    Object.keys(days).forEach(function (k) {
+      ((days[k] && days[k].items) || []).forEach(function (it) {
+        var amt = Number(it.amt || 0);
+        if (it.k === 'got') { bal += amt; got += amt; } else { bal -= amt; spent += amt; }
+        items.push({ d: k, it: it });
+      });
+    });
+    items.sort(function (a, b) { return (b.it.at || 0) - (a.it.at || 0); });
+    return { bal: bal, got: got, spent: spent, items: items };
+  }
+  function liveXp(D) {
+    var v4n = (D && D.v4) || {};
+    var all = liveList(v4n.cal).map(function (it) { return it; })
+      .concat(liveList(v4n.todos).map(function (it) { return it; }));
+    var total = 0, doneN = 0, openN = 0;
+    all.forEach(function (it) {
+      var st = it.st || (it.done ? 'done' : 'plan');
+      if (it.st && (it.at || 0) > (it.stAt || 0)) st = it.done ? 'done' : 'plan';
+      if (st === 'done') {
+        total += (it.imp === 'high' ? 30 : (it.imp === 'low' ? 10 : 20));
+        doneN++;
+      } else if (st === 'plan' || st === 'post') openN++;
+    });
+    return { total: total, lv: 1 + Math.floor(total / 100), doneN: doneN, openN: openN };
+  }
+
+  function buildLiveFamContext() {
+    var D = d(), v = V9();
+    if (!D || !v) return '';
+    var mine = me();
+    var ms = F.members() || [];
+    var nd = new Date();
+    var today0 = new Date(); today0.setHours(0, 0, 0, 0);
+    var L = [];
+
+    /* 1) 지금 */
+    L.push('[지금] ' + nd.getFullYear() + '년 ' + (nd.getMonth() + 1) + '월 ' + nd.getDate() + '일(' + wdKo(nd) + ') ' + F.hhmm(nd.getTime()) + ' · ' +
+      (mine ? '이 대화를 쓰는 사람: ' + (mine.emoji || '') + ' ' + mine.name + '(' + (mine.role || '가족') + ')' : '로그인 정보 없음'));
+
+    /* 2) 가족 특징(직업·학년·생일·디데이) */
+    var suDows = (v.commute && v.commute.su && v.commute.su.dows) || [1, 3];
+    var vac = !!(v.schoolMode && v.schoolMode.vacation);
+    var feat = ms.map(function (m) {
+      var f = [];
+      var nm = String(m.name || '');
+      if (m.role === '아빠') { f.push('육군 준위(영상정보 분야)'); f.push('파주 집↔연천 부대 출퇴근'); f.push('4주 교대근무'); }
+      else if (m.role === '엄마') {
+        var dn = (suDows || []).slice().sort().map(function (i) { return ['일', '월', '화', '수', '목', '금', '토'][i]; }).join('·');
+        f.push('출근 요일 ' + (dn || '미지정'));
+      } else if (GRADE_BY_NAME[nm]) f.push(GRADE_BY_NAME[nm] + (vac ? ' · 지금 방학' : ' · 등교 중'));
+      if (BIRTH_BY_NAME[nm]) {
+        f.push(BIRTH_BY_NAME[nm].replace(/-/g, '.') + '생');
+        var bl = birthLeft(BIRTH_BY_NAME[nm]);
+        if (bl != null) f.push('생일 ' + (bl === 0 ? '오늘' : 'D-' + bl));
+      }
+      if (!f.length) f.push(m.role || '가족');
+      return (m.emoji || '🧑') + ' ' + nm + '(' + (m.role || '가족') + '): ' + f.join(' · ');
+    }).join(' / ');
+    if (feat) L.push('[가족 특징] ' + feat);
+    var dds = [];
+    Object.keys(v.ddays || {}).forEach(function (k) {
+      var it = v.ddays[k];
+      if (!it || it.del || !it.d) return;
+      var left = birthLeft(it.d);
+      if (left != null) dds.push(clipTxt(it.t, 20) + ' D-' + left);
+    });
+    if (dds.length) L.push('[가족 디데이] ' + dds.slice(0, 6).join(' · '));
+
+    /* 3) 가족별 기록 */
+    var sb = v.sb || { cat: {}, rec: {} };
+    var sbTot = {};
+    Object.keys(sb.rec || {}).forEach(function (k) {
+      var r = sb.rec[k];
+      if (!r || r.del || r.st !== 'ok') return;
+      sbTot[r.to] = (sbTot[r.to] || 0) + (r.pts || 0);
+    });
+    var wishes = liveList(v.wish);
+    var rows = [];
+    ms.forEach(function (m) {
+      var p = [];
+      var mo = (v.mood || {})[m.id];
+      if (mo && mo.e) p.push('기분 ' + mo.e + (mo.t ? ' ' + clipTxt(mo.t, 14) : '') + (mo.note ? ' "' + clipTxt(mo.note, 24) + '"' : '') + ' (' + liveStamp(mo.at) + ')');
+      else p.push('기분 기록 없음');
+      var st = (D.status || {})[m.id];
+      var stk = liveStatusKo(st);
+      if (stk) p.push('상태 ' + stk + (st.memo ? ' "' + clipTxt(st.memo, 24) + '"' : '') + ' (' + liveStamp(st.at) + ')');
+      var lv = (D.live || {})[m.id];
+      if (lv && lv.at) {
+        p.push('위치 ' + clipTxt(lv.addr || (Number(lv.lat).toFixed(4) + ',' + Number(lv.lon).toFixed(4)), 40) + ' (' + liveStamp(lv.at) + ((Date.now() - lv.at) > 6 * 3600000 ? ' · 오래된 위치' : '') + ')');
+      }
+      var g = (v.goals || {})[m.id];
+      if (g && (g.week || g.month || g.dream)) {
+        var gh = ['주 ' + (clipTxt(g.week, 24) || '-'), '월 ' + (clipTxt(g.month, 24) || '-'), '꿈 ' + (clipTxt(g.dream, 16) || '-')];
+        p.push('목표 ' + gh.join(' · '));
+      }
+      var sl = (v.sleep || {})[m.id];
+      if (sl) {
+        var ss = computeSleep(sl, sl.wakeAt);
+        if (ss) p.push('수면 ' + ss.hours + '시간·피로 ' + ss.fatigue + '%·에너지 ' + ss.energy + '%');
+        else if (sl.bedAt && !sl.wakeAt) p.push('지금 자는 중');
+      }
+      var mn = liveMoney(v, m.id);
+      if (mn.items.length) {
+        var rm = mn.items.slice(0, 2).map(function (x) { return x.d.slice(5).replace('-', '/') + ' ' + (x.it.k === 'got' ? '+' : '-') + wonNum(x.it.amt) + (x.it.t ? '(' + clipTxt(x.it.t, 10) + ')' : ''); }).join(', ');
+        p.push('용돈 잔액 ' + wonNum(mn.bal) + ' · 최근 ' + rm);
+      } else p.push('용돈 기록 없음');
+      if (sbTot[m.id] != null) p.push('상벌점 ' + (sbTot[m.id] > 0 ? '+' : '') + sbTot[m.id] + '점');
+      var lk = ((D.v4 && D.v4.like) || {})[m.id];
+      if (lk && (lk.food || lk.hobby || lk.interest)) {
+        var lks = [];
+        if (lk.food) lks.push('음식 ' + clipTxt(lk.food, 16));
+        if (lk.hobby) lks.push('취미 ' + clipTxt(lk.hobby, 16));
+        if (lk.interest) lks.push('관심 ' + clipTxt(lk.interest, 16));
+        p.push('좋아하는 것 ' + lks.join(' · '));
+      }
+      var myW = wishes.filter(function (w) { return w.by === m.id; });
+      if (myW.length) {
+        var ws = myW.slice(0, 4).map(function (w) {
+          return clipTxt(w.name, 18) + (w.price ? ' ' + clipTxt(w.price, 10) : '') + (w.got ? '(받음)' : '');
+        });
+        p.push('갖고 싶은 것 ' + ws.join(', ') + (myW.length > 4 ? ' 외 ' + (myW.length - 4) + '개' : ''));
+      }
+      var tm = (v.tama || {})[m.id];
+      if (tm) p.push('펫 ' + clipTxt(tm.name || '이름 없음', 10) + '(Lv.' + (tm.lv || 1) + '·배부름 ' + (tm.full || 0) + '·행복 ' + (tm.happy || 0) + '·에너지 ' + (tm.energy || 0) + ')');
+      rows.push('- ' + (m.emoji || '🧑') + ' ' + m.name + ': ' + p.join(' | '));
+    });
+    if (rows.length) L.push('[가족별 기록]\n' + rows.join('\n'));
+
+    /* 4) 일정(오늘~14일) + 지난 미완료 */
+    var cal = liveList((D.v4 && D.v4.cal) || {});
+    var t0 = today0.getTime(), tEnd = t0 + 14 * 86400000;
+    var byDay = {}, dayOrder = [], past = [];
+    cal.forEach(function (it) {
+      var msDay = dayMs(it.d);
+      if (isNaN(msDay)) return;
+      var done = it.st ? it.st === 'done' : !!it.done;
+      if (it.st && (it.at || 0) > (it.stAt || 0)) done = !!it.done;
+      var one = clipTxt(it.t, 40) + (it.time ? ' ' + it.time : '') + ' (' + (memName(it.by) || '가족') + ')' + (it.st === 'cancel' ? '[취소]' : (done ? '[완료]' : '')) + (it.memo ? ' {' + clipTxt(it.memo, 20) + '}' : '');
+      if (msDay >= t0 && msDay < tEnd) {
+        var key = ymd(msDay);
+        if (!byDay[key]) { byDay[key] = []; dayOrder.push(key); }
+        byDay[key].push(one);
+      } else if (msDay < t0 && !done && past.length < LIVE_LIM.pastCal) {
+        past.push(ymd(msDay).slice(5).replace('-', '/') + ' ' + one);
+      }
+    });
+    dayOrder.sort();
+    var calLines = [];
+    var showed = 0;
+    dayOrder.forEach(function (key) {
+      if (showed >= LIVE_LIM.cal) return;
+      var dt = new Date(dayMs(key));
+      var list = byDay[key];
+      var use = list.slice(0, Math.max(1, LIVE_LIM.cal - showed));
+      showed += use.length;
+      calLines.push(mdKo(dt) + ' ' + use.join(' / ') + (list.length > use.length ? moreStr(list.length - use.length) : ''));
+    });
+    if (calLines.length) L.push('[일정 · 오늘부터 14일]\n' + calLines.join('\n'));
+    else L.push('[일정 · 오늘부터 14일] 달력에 기록된 일정이 없어요');
+    if (past.length) L.push('[지난 미완료 일정] ' + past.join(' / '));
+    var plans = liveList(D.plans).filter(function (p) { return p.when; }).sort(function (a, b) { return (a.when || 0) - (b.when || 0); }).slice(0, LIVE_LIM.plan);
+    if (plans.length) {
+      L.push('[가족 약속] ' + plans.map(function (p) {
+        return (p.what || '약속') + (p.where ? ' @' + clipTxt(p.where, 24) : '') + ' ' + liveStamp(p.when) + ' (' + memName(p.by) + ')';
+      }).join(' / '));
+    }
+
+    /* 5) 교대근무·출근·등교(오늘~14일) */
+    var shiftBits = [];
+    for (var i = 0; i < LIVE_LIM.shift; i++) {
+      var dt2 = new Date(t0 + i * 86400000);
+      var sh = shiftOf(dt2);
+      var bits = ['상국 ' + (sh.label || (sh.isWork ? '근무' : '휴식'))];
+      if ((suDows || []).indexOf(dt2.getDay()) >= 0) bits.push('수향 출근');
+      var dow = dt2.getDay();
+      if (dow >= 1 && dow <= 5) bits.push(vac ? '아이들 방학' : '아이들 등교');
+      shiftBits.push(mdKo(dt2) + ' ' + bits.join('·'));
+    }
+    L.push('[근무·출근·등교] ' + shiftBits.join(' | '));
+
+    /* 6) 미완료 할일 */
+    var todos = liveList((D.v4 && D.v4.todos) || {}).filter(function (it) { return !it.done; })
+      .sort(function (a, b) { return (b.at || 0) - (a.at || 0); });
+    if (todos.length) {
+      var tl = todos.slice(0, LIVE_LIM.todo).map(function (it) { return clipTxt(it.t, 40) + '(' + memName(it.by) + ')'; });
+      L.push('[미완료 할일 ' + todos.length + '건] ' + tl.join(' / ') + (todos.length > tl.length ? ' 외 ' + (todos.length - tl.length) + '건' : ''));
+    } else L.push('[미완료 할일] 없음');
+
+    /* 7) 공지·채팅·응원 */
+    var notices = liveList(D.notices).filter(function (n) { return String(n.text || '').trim(); })
+      .sort(function (a, b) { return ((b.pin ? 1 : 0) - (a.pin ? 1 : 0)) || ((b.at || 0) - (a.at || 0)); });
+    if (notices.length) {
+      L.push('[가족 공지] ' + notices.slice(0, LIVE_LIM.notice).map(function (n) {
+        return (n.pin ? '📌' : '📢') + memName(n.by) + ': ' + clipTxt(n.text, 70) + ' (' + liveStamp(n.at) + ')';
+      }).join(' / '));
+    }
+    var chats = liveList(D.chat).filter(function (c) { return String(c.text || '').trim(); })
+      .sort(function (a, b) { return (b.at || 0) - (a.at || 0); }).slice(0, LIVE_LIM.chat).reverse();
+    if (chats.length) {
+      L.push('[최근 가족 채팅] ' + chats.map(function (c) {
+        return memName(c.by) + ': ' + clipTxt(c.text, 60) + ' (' + liveStamp(c.at) + ')';
+      }).join(' / '));
+    }
+    var cheers = liveList(D.cheer).filter(function (c) { return String(c.text || '').trim(); })
+      .sort(function (a, b) { return (b.at || 0) - (a.at || 0); }).slice(0, LIVE_LIM.cheer);
+    if (cheers.length) {
+      L.push('[가족 응원 한마디] ' + cheers.map(function (c) { return memName(c.by) + ': ' + clipTxt(c.text, 50); }).join(' / '));
+    }
+
+    /* 8) 가족 XP · 기록량 */
+    var xp = liveXp(D);
+    L.push('[가족 경험치] 완료 ' + xp.doneN + '건 · 약 ' + xp.total + 'XP · Lv.' + xp.lv + ' · 진행 중 ' + xp.openN + '건' +
+      ' | 위시 ' + wishes.length + '개 · 사진 ' + liveList(D.photos).length + '장 · 일기 ' + liveList(D.diary).length + '편');
+
+    /* 9) 답변 지침 */
+    L.push('[답변 지침] 위 기록에 있는 값은 이름·날짜·시간·금액·기분 표현 그대로 구체적으로 인용해 답해. ' +
+      '기록이 없는 항목은 "아직 포털에 기록이 없어요"라고 말하고 절대 지어내지 마. ' +
+      '날짜·요일·남은 날짜는 [지금]과 [근무·출근·등교]를 기준으로 계산해. ' +
+      '가족끼리 서로 챙길 수 있게, 필요하면 한 가지 행동을 다정하게 제안해.');
+
+    return L.join('\n');
+  }
+  function moreStr(n) { return ' 외 ' + n + '건'; }
 
   /* 미쁠 마스코트 그림: 통통한 초록 ㅅ 몸체 + 동그란 두 눈 + 밝은 미소 */
   function mippeulSVG(size) {
@@ -1059,7 +1346,12 @@
       pushMsg('me', q);
       var thinking = pushMsg('ai', '생각 중…');
       var hist = chatHist.map(function (h) { return (h.r === 'me' ? '가족: ' : '미쁠: ') + h.t; }).join('\n');
-      global.FAM9AI.ask(FAM_CTX + (hist ? '\n대화 기록:\n' + hist : '') + '\n가족: ' + q)
+      var live = '';
+      try { live = buildLiveFamContext(); } catch (err) { live = ''; }
+      global.FAM9AI.ask(
+        (live ? live + '\n\n' : '') + (hist ? '대화 기록:\n' + hist + '\n' : '') + '가족: ' + q,
+        { system: FAM_CTX }
+      )
         .then(function (txt) {
           chatHist.push({ r: 'me', t: q }, { r: 'ai', t: txt });
           if (chatHist.length > 12) chatHist = chatHist.slice(-12);
@@ -1442,9 +1734,12 @@
         var lines = sbRows(sb2, function (r) { return r.st === 'ok'; }).slice(0, 20).map(function (r) {
           return memName(r.to) + ' · ' + catName(sb2, r.cat) + ' (' + r.pts + '점) — ' + memName(r.from);
         }).join('\n');
+        var liveAdv = '';
+        try { liveAdv = buildLiveFamContext(); } catch (err) { liveAdv = ''; }
         global.FAM9AI.ask(
+          (liveAdv ? liveAdv + '\n\n' : '') +
           '우리 가족 상벌점 기록이야:\n' + (lines || '(아직 기록 없음)') + '\n' +
-          '반복된 벌점과 잘한 일을 분석해, 아이들이 상처받지 않게 따뜻한 조언 2~3문장으로 해줘. 이모지 1개 이하. 조언 본문만.'
+          '위 기록의 지금 기분·일정·수면까지 살펴서, 반복된 벌점과 잘한 일을 아이들이 상처받지 않게 따뜻한 조언 2~3문장으로 해줘. 이모지 1개 이하. 조언 본문만.'
         ).then(function (txt) {
           var sb3 = sbOf();
           sb3.advice = { text: txt.slice(0, 400), at: now(), ymd: todayYmd() };
@@ -1824,4 +2119,16 @@
     document.head.appendChild(s);
   }
   style();
+
+  /* 다른 모듈(용돈·위시·주말 추천 등)도 같은 실시간 문맥을 쓸 수 있게 열어 둔다 */
+  global.FAM9LIVE = {
+    build: function () { try { return buildLiveFamContext(); } catch (e) { return ''; } },
+    brief: function (n) {
+      var t = '';
+      try { t = buildLiveFamContext(); } catch (e) { t = ''; }
+      if (!t) return '';
+      var keep = String(n || 1200);
+      return t.length > Number(keep) ? t.slice(0, Number(keep)) + '…' : t;
+    }
+  };
 })(window);
