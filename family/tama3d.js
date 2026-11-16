@@ -536,7 +536,14 @@
   function renderTamaUI() {
     var t = tamaOf(false), box = $('t9Hero');
     if (!box) return;
-    if (!t || !t.sp) { box.innerHTML = ''; setupUI(); return; }
+    if (!t || !t.sp) {
+      box.innerHTML = '';
+      /* 펫이 없으면 돌보기 키패드·수정 버튼도 감춘다 */
+      var a0 = $('t9Acts'); if (a0) a0.classList.add('hidden');
+      var e0 = $('t9EditBtn'); if (e0) e0.classList.add('hidden');
+      setupUI();
+      return;
+    }
     var sp = SPECIES[t.sp] || SPECIES.dog;
     box.innerHTML =
       '<div class="t9-hero"><div class="t9-info">' +
@@ -649,7 +656,7 @@
       var eb = e.target.closest('#t9EditBtn');
       if (eb) {
         var v9 = V9(), tt = tamaOf(false);
-        if (tt) { tt.sp = ''; save(); if (petG && scene) { scene.remove(petG); petG = null; } renderTamaUI(); setupUI(); }
+        if (tt) { tt.sp = ''; save(); if (petG && scene) { scene.remove(petG); petG = null; } renderTamaUI(); setupUI(); roomUI(); }
         return;
       }
       var wl = e.target.closest('[data-t9wall]');
