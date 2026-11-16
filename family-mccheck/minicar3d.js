@@ -205,7 +205,10 @@
     var g = new THREE.BufferGeometry();
     g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
     g.setIndex(idx);
-    g.computeVertexNormals();
+    /* 노면은 위쪽(0,1,0) 법선으로 고정 — 감기 방향이 뒤집혀도 검게 보이지 않는다 */
+    var nrm = new Float32Array(pos.length);
+    for (var q = 1; q < nrm.length; q += 3) nrm[q] = 1;
+    g.setAttribute('normal', new THREE.Float32BufferAttribute(nrm, 3));
     trackG = new THREE.Group();
     trackG.add(new THREE.Mesh(g, new THREE.MeshLambertMaterial({ color: 0x5A6470 })));
     /* 가드레일 */
@@ -356,7 +359,7 @@
       dir.position.set(8, 14, 6);
       scene.add(dir);
       camera = new THREE.PerspectiveCamera(55, 2, 0.1, 200);
-      camera.position.set(0, 3.4, -7);
+      camera.position.set(0, 3.8, -7);
       buildTrack();
       resize3D();
       return true;
@@ -644,8 +647,8 @@
     step(dt);
     placeCar();
     if (carG && camera) {
-      var back = new THREE.Vector3(0, 0, -1).applyQuaternion(carG.quaternion).multiplyScalar(6.4);
-      camera.position.lerp(new THREE.Vector3(carG.position.x + back.x, carG.position.y + 3.3, carG.position.z + back.z), 1 - Math.exp(-6 * dt));
+      var back = new THREE.Vector3(0, 0, -1).applyQuaternion(carG.quaternion).multiplyScalar(6.2);
+      camera.position.lerp(new THREE.Vector3(carG.position.x + back.x, carG.position.y + 3.6, carG.position.z + back.z), 1 - Math.exp(-6 * dt));
       camera.lookAt(carG.position.x, carG.position.y + 0.5, carG.position.z);
     }
     renderer.render(scene, camera);
