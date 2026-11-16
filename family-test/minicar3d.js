@@ -925,7 +925,7 @@
       id: id, name: name, isMe: !!isMe, cfg: conf, st: st,
       u: 0, s: 0, lane: lane || 0, lap: 1, lapT: 0, best: 0,
       boostT: 0, boosts: st.boosts, finished: false, finishT: 0,
-      air: false, vy: 0, y: 0, shake: 0, group: null, place: 0
+      air: false, vy: 0, y: 0, shake: 0, group: null, place: 0, manualT: 0
     };
   }
   function progressOf(c) { return (c.lap - 1) + c.u; }
@@ -953,6 +953,14 @@
     var drift = curv * car.s * car.s * 0.07 * (1.25 - st.grip) * (1 - st.stab * 0.45);
     car.lane = clamp(car.lane + drift * dt, -1.7, 1.7);
     if (ai) aiSteer(car, dt, curv);
+    else {
+      /* 내 차: 기본은 코스 안쪽을 따라가는 보조 핸들링, 좌우 버튼을 누르면 그동안은 수동 */
+      car.manualT = Math.max(0, (car.manualT || 0) - dt);
+      if (!car.manualT) {
+        var tgt = clamp(-curv * 26, -0.9, 0.9);
+        car.lane += (tgt - car.lane) * Math.min(1, dt * 1.25);
+      }
+    }
     var off = Math.abs(car.lane * 0.5) > HW * 0.85;
     if (off) car.s *= 1 - Math.min(0.9, dt * 2.2);
     car.shake = off ? 1 : Math.max(0, car.shake - dt * 3);
@@ -1441,7 +1449,7 @@
   }
   function fittedHtml() {
     var st = stats(cfg);
-    return '🛞 <b>' + st.t.n + '</b> · 🛑 <b>' + st.br.n + '</b> · 🪽 <b>' + st.a.n + '</b><br>' +
+    return '🛞 <b>' + st.t.n + '</b> · 🛑 <b>' + st.br.n + '</b> · 🪶 <b>' + st.a.n + '</b><br>' +
       '⚙️ <b>' + st.p.n + '</b> · ' + st.g.n + ' · 🎨 <b>' + st.d.n + '</b> · 🔋 ' + st.bt.n;
   }
   function rankHtml() {
@@ -1651,8 +1659,8 @@
       if (race.me.boosts <= 0) { toast('부스트가 없어요 — 다음 랩에 충전돼요'); return; }
       race.me.boosts--; race.me.boostT = 1.6;
     };
-    if (bL) bL.onclick = function () { if (race) race.me.lane = clamp(race.me.lane - 0.32, -1.8, 1.8); };
-    if (bR) bR.onclick = function () { if (race) race.me.lane = clamp(race.me.lane + 0.32, -1.8, 1.8); };
+    if (bL) bL.onclick = function () { if (race) { race.me.lane = clamp(race.me.lane - 0.32, -1.8, 1.8); race.me.manualT = 2.5; } };
+    if (bR) bR.onclick = function () { if (race) { race.me.lane = clamp(race.me.lane + 0.32, -1.8, 1.8); race.me.manualT = 2.5; } };
     if (bBack) bBack.onclick = function () { backToGarage(); };
   }
   function resetRaceState() {
