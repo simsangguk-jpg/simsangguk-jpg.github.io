@@ -187,6 +187,9 @@
   curve = makePath(TRACK_PTS, 1200);
   trackLen = curve.getLength();
   function drv() { return (mode === '3d' && curve3) ? curve3 : curve; }
+  function cu(u) { return ((u % 1) + 1) % 1; }
+  function ptAt(u) { return drv().getPointAt(cu(u)); }
+  function tanAt(u) { return drv().getTangentAt(cu(u)); }
 
   function buildTrack() {
     if (!scene || trackG) return;
@@ -568,14 +571,14 @@
   function stop2D() { if (raf2) { cancelAnimationFrame(raf2); raf2 = 0; } }
 
   /* ---------------- 주행 물리 ---------------- */
-  function curveY(u) { return drv().getPointAt(u).y; }
+  function curveY(u) { return ptAt(u).y; }
   function slopeAt(u) {
     var e = 0.004;
     return (curveY(u + e) - curveY(u - e)) / (2 * e * trackLen);
   }
   function curveCurvature(u) {
-    var e = 0.02, c = drv();
-    var a = c.getTangentAt(u - e), b = c.getTangentAt(u + e);
+    var e = 0.02;
+    var a = tanAt(u - e), b = tanAt(u + e);
     var cross = a.x * b.z - a.z * b.x, dot = a.x * b.x + a.z * b.z;
     return Math.atan2(cross, dot) / (2 * e * trackLen);   /* 부호 유지: 바깥으로 밀림 */
   }
@@ -636,7 +639,7 @@
   function placeCar() {
     if (!carG || !curve) return;
     var u = ((run.u % 1) + 1) % 1;
-    var p = drv().getPointAt(u), t = drv().getTangentAt(u);
+    var p = ptAt(u), t = tanAt(u);
     var nx = -t.z, nz = t.x, nl = len2(nx, nz); nx /= nl; nz /= nl;
     var y = run.air ? run.y : p.y;
     carG.position.set(p.x + nx * run.lane * 0.5, y + 0.02 + run.shake * Math.sin(now() * 0.06) * 0.03, p.z + nz * run.lane * 0.5);
