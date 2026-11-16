@@ -211,19 +211,25 @@
     g.setAttribute('normal', new THREE.Float32BufferAttribute(nrm, 3));
     trackG = new THREE.Group();
     trackG.add(new THREE.Mesh(g, new THREE.MeshLambertMaterial({ color: 0x5A6470 })));
-    /* 가드레일 */
-    var railPos = [], railIdx = [];
-    for (i = 0; i <= SEG; i++) {
-      u = i / SEG;
-      var p2 = base.getPointAt(u), t2 = base.getTangentAt(u);
-      var nx2 = -t2.z, nz2 = t2.x, nl2 = len2(nx2, nz2); nx2 /= nl2; nz2 /= nl2;
-      railPos.push(p2.x + nx2 * (HW + 0.18), p2.y + 0.1, p2.z + nz2 * (HW + 0.18));
-      railPos.push(p2.x - nx2 * (HW + 0.18), p2.y + 0.1, p2.z - nz2 * (HW + 0.18));
-      if (i < SEG) { var b = i * 2; railIdx.push(b, b + 1, b + 2, b + 1, b + 3, b + 2); }
+    /* 가드레일 — 도로 양옆에 세운 얇은 난간(도로를 덮지 않게) */
+    var railPos = [], railIdx = [], vi = 0, side, k2;
+    for (k2 = 0; k2 < 2; k2++) {
+      side = k2 === 0 ? 1 : -1;
+      for (i = 0; i <= SEG; i++) {
+        u = i / SEG;
+        var p2 = base.getPointAt(u), t2 = base.getTangentAt(u);
+        var nx2 = -t2.z, nz2 = t2.x, nl2 = len2(nx2, nz2); nx2 /= nl2; nz2 /= nl2;
+        var rx = p2.x + side * nx2 * (HW + 0.06), rz = p2.z + side * nz2 * (HW + 0.06);
+        railPos.push(rx, p2.y + 0.02, rz);
+        railPos.push(rx, p2.y + 0.22, rz);
+        if (i < SEG) { var b = vi; railIdx.push(b, b + 1, b + 2, b + 1, b + 3, b + 2); }
+        vi += 2;
+      }
     }
     var g2 = new THREE.BufferGeometry();
     g2.setAttribute('position', new THREE.Float32BufferAttribute(railPos, 3));
     g2.setIndex(railIdx);
+    g2.computeVertexNormals();
     trackG.add(new THREE.Mesh(g2, new THREE.MeshLambertMaterial({ color: 0xE5484D, side: THREE.DoubleSide })));
     /* 출발선(체커) */
     var p0 = base.getPointAt(0), t0 = base.getTangentAt(0);
