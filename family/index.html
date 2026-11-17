@@ -15,7 +15,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="우리가족포털">
 <meta name="format-detection" content="telephone=no">
-<link rel="stylesheet" href="./v10.css?v=11">
+<link rel="stylesheet" href="./v10.css?v=12">
 <style>
 :root{
   --bg:#F5F7F8;
@@ -499,7 +499,8 @@ body.pg-lock{overflow:hidden}
   main{max-width:520px;margin:0 auto;padding:16px 0 6px}
   .appbar{max-width:520px;margin:0 auto;border-radius:0 0 22px 22px}
   .appbar-top,.wx-banner{max-width:100%;margin-left:0;margin-right:0}
-  .tabbar{max-width:520px;left:50%;transform:translateX(-50%);border-radius:16px 16px 0 0;border:1px solid var(--line);border-bottom:none}
+  /* 폭 640px 이상: 하단 바를 화면 정중앙에 고정 (left:50% + translateX(-50%) 조합에서 left:0 이 남아 왼쪽으로 반만큼 밀리던 문제 수리) */
+  .tabbar{left:50%;right:auto;width:100%;max-width:520px;transform:translateX(-50%);border-radius:16px 16px 0 0;border:1px solid var(--line);border-bottom:none}
 }
 </style>
 </head>

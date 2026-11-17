@@ -895,6 +895,21 @@ input[type="date"].field,input[type="time"].field,input[type="datetime-local"].f
 .wk9-h{font-size:10.5px !important;font-weight:800 !important;color:var(--ink2) !important}
 .wk9-item b{font-weight:750 !important}
 
+/* ---------------------------------------------------------------- 태블릿·폴드 펼친 화면 (640~899px) */
+/* 하단 바를 화면 정중앙에 둔다. left:50% + translateX(-50%) 만 쓰고 right는 반드시 auto
+   (예전엔 left:0 이 남아 있어 바가 자기 폭의 절반만큼 왼쪽으로 밀려 잘렸다) */
+@media (min-width:640px) and (max-width:899.98px){
+  .tabbar{
+    left:50%;right:auto;transform:translateX(-50%);
+    width:100%;max-width:520px;
+    border:1px solid rgba(226,213,197,.85);border-bottom:none;
+    border-radius:18px 18px 0 0;
+    background:rgba(255,252,248,.92);
+    backdrop-filter:blur(18px) saturate(160%);
+    -webkit-backdrop-filter:blur(18px) saturate(160%);
+  }
+}
+
 /* ---------------------------------------------------------------- 데스크톱 */
 @media (min-width:900px){
   .appbar{max-width:1120px;margin:0 auto;padding:16px 32px 0;border-radius:0 0 26px 26px}
@@ -938,10 +953,11 @@ input[type="date"].field,input[type="time"].field,input[type="datetime-local"].f
   #view-chat,#view-photos{max-width:780px;margin:0 auto}
   #view-chat, #view-photos{display:block}
 
-  /* 데스크톱 독 */
+  /* 데스크톱 독 — 어떤 폭에서도 좌우 정중앙 (left:50% + translateX(-50%) 만 사용, right 는 auto) */
   .tabbar{
     left:50%;right:auto;transform:translateX(-50%);
-    bottom:22px;width:auto;min-width:560px;
+    bottom:22px;width:auto;min-width:0;max-width:calc(100vw - 32px);
+    justify-content:center;gap:2px;
     border:1px solid rgba(226,213,197,.9);border-radius:24px;
     padding:8px 10px;
     box-shadow:0 22px 50px -24px rgba(60,44,28,.5),0 2px 6px rgba(60,44,28,.06);
