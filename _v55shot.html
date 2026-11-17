@@ -33,7 +33,7 @@ try { f.src = './?v=55shot&cb=' + Date.now(); } catch (e) {}
     if (tries < 40) setTimeout(place, 400);
   }
   f.addEventListener('load', function () { setTimeout(place, 400); });
-  setTimeout(place, 1200);
+  var k = 0, iv = setInterval(function () { k++; place(); if (k > 8) clearInterval(iv); }, 700);
 </script>
 </body>
 </html>
