@@ -9,12 +9,13 @@
 </style>
 </head>
 <body>
-<iframe id="ff" src="./?v=55shot" title="상국포털"></iframe>
+<iframe id="ff" src="./?v=55shot&cb=x" title="상국포털"></iframe>
 <script>
   var q = new URLSearchParams(location.search);
   var w = parseInt(q.get('w') || '1440', 10), h = parseInt(q.get('h') || '900', 10);
   var sel = q.get('el') || '', off = parseInt(q.get('off') || '104', 10);
   var f = document.getElementById('ff');
+try { f.src = './?v=55shot&cb=' + Date.now(); } catch (e) {}
   f.style.width = w + 'px';
   f.style.height = h + 'px';
   var tries = 0;
