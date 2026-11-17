@@ -346,13 +346,17 @@
       if (d) d.click();
       else if (F && F.openSheet) F.openSheet('<h3>홈 꾸미기</h3><div class="sdesc">홈 카드 순서를 정리하는 기능을 불러오지 못했어요. 잠시 뒤 다시 눌러 주세요.</div>');
     });
-    /* 떠 있던 미쁠 AI 버튼은 헤더 안으로 옮겨 화면을 가리지 않게 한다 */
+    placeRobot();
+  }
+
+  /* 떠 있던 미쁠 AI 버튼은 헤더 안으로 모셔 화면을 가리지 않게 한다(나중에 생겨도 다시 옮긴다) */
+  function placeRobot() {
     var bot = $('f9robot');
-    if (bot) {
-      bot.classList.add('v10-hbtn');
-      bot.title = '미쁠 — 우리 가족 AI 비서';
-      me.parentNode.insertBefore(bot, b);
-    }
+    var deco = $('v10Deco');
+    if (!bot || !deco || !deco.parentNode) return;
+    bot.classList.add('v10-hbtn');
+    bot.title = '미쁠 — 우리 가족 AI 비서';
+    if (bot.parentNode !== deco.parentNode) deco.parentNode.insertBefore(bot, deco);
   }
 
   function paintFamRow() {
@@ -487,6 +491,7 @@
     keepCssLast();
     buildHero();
     wireHeader();
+    placeRobot();
     orderHome();
     park();
     movePhotos();

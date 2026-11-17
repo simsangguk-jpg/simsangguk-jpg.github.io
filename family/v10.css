@@ -927,6 +927,10 @@ input[type="date"].field,input[type="time"].field,input[type="datetime-local"].f
   .v10-hero .wx-chip .t{font-size:22px}
   .v10-hero .wx-row{gap:10px}
 
+  /* 일정 페이지는 카드 높이가 들쭉날쭉 → 데스크톱은 단으로 흐르게 */
+  #view-sched{display:block !important;column-count:2;column-gap:18px;max-width:1120px}
+  #view-sched>*{break-inside:avoid;margin-bottom:18px}
+
   /* 채팅은 읽기 좋은 폭으로 */
   #view-chat,#view-photos{max-width:780px;margin:0 auto}
   #view-chat, #view-photos{display:block}
