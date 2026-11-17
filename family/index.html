@@ -3,18 +3,19 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=5">
-<meta name="theme-color" content="#0E9F6E">
+<meta name="theme-color" content="#0A4C39">
 <meta name="robots" content="noindex, nofollow, noarchive">
-<title>상국수향지섭지율포털 V9</title>
+<title>상국수향지섭지율포털 V10</title>
 <meta name="description" content="상국·수향·지섭·지율 우리 가족 전용 공간">
 <link rel="manifest" href="./manifest.webmanifest">
 <link rel="icon" href="./icon-192.png">
 <link rel="apple-touch-icon" href="./apple-touch-icon.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="우리가족포털">
 <meta name="format-detection" content="telephone=no">
+<link rel="stylesheet" href="./v10.css?v=10">
 <style>
 :root{
   --bg:#F5F7F8;
@@ -579,6 +580,8 @@ body.pg-lock{overflow:hidden}
       <div class="cheer-line" id="cheerLine"><span class="who">💬</span><span class="txt">오늘도 우리 가족 화이팅!</span></div>
     </div>
     <div class="syncbar" id="syncBar"><span class="dot" id="syncDot"></span><span id="syncText">가족 클라우드 연결 중…</span></div>
+    <!-- V10 영역별 하위 탭 (v10.js 가 채운다) -->
+    <div id="v10Sub" class="v10-sub is-empty"></div>
   </header>
 
   <main>
@@ -588,7 +591,7 @@ body.pg-lock{overflow:hidden}
       <div id="famCalBanner"></div>
 
       <!-- ===== V8 ② 지금 우리 가족 위치 (HOME8 이 가족별 주변 맛집·카페·명소 칩을 붙인다) ===== -->
-      <div class="card">
+      <div class="card" id="v10LocCard">
         <div class="card-head"><h2>📍 지금 우리 가족 위치</h2><span class="sub" id="locSumAt">–</span></div>
         <div id="locMineBox" style="display:none"></div>
         <div id="locSumList" class="loc-list"></div>
@@ -654,7 +657,7 @@ body.pg-lock{overflow:hidden}
         <span class="go">의견 쓰기 ›</span>
       </button>
 
-      <div class="card">
+      <div class="card" id="v10EtaCard">
         <div class="card-head"><h2>🏠 우리 가족 귀가 현황</h2><span class="sub" id="etaUpdated">–</span></div>
         <div class="eta-grid" id="etaGrid"></div>
       </div>
@@ -677,7 +680,7 @@ body.pg-lock{overflow:hidden}
         </div>
       </div>
 
-      <div class="card">
+      <div class="card" id="v10MyEtaCard">
         <div class="card-head"><h2>🚗 내 귀가 알리기</h2><span class="sub" id="myEtaLabel">아직 등록 전</span></div>
         <div class="quick" id="quickBtns">
           <button type="button" data-act="depart">🚗 지금 출발했어요</button>
@@ -691,7 +694,7 @@ body.pg-lock{overflow:hidden}
 
       <div id="p7strip3" class="p7"></div>
 
-      <div class="card">
+      <div class="card" id="v10PlanCard">
         <div class="card-head"><h2>📅 가족 약속·만남</h2><span class="sub" id="planCount">0개</span></div>
         <div id="planList" class="live-list"></div>
       </div>
@@ -781,6 +784,7 @@ body.pg-lock{overflow:hidden}
         <button type="button" data-life="diary">📔 일기</button>
         <button type="button" data-life="money">💰 용돈기입장</button>
         <button type="button" data-life="reco">🍽️ 추천</button>
+        <button type="button" data-life="feedback">💡 의견</button>
       </div>
 
       <div id="life-letters">
@@ -818,6 +822,8 @@ body.pg-lock{overflow:hidden}
           <button class="btn" id="btnDiaryNew" style="margin-top:9px">✍️ 오늘 일기 쓰기</button>
         </div>
       </div>
+
+      <div id="life-feedback" class="hidden"></div>
 
       <div id="life-money" class="hidden">
         <div class="card">
@@ -885,18 +891,19 @@ body.pg-lock{overflow:hidden}
       </div>
     </section>
 
+    <!-- ===== V10 · 일정 (근무표·디데이·용돈·약속) — v10.js 가 카드를 옮겨 채운다 ===== -->
+    <section id="view-sched" class="hidden"></section>
+
     <!-- ===== V4 · 전체(카테고리 목차 + 생활 업그레이드) ===== -->
     <section id="view-all" class="hidden"></section>
   </main>
 
   <nav class="tabbar" id="tabbar">
-    <button type="button" data-view="home" class="on"><span class="ico">🏠</span>홈</button>
-    <button type="button" data-view="chat"><span class="ico">💬</span>채팅<span class="badge-dot hidden" id="tabChatDot">0</span></button>
-    <button type="button" data-view="photos"><span class="ico">📷</span>사진</button>
-    <button type="button" data-view="map"><span class="ico">📍</span>위치</button>
-    <button type="button" data-view="play"><span class="ico">🎮</span>놀이</button>
-    <button type="button" data-view="life"><span class="ico">📋</span>생활<span class="badge-dot hidden" id="tabLifeDot">0</span></button>
-    <button type="button" data-view="all"><span class="ico">🗂️</span>전체<span class="badge-dot hidden" id="tabAllDot">0</span></button>
+    <button type="button" data-v10tab="home" class="on"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10.6 12 4l8 6.6V19a1.4 1.4 0 0 1-1.4 1.4H5.4A1.4 1.4 0 0 1 4 19z"/><path d="M9.6 20.4v-6.1h4.8v6.1"/></svg></span>홈</button>
+    <button type="button" data-v10tab="share"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20.3 11.6a7.7 7.7 0 0 1-11.2 7l-4.1 1.3 1.3-4A7.7 7.7 0 1 1 20.3 11.6z"/><path d="M8.9 11.6h.01M12 11.6h.01M15.1 11.6h.01"/></svg></span>소통<span class="badge-dot hidden" id="tabChatDot">0</span><span class="badge-dot hidden" id="tabLifeDot" style="display:none">0</span></button>
+    <button type="button" data-v10tab="play"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3.2" y="7.4" width="17.6" height="9.6" rx="4.6"/><path d="M7.9 10.6v3M6.4 12.1h3"/><path d="M15.7 10.9h.01M17.7 13.3h.01"/></svg></span>놀이</button>
+    <button type="button" data-v10tab="sched"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3.8" y="5.6" width="16.4" height="14.4" rx="3.2"/><path d="M8.2 3.4v4M15.8 3.4v4M3.8 10.4h16.4"/><path d="M7.9 14.2h.01M12 14.2h.01M16.1 14.2h.01"/></svg></span>일정</button>
+    <button type="button" data-v10tab="house"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="9.2" cy="8.8" r="3.1"/><path d="M3.6 19.4c.7-3.2 2.9-4.9 5.6-4.9s4.9 1.7 5.6 4.9"/><path d="M16.2 6.9a2.6 2.6 0 1 1 1.9 4.4c-.7 0-1.4-.3-1.9-.8"/><path d="M17.9 14.9c2 .4 3.4 1.9 3.9 4.5"/></svg></span>우리집<span class="badge-dot hidden" id="tabAllDot">0</span></button>
   </nav>
 </div>
 
@@ -927,7 +934,8 @@ body.pg-lock{overflow:hidden}
 <script src="./tama3d.js?v=14a"></script>
 <script src="./minicar3d.js?v=14a"></script>
 <script src="./life9.js?v=15b"></script>
-<script src="./home9.js?v=15b"></script>
+<script src="./home9.js?v=16a"></script>
+<script src="./v10.js?v=16a"></script>
 <script>
 (function () {
 'use strict';
@@ -2816,7 +2824,7 @@ function mapRecenter() {
    ============================================================ */
 var lifeTab = 'letters';
 function paintLife() {
-  ['letters', 'notices', 'diary', 'money', 'reco', 'todo', 'cal'].forEach(function (t) {
+  ['letters', 'notices', 'diary', 'money', 'reco', 'todo', 'cal', 'feedback'].forEach(function (t) {
     var el = $('life-' + t);
     if (el) el.classList.toggle('hidden', t !== lifeTab);
     var b = document.querySelector('#lifeNav button[data-life="' + t + '"]');
@@ -2832,6 +2840,7 @@ function openLife(tab) {
   if (lifeTab === 'diary') renderDiary();
   if (lifeTab === 'money') renderMoney();
   if (lifeTab === 'reco') renderReco();
+  if (lifeTab === 'feedback') renderFeedback();
 }
 
 function renderAll() {
@@ -3720,7 +3729,7 @@ function lateSheet() {
 }
 function switchView(v) {
   currentView = v;
-  ['home', 'chat', 'photos', 'map', 'life', 'play', 'all'].forEach(function (name) {
+  ['home', 'chat', 'photos', 'map', 'life', 'play', 'sched', 'all'].forEach(function (name) {
     var el = $('view-' + name);
     if (el) el.classList.toggle('hidden', name !== v);
     var btn = document.querySelector('#tabbar button[data-view="' + name + '"]');
