@@ -449,14 +449,17 @@ input[type="date"].field,input[type="time"].field,input[type="datetime-local"].f
 #ntBanner,#chatTopBtn,#fbTopBtn,#pgTopBtn,.chat-inline,#lifeQuick,#lifeNav,#pgNav,#v4Fab,#v4Menu{display:none !important}
 /* 내 귀가 알리기는 '귀가 현황' 카드의 시트로 통합 */
 #v10MyEtaCard{display:none !important}
-/* 미쁠 AI 버튼 — 헤더 아이콘으로 */
+/* 미쁠 AI 버튼 — 헤더 아이콘으로. 실제 미쁠 얼굴을 흰 원 배지에 담는다 */
 #f9robot.v10-hbtn{
   position:static !important;right:auto !important;bottom:auto !important;
-  width:38px !important;height:38px !important;border-radius:13px !important;
-  background:rgba(255,255,255,.12) !important;border:1px solid rgba(255,255,255,.2) !important;
-  box-shadow:none !important;animation:none !important;flex:none;
+  width:38px !important;height:38px !important;border-radius:50% !important;
+  background:#fff !important;border:1px solid rgba(255,255,255,.6) !important;
+  box-shadow:0 2px 8px -3px rgba(0,0,0,.45) !important;animation:none !important;flex:none;
+  padding:2px !important;overflow:hidden;
 }
-#f9robot.v10-hbtn svg{width:24px !important;height:24px !important}
+#f9robot.v10-hbtn svg,#f9robot.v10-hbtn img{
+  width:100% !important;height:100% !important;object-fit:contain;
+}
 
 /* 알림 배너(도착 알림) */
 #v4Banner{

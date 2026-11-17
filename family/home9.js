@@ -1273,21 +1273,15 @@
   }
   function moreStr(n) { return ' 외 ' + n + '건'; }
 
-  /* 미쁠 마스코트 그림: 통통한 초록 ㅅ 몸체 + 동그란 두 눈 + 밝은 미소 */
-  function mippeulSVG(size) {
+  /* 미쁠 실제 얼굴: 흰 원 안의 동글동글한 연두 캐릭터 (family/mippeul-avatar.png)
+     — 예전에 그려 넣던 ㅅ 모양 SVG 는 실제 미쁠과 달라서 그림 파일로 바꿨다. */
+  var MIPP_FACE = './mippeul-avatar.png?v=10';
+  function mippeulImg(size, cls) {
     var s = size || 34;
-    return '<svg viewBox="0 0 48 48" width="' + s + '" height="' + s + '" aria-hidden="true" focusable="false">' +
-      '<g stroke="#22C55E" stroke-width="11" stroke-linecap="round" fill="none">' +
-      '<line x1="24" y1="12.5" x2="12.6" y2="35.5"/>' +
-      '<line x1="24" y1="12.5" x2="35.4" y2="35.5"/></g>' +
-      '<circle cx="24" cy="12.5" r="7" fill="#22C55E"/>' +
-      '<ellipse cx="19" cy="19.6" rx="2.6" ry="3.6" fill="#0F172A"/>' +
-      '<ellipse cx="29" cy="19.6" rx="2.6" ry="3.6" fill="#0F172A"/>' +
-      '<circle cx="18.2" cy="18.2" r="0.95" fill="#FFFFFF"/>' +
-      '<circle cx="28.2" cy="18.2" r="0.95" fill="#FFFFFF"/>' +
-      '<path d="M21 25.6 Q24 28.2 27 25.6" stroke="#0F172A" stroke-width="1.6" stroke-linecap="round" fill="none"/>' +
-      '</svg>';
+    return '<img class="' + (cls || 'f9-face') + '" src="' + MIPP_FACE + '" width="' + s + '" height="' + s +
+      '" alt="미쁠" draggable="false">';
   }
+  function mippeulSVG(size) { return mippeulImg(size); }
   function mippeulAvatar(size) {
     return '<span class="f9-av" style="width:' + (size || 22) + 'px;height:' + (size || 22) + 'px">' + mippeulSVG((size || 22) - 3) + '</span>';
   }
@@ -2092,13 +2086,15 @@
       '.lg9-row b{font-weight:800}',
       '.lg9-row .at{margin-left:auto;color:#9AA4AF;font-size:10.5px;flex:none}',
       '#f9robot{position:fixed;right:14px;bottom:calc(148px + var(--safe-b,0px));z-index:60;width:56px;height:56px;border-radius:50%;background:linear-gradient(180deg,#F2FDF8,#E4F9EF);border:1.5px solid #A7F3D0;box-shadow:0 10px 24px rgba(6,148,88,.20);display:flex;align-items:center;justify-content:center;animation:f9bob 3.2s ease-in-out infinite}',
-'#f9robot svg{display:block;pointer-events:none}',
+'#f9robot svg,#f9robot img{display:block;pointer-events:none}',
+'#f9robot img{width:100%;height:100%;object-fit:contain;border-radius:50%}',
 '#f9robot:active{transform:scale(.93)}',
 '@keyframes f9bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}',
 '#f9chat{position:fixed;right:12px;bottom:calc(96px + var(--safe-b,0px));z-index:75;width:min(340px,calc(100vw - 24px));background:#fff;border-radius:20px;border:1.5px solid #D7EDE2;box-shadow:0 16px 40px rgba(20,24,29,.18);overflow:hidden;display:flex;flex-direction:column;max-height:70vh}',
 '#f9chat.hidden{display:none}',
 '.f9chat-head{display:flex;align-items:center;gap:7px;padding:10px 12px;background:linear-gradient(135deg,#0E9F6E,#12B886);color:#fff}',
-'.f9chat-av{flex:none;width:26px;height:26px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center}',
+'.f9chat-av{flex:none;width:26px;height:26px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;overflow:hidden}',
+'.f9chat-av img{width:100%;height:100%;object-fit:contain;display:block}',
 '.f9chat-title{display:flex;flex-direction:column;line-height:1.15;font-weight:900;font-size:13.5px}',
 '.f9chat-title small{font-weight:700;font-size:9.5px;opacity:.9}',
 '.f9chat-head .f9h{width:27px;height:27px;border-radius:9px;background:rgba(255,255,255,.22);color:#fff;font-size:12px;line-height:1;display:flex;align-items:center;justify-content:center;flex:none}',
@@ -2107,7 +2103,8 @@
 '.f9chat-body{flex:1;overflow:auto;padding:11px;display:flex;flex-direction:column;gap:7px;min-height:160px}',
 '.f9-row{display:flex;align-items:flex-end;gap:6px;width:100%}',
 '.f9-row.me{justify-content:flex-end}',
-'.f9-av{flex:none;border-radius:50%;background:#E7F8F1;border:1px solid #C8F0DC;display:flex;align-items:center;justify-content:center;margin-bottom:2px}',
+'.f9-av{flex:none;border-radius:50%;background:#fff;border:1px solid #DCE9E3;display:flex;align-items:center;justify-content:center;margin-bottom:2px;overflow:hidden}',
+'.f9-av img{width:100%;height:100%;object-fit:contain;display:block}',
 '.f9-msg{max-width:82%;padding:8px 11px;border-radius:14px;font-size:12.5px;line-height:1.5;white-space:pre-wrap;word-break:keep-all}',
 '.f9-msg.me{background:#0E9F6E;color:#fff;border-bottom-right-radius:5px}',
 '.f9-msg.ai{background:#F1F4F5;color:#14181D;border-bottom-left-radius:5px}',
