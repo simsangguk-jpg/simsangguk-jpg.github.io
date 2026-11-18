@@ -7,29 +7,73 @@
   <title>상국포털 스마트 위젯</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; background: #ffffff; color: #111827; padding: 10px; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; background: #ffffff; color: #111827; padding: 10px 10px 14px; }
     a { text-decoration: none; color: inherit; }
     .w-box { max-width: 480px; margin: 0 auto; }
-    .w-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; gap: 6px; }
+    .w-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 7px; gap: 6px; }
     .w-title { font-size: 14px; font-weight: 900; color: #111827; }
-    .w-time { font-size: 11px; font-weight: 700; color: #6b7280; white-space: nowrap; }
-    .w-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }
-    .w-tile { display: block; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 12px; padding: 9px 10px; }
-    .w-tile:active { opacity: 0.8; }
-    .w-lbl { font-size: 10.5px; font-weight: 800; color: #6b7280; margin-bottom: 3px; }
-    .w-val { font-size: 13px; font-weight: 800; color: #111827; line-height: 1.25; }
-    .w-sub { font-size: 11px; color: #4b5563; margin-top: 2px; line-height: 1.3; }
-    .w-full { grid-column: 1 / -1; }
-    .w-tip { background: #eff6ff; border-color: #bfdbfe; }
-    .w-money { background: #ecfdf5; border-color: #a7f3d0; }
+    .w-time { font-size: 11px; font-weight: 800; color: #6b7280; white-space: nowrap; }
+    .w-brief { display: flex; gap: 8px; align-items: flex-start; background: linear-gradient(135deg,#F0FDF4 0%,#F6FFFB 100%); border: 1px solid #C8F0DA; border-radius: 12px; padding: 8px 10px; margin-bottom: 8px; }
+    .w-brief img { flex: 0 0 auto; width: 28px; height: 28px; border-radius: 50%; object-fit: cover; object-position: center; background: #fff; border: 1px solid #D6F1E2; }
+    .w-brief .t { font-size: 11.5px; font-weight: 700; color: #134E3A; line-height: 1.45; }
+    .w-brief .t b { color: #04724D; font-weight: 900; }
+
+    .card { background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 13px; padding: 9px 10px; margin-bottom: 7px; }
+    .card-h { display: flex; justify-content: space-between; align-items: center; gap: 6px; margin-bottom: 6px; }
+    .card-h .t { font-size: 11.5px; font-weight: 900; color: #374151; }
+    .stamp { font-size: 9.5px; font-weight: 800; color: #047857; background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 999px; padding: 1px 6px; white-space: nowrap; }
+    .stamp.gray { color: #6b7280; background: #f3f4f6; border-color: #e5e7eb; }
+    .stamp.blue { color: #1d4ed8; background: #eff6ff; border-color: #bfdbfe; }
+    .note { font-size: 10px; color: #6b7280; font-weight: 700; margin-top: 5px; line-height: 1.35; }
+
+    .wx-row { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }
+    .wx-col { background: #fff; border: 1px solid #e8eef5; border-radius: 10px; padding: 7px 8px; }
+    .wx-name { font-size: 11px; font-weight: 900; color: #1f2937; display: flex; justify-content: space-between; align-items: center; }
+    .wx-sky { font-size: 9.5px; font-weight: 700; color: #6b7280; }
+    .wx-temp { font-size: 25px; font-weight: 900; color: #0f172a; line-height: 1.05; margin: 2px 0 1px; letter-spacing: -0.5px; }
+    .wx-temp b { font-size: 25px; font-weight: 900; color: #0f172a; }
+    .wx-temp span { font-size: 13px; font-weight: 800; color: #64748b; margin-left: 1px; }
+    .wx-line { font-size: 10.5px; color: #374151; font-weight: 700; line-height: 1.4; }
+    .wx-line b { font-weight: 900; color: #111827; }
+    .wx-pm { font-size: 10px; font-weight: 800; margin-top: 3px; line-height: 1.35; }
+
+    .mini { position: relative; }
+    .mini .lbl { font-size: 10.5px; font-weight: 900; color: #6b7280; margin-bottom: 2px; }
+    .big { font-size: 19px; font-weight: 900; letter-spacing: -0.5px; color: #0f172a; line-height: 1.15; }
+    .big.sm { font-size: 17px; }
+    .chg { font-size: 11.5px; font-weight: 900; margin-top: 1px; }
+    .sub { font-size: 10px; font-weight: 700; color: #6b7280; margin-top: 3px; line-height: 1.35; }
+    .up { color: #dc2626; }
+    .down { color: #2563eb; }
+    .flat { color: #4b5563; }
+
+    .row { display: flex; justify-content: space-between; align-items: baseline; gap: 6px; padding: 3px 0; border-top: 1px dashed #e5e7eb; }
+    .row:first-of-type { border-top: 0; }
+    .row .n { font-size: 11px; font-weight: 900; color: #374151; }
+    .row .v { font-size: 12px; font-weight: 900; color: #0f172a; font-variant-numeric: tabular-nums; }
+    .row .r { font-size: 10.5px; font-weight: 900; margin-left: 4px; white-space: nowrap; }
+
+    .check { background: #eff6ff; border-color: #bfdbfe; }
+    .check .card-h .t { color: #1d4ed8; }
+    .chk { display: flex; gap: 6px; align-items: flex-start; font-size: 11px; color: #1e3a8a; font-weight: 700; line-height: 1.45; padding: 2px 0; }
+    .chk b { font-weight: 900; color: #172554; }
+    .chk .tm { flex: 0 0 auto; font-size: 10px; font-weight: 900; color: #fff; background: #2563eb; border-radius: 5px; padding: 1px 4px; margin-top: 1px; }
+
+    .post { display: block; padding: 5px 0; border-top: 1px dashed #e5e7eb; }
+    .post:first-of-type { border-top: 0; padding-top: 1px; }
+    .post .tag { display: inline-block; font-size: 9px; font-weight: 900; border-radius: 4px; padding: 1px 4px; margin-right: 4px; vertical-align: 1px; }
+    .post .tag.t { color: #b91c1c; background: #fef2f2; border: 1px solid #fecaca; }
+    .post .tag.n { color: #047857; background: #ecfdf5; border: 1px solid #a7f3d0; }
+    .post .tag.m { color: #6d28d9; background: #f5f3ff; border: 1px solid #ddd6fe; }
+    .post .tag.y { color: #b91c1c; background: #fff1f2; border: 1px solid #fecdd3; }
+    .post .pt { font-size: 11px; font-weight: 800; color: #111827; line-height: 1.4; }
+    .post .pd { font-size: 9.5px; color: #9ca3af; font-weight: 700; margin-top: 1px; }
+
     .w-links { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; margin-top: 7px; }
     .w-btn { display: block; text-align: center; background: #f3f4f6; border: 1px solid #e5e7eb; border-radius: 9px; padding: 6px 4px; font-size: 10.5px; font-weight: 800; color: #1f2937; }
     .w-btn.green { background: #ecfdf5; border-color: #a7f3d0; color: #047857; }
     .w-btn.red { background: #fef2f2; border-color: #fecaca; color: #b91c1c; }
-    .w-brief { display: flex; gap: 8px; align-items: flex-start; background: linear-gradient(135deg,#F0FDF4 0%,#F6FFFB 100%); border: 1px solid #C8F0DA; border-radius: 12px; padding: 8px 10px; margin-bottom: 7px; }
-    .w-brief img { flex: 0 0 auto; width: 30px; height: 30px; border-radius: 50%; object-fit: cover; object-position: center; background: #fff; border: 1px solid #D6F1E2; }
-    .w-brief .t { font-size: 11px; font-weight: 700; color: #134E3A; line-height: 1.45; }
-    .w-brief .t b { color: #04724D; font-weight: 900; }
+    .src { font-size: 9px; color: #9ca3af; font-weight: 700; margin-top: 5px; }
   </style>
 </head>
 <body>
@@ -40,63 +84,132 @@
     </div>
 
     <div class="w-brief">
-      <img src="./mippeul-avatar.png" alt="" aria-hidden="true" width="30" height="30" loading="lazy" decoding="async">
-      <div class="t" id="wGreet">오늘 하루도 좋은 하루예요. 날씨·일정·수익은 아래 타일에서 바로 확인하세요.</div>
+      <img src="./mippeul-avatar.png" alt="" aria-hidden="true" width="28" height="28" loading="lazy" decoding="async">
+      <div class="t" id="wGreet">오늘 날씨·증시·환율·비트코인 수치를 이 화면에서 바로 볼 수 있어요.</div>
     </div>
 
-    <div class="w-grid">
-      <a class="w-tile" href="https://simsangguk-jpg.github.io/" target="_blank" rel="noopener noreferrer">
-        <div class="w-lbl">📅 오늘 일정 (누르면 포털)</div>
-        <div class="w-val">포털에서 확인</div>
-        <div class="w-sub">근무표·할일·요약은 잠금 해제 뒤 포털에서 보여요</div>
-      </a>
-
-      <a class="w-tile" href="https://weather.naver.com/" target="_blank" rel="noopener noreferrer">
-        <div class="w-lbl">🌥️ 오늘 날씨 ↗</div>
-        <div class="w-val">우리 동네 날씨</div>
-        <div class="w-sub">기온·강수·미세먼지 바로 보기</div>
-      </a>
-
-      <a class="w-tile w-full" href="https://calendar.google.com/" target="_blank" rel="noopener noreferrer">
-        <div class="w-lbl">⏰ 오늘 일정 (누르면 캘린더)</div>
-        <div class="w-val" style="font-size:12px;">가족 일정은 포털 요약에서 한 번에</div>
-        <div class="w-sub">일정·기념일은 로그인한 포털 안에서만 표시됩니다</div>
-      </a>
-
-      <a class="w-tile w-full w-tip" href="https://simsangguk-jpg.github.io/" target="_blank" rel="noopener noreferrer">
-        <div class="w-lbl" style="color:#1d4ed8;">✅ 오늘 할일 (터치 시 포털 체크리스트)</div>
-        <div class="w-sub" style="margin-top:0;color:#1e3a8a;font-weight:700;">
-          • 포털에 적어 둔 오늘 할일·준비물을 확인해요<br>
-          • 한파엔 겉옷·장갑을 챙기고, 물 한 잔으로 시작해요
+    <!-- 날씨 -->
+    <div class="card">
+      <div class="card-h">
+        <div class="t">🌤️ 오늘 날씨 · 미세먼지</div>
+        <div class="stamp" id="wxStamp">실시간</div>
+      </div>
+      <div class="wx-row">
+        <div class="wx-col">
+          <div class="wx-name"><span>파주</span><span class="wx-sky" id="paSky">대체로 맑음</span></div>
+          <div class="wx-temp"><b id="paT">-1</b><span>℃</span></div>
+          <div class="wx-line">체감 <b id="paF">-2℃</b> · <span id="paRange">-3 ~ 5℃</span></div>
+          <div class="wx-line">강수 <b id="paRain">0%</b> · 습도 66%</div>
+          <div class="wx-pm" id="paPm">PM10 33 보통 · PM2.5 15 좋음</div>
         </div>
-      </a>
-
-      <a class="w-tile w-full w-money" href="https://adsense.google.com/" target="_blank" rel="noopener noreferrer">
-        <div class="w-lbl" style="color:#047857;">💰 수익 현황 (누르면 애드센스)</div>
-        <div class="w-val" style="font-size:12px;">잔액·지급 일정은 애드센스에서 확인</div>
-        <div class="w-sub" style="color:#065f46;font-weight:700;">금액은 이 화면에 남기지 않아요</div>
-      </a>
-
-      <a class="w-tile" href="https://finance.naver.com/" target="_blank" rel="noopener noreferrer">
-        <div class="w-lbl">📈 증시 · 환율 ↗</div>
-        <div class="w-val" style="font-size:12px;">지금 시세 보기</div>
-        <div class="w-sub">코스피·코스닥·환율은 열어서 확인</div>
-      </a>
-
-      <a class="w-tile" href="https://upbit.com/" target="_blank" rel="noopener noreferrer">
-        <div class="w-lbl">🪙 비트코인 ↗</div>
-        <div class="w-val" style="font-size:12px;">시세 보기</div>
-        <div class="w-sub">업비트에서 실시간 확인</div>
-      </a>
-
-      <div class="w-tile w-full">
-        <div class="w-lbl">✍️ 최신 발행 콘텐츠 (터치 시 이동)</div>
-        <div class="w-sub" style="margin-top:0;color:#111827;font-weight:700;line-height:1.45;">
-          • <a href="https://feelyour15.tistory.com" target="_blank" rel="noopener noreferrer">티스토리 최신 글 ↗</a><br>
-          • <a href="https://blog.naver.com/simsangguk" target="_blank" rel="noopener noreferrer">네이버 블로그 ↗</a><br>
-          • <a href="https://www.youtube.com/@%EB%AF%B8%EC%81%A0-f2x/shorts" target="_blank" rel="noopener noreferrer">유튜브 쇼츠 ↗</a>
+        <div class="wx-col">
+          <div class="wx-name"><span>연천</span><span class="wx-sky" id="ycSky">맑음</span></div>
+          <div class="wx-temp"><b id="ycT">-3</b><span>℃</span></div>
+          <div class="wx-line">체감 <b id="ycF">-3℃</b> · <span id="ycRange">-4 ~ 3℃</span></div>
+          <div class="wx-line">강수 <b id="ycRain">0%</b> · 습도 64%</div>
+          <div class="wx-pm" id="ycPm">PM10 29 좋음 · PM2.5 18 보통</div>
         </div>
       </div>
+      <div class="note" id="wxNote">아침 체감 영하 3~8℃ · 한파라 겉옷·장갑 챙기세요. 일몰 17:19.</div>
+      <div class="src" id="wxSrc">Apple Weather · AirKorea 07:00 관측</div>
+    </div>
+
+    <!-- 오늘 체크 -->
+    <div class="card check">
+      <div class="card-h">
+        <div class="t">📌 오늘 핵심 체크</div>
+        <div class="stamp blue">11/19(목)</div>
+      </div>
+      <div class="chk"><span class="tm">수능</span><span><b>2027학년도 수능일</b> — 08:10까지 입실, 08:40 1교시 시작 · 전국 1,300여 시험장 55만 2천명 응시</span></div>
+      <div class="chk"><span class="tm">08:30</span><span>시험장 주변 정체 · <b>위급재난문자</b>와 교통 안내 확인, 08:40 이후 출근길 여유 있게</span></div>
+      <div class="chk"><span class="tm">14:00</span><span><b>예스24 네이버페이 보너스 마감</b> — 오늘 14시까지 사용</span></div>
+      <div class="chk"><span class="tm">한파</span><span>아침 체감 <b>-3 ~ -8℃</b> · 겉옷·장갑, 차량 성에 제거하고 출발</span></div>
+    </div>
+
+    <!-- 국내 증시 + 환율 -->
+    <div class="wx-row" style="margin-bottom:7px;">
+      <div class="card mini" style="margin-bottom:0;">
+        <div class="lbl">📈 코스피</div>
+        <div class="big">5,067.44</div>
+        <div class="chg up">▲ 1.99% (+98.96)</div>
+        <div class="sub">11/18 종가</div>
+      </div>
+      <div class="card mini" style="margin-bottom:0;">
+        <div class="lbl">📈 코스닥</div>
+        <div class="big">662.81</div>
+        <div class="chg up">▲ 1.96% (+12.75)</div>
+        <div class="sub">11/18 종가</div>
+      </div>
+    </div>
+
+    <div class="wx-row" style="margin-bottom:7px;">
+      <div class="card mini" style="margin-bottom:0;">
+        <div class="lbl">💱 원/달러</div>
+        <div class="big">1,334.00</div>
+        <div class="chg down">▼ 0.11% (-1.50)</div>
+        <div class="sub">11/18 기준 · 1달러</div>
+      </div>
+      <div class="card mini" style="margin-bottom:0;">
+        <div class="lbl">🇺🇸 나스닥</div>
+        <div class="big">24,429.88</div>
+        <div class="chg up">▲ 0.42% (+101.51)</div>
+        <div class="sub">11/18 마감</div>
+      </div>
+    </div>
+
+    <!-- 미국 증시 -->
+    <div class="card">
+      <div class="card-h">
+        <div class="t">🇺🇸 미국 증시</div>
+        <div class="stamp gray">11/18 마감</div>
+      </div>
+      <div class="row"><span class="n">S&amp;P 500</span><span><span class="v">7,323.63</span><span class="r down">▼ 0.23%</span></span></div>
+      <div class="row"><span class="n">다우존스</span><span><span class="v">50,198.17</span><span class="r down">▼ 1.11%</span></span></div>
+      <div class="row"><span class="n">나스닥</span><span><span class="v">24,429.88</span><span class="r up">▲ 0.42%</span></span></div>
+      <div class="note">국내 증시는 오늘 수능일이라 <b>10:00 개장 · 16:30 마감</b>입니다.</div>
+    </div>
+
+    <!-- 비트코인 -->
+    <div class="card">
+      <div class="card-h">
+        <div class="t">🪙 비트코인 (업비트 원화)</div>
+        <div class="stamp" id="btcStamp">실시간</div>
+      </div>
+      <div style="display:flex; align-items:flex-end; justify-content:space-between; gap:8px;">
+        <div>
+          <div class="big sm" id="btcBig">8,483만원</div>
+          <div class="sub" id="btcSub">84,832,000원 · 전일 대비 ▼ 3.97%</div>
+        </div>
+        <div class="chg down" id="btcChg" style="font-size:14px;">▼ 3.97%</div>
+      </div>
+      <div class="row" style="margin-top:5px;"><span class="n">오늘 고가</span><span class="v" id="btcHigh">88,347,000원</span></div>
+      <div class="row"><span class="n">오늘 저가</span><span class="v" id="btcLow">84,669,000원</span></div>
+      <div class="row"><span class="n">전일 종가</span><span class="v" id="btcPrev">88,341,000원</span></div>
+      <div class="note">52주 최고 1억 4,305만원(1/14) · 저가 8,466만원(11/18)</div>
+    </div>
+
+    <!-- 최신 글 -->
+    <div class="card">
+      <div class="card-h">
+        <div class="t">✍️ 최신 발행 글 · 쇼츠</div>
+        <div class="stamp gray">누르면 이동</div>
+      </div>
+      <a class="post" href="https://blog.naver.com/simsangguk/224482903098" target="_blank" rel="noopener noreferrer">
+        <div class="pt"><span class="tag n">네이버</span>다이소 1,000원 각도 조절 유리창닦이, 45도와 25cm의 진실 (품번 1035921)</div>
+        <div class="pd">소통의 살림</div>
+      </a>
+      <a class="post" href="https://feelyour15.tistory.com/186" target="_blank" rel="noopener noreferrer">
+        <div class="pt"><span class="tag t">티스토리</span>삼성 AI 안경 '인텔리전트 아이웨어' 총정리 — 65만원·41g·9시간</div>
+        <div class="pd">#186 · 11/18</div>
+      </a>
+      <a class="post" href="https://feelyour20.tistory.com/19" target="_blank" rel="noopener noreferrer">
+        <div class="pt"><span class="tag m">만남의 광장</span>문무 명장면·명대사 — 칼을 휘두른다고 강한 것이 아닙니다</div>
+        <div class="pd">#19 · 11/18</div>
+      </a>
+      <a class="post" href="https://www.youtube.com/shorts/zlSqbLH_kuw" target="_blank" rel="noopener noreferrer">
+        <div class="pt"><span class="tag y">쇼츠</span>삼성 AI 안경 37초 요약 (여성 아나운서 음성)</div>
+        <div class="pd">유튜브 @미쁠</div>
+      </a>
     </div>
 
     <div class="w-links">
@@ -112,19 +225,128 @@
   </div>
 
   <script>
-    /* 이 위젯은 개인 정보를 담지 않는다 — 날짜·인사말만 화면에서 계산한다. */
-    var now = new Date();
-    var days = ['일','월','화','수','목','금','토'];
-    document.getElementById('wDate').textContent =
-      (now.getMonth() + 1) + '.' + now.getDate() + '(' + days[now.getDay()] + ') ' +
-      String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
-    var h = now.getHours();
-    var greet = h < 5 ? '늦은 시간까지 수고 많으세요. 오늘 하루도 편안하게 마무리해요.'
-      : h < 11 ? '좋은 아침이에요. 오늘 날씨와 일정을 아래 타일에서 확인하세요.'
-      : h < 17 ? '점심 잘 보내고 계신가요? 날씨·일정은 아래 타일에서 바로 볼 수 있어요.'
-      : h < 22 ? '오늘 하루도 수고하셨어요. 내일 일정과 수익 현황을 확인해 보세요.'
-      : '편안한 저녁 보내세요. 내일 날씨와 일정을 미리 확인해 두면 좋아요.';
-    document.getElementById('wGreet').textContent = greet;
+  (function () {
+    /* 이 위젯은 개인 실명·주소·연락처·개인 수익 금액을 담지 않습니다.
+       화면의 수치는 2026-11-19 07:50 실측 스냅샷이고, 날씨와 비트코인은 열 때마다 공개 API로 갱신합니다. */
+    var $ = function (id) { return document.getElementById(id); };
+    var DAYS = ['일', '월', '화', '수', '목', '금', '토'];
+
+    /* ---- 시계 ---- */
+    function tickClock() {
+      var n = new Date();
+      $('wDate').textContent =
+        (n.getMonth() + 1) + '.' + n.getDate() + '(' + DAYS[n.getDay()] + ') ' +
+        String(n.getHours()).padStart(2, '0') + ':' + String(n.getMinutes()).padStart(2, '0');
+    }
+    tickClock();
+    setInterval(tickClock, 30000);
+
+    /* ---- 인사말 ---- */
+    (function greet() {
+      var h = new Date().getHours();
+      var txt;
+      if (h < 5) txt = '늦은 시간까지 수고 많으세요. 아래 수치는 실시간으로 갱신되고 있어요.';
+      else if (h < 11) txt = '<b>수능일 아침</b>이에요. 체감 -3~-8℃ 한파니 겉옷·장갑 챙기고, <b>14:00 예스24 보너스 마감</b>도 잊지 마세요.';
+      else if (h < 17) txt = '점심 잘 보내고 계신가요? 날씨·증시·환율·비트코인 수치를 이 화면에서 바로 보세요.';
+      else if (h < 22) txt = '오늘 하루도 수고하셨어요. 저녁 수치와 새 글이 아래에 바로 떠 있어요.';
+      else txt = '편안한 저녁 보내세요. 내일 날씨와 수치는 열 때마다 새로 갱신돼요.';
+      $('wGreet').innerHTML = txt;
+    })();
+
+    /* ---- 공통 fetch (5초 타임아웃, 실패하면 스냅샷 유지) ---- */
+    function getJSON(url) {
+      return new Promise(function (resolve, reject) {
+        var ctl = window.AbortController ? new AbortController() : null;
+        var timer = setTimeout(function () { if (ctl) ctl.abort(); reject(new Error('timeout')); }, 6000);
+        fetch(url, ctl ? { signal: ctl.signal, cache: 'no-store' } : { cache: 'no-store' })
+          .then(function (r) { clearTimeout(timer); if (!r.ok) throw new Error('http ' + r.status); return r.json(); })
+          .then(resolve)
+          .catch(function (e) { clearTimeout(timer); reject(e); });
+      });
+    }
+
+    function sky(code) {
+      if (code === 0) return '맑음';
+      if (code === 1 || code === 2) return '대체로 맑음';
+      if (code === 3) return '흐림';
+      if (code === 45 || code === 48) return '안개';
+      if (code >= 51 && code <= 57) return '이슬비';
+      if (code >= 61 && code <= 67) return '비';
+      if (code >= 71 && code <= 77) return '눈';
+      if (code >= 80 && code <= 82) return '소나기';
+      if (code >= 85 && code <= 86) return '눈';
+      if (code >= 95) return '뇌우';
+      return '';
+    }
+
+    var WX = [
+      { key: 'pa', lat: 37.7599, lon: 126.7801 },
+      { key: 'yc', lat: 38.0966, lon: 127.0749 }
+    ];
+
+    function refreshWeather() {
+      var url = 'https://api.open-meteo.com/v1/forecast?latitude=' +
+        WX.map(function (w) { return w.lat; }).join(',') + '&longitude=' +
+        WX.map(function (w) { return w.lon; }).join(',') +
+        '&current=temperature_2m,apparent_temperature,weather_code' +
+        '&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max' +
+        '&timezone=Asia%2FSeoul&forecast_days=1';
+      getJSON(url).then(function (res) {
+        var list = Array.isArray(res) ? res : [res];
+        var okAt = '';
+        list.forEach(function (d, i) {
+          var w = WX[i]; if (!w || !d || !d.current) return;
+          var c = d.current, day = d.daily || {};
+          var t = Math.round(c.temperature_2m);
+          var f = Math.round(c.apparent_temperature);
+          var lo = day.temperature_2m_min ? Math.round(day.temperature_2m_min[0]) : null;
+          var hi = day.temperature_2m_max ? Math.round(day.temperature_2m_max[0]) : null;
+          var rain = (day.precipitation_probability_max || [])[0];
+          $(w.key + 'T').textContent = t;
+          $(w.key + 'F').textContent = f + '℃';
+          if (lo !== null && hi !== null) $(w.key + 'Range').textContent = lo + ' ~ ' + hi + '℃';
+          if (rain !== undefined && rain !== null) $(w.key + 'Rain').textContent = rain + '%';
+          var s = sky(c.weather_code); if (s) $(w.key + 'Sky').textContent = s;
+          if (c.time && !okAt) okAt = c.time.slice(11, 16);
+        });
+        $('wxStamp').textContent = okAt ? okAt + ' 실시간' : '실시간';
+        $('wxSrc').textContent = 'Open-Meteo 실시간' + (okAt ? ' ' + okAt : '') + ' · 미세먼지는 AirKorea 07:00 관측';
+      }).catch(function () {
+        $('wxStamp').textContent = '07:50 기준';
+      });
+    }
+
+    /* ---- 비트코인 (업비트 공개 API) ---- */
+    function won(n) { return Math.round(n).toLocaleString('ko-KR'); }
+
+    function refreshBtc() {
+      getJSON('https://api.upbit.com/v1/ticker?markets=KRW-BTC').then(function (d) {
+        var t = d && d[0]; if (!t) return;
+        var p = t.trade_price, prev = t.prev_closing_price;
+        var rate = (t.signed_change_rate || 0) * 100;
+        var up = rate > 0, down = rate < 0;
+        var man = Math.round(p / 10000);
+        $('btcBig').textContent = man.toLocaleString('ko-KR') + '만원';
+        $('btcSub').textContent = won(p) + '원 · 전일 대비 ' + (up ? '▲ ' : down ? '▼ ' : '') + Math.abs(rate).toFixed(2) + '%';
+        var chg = $('btcChg');
+        chg.textContent = (up ? '▲ ' : down ? '▼ ' : '– ') + Math.abs(rate).toFixed(2) + '%';
+        chg.className = 'chg ' + (up ? 'up' : down ? 'down' : 'flat');
+        $('btcHigh').textContent = won(t.high_price) + '원';
+        $('btcLow').textContent = won(t.low_price) + '원';
+        $('btcPrev').textContent = won(prev) + '원';
+        var n = new Date();
+        $('btcStamp').textContent = String(n.getHours()).padStart(2, '0') + ':' + String(n.getMinutes()).padStart(2, '0') + ' 실시간';
+      }).catch(function () {});
+    }
+
+    refreshWeather();
+    refreshBtc();
+    setInterval(refreshBtc, 5 * 60 * 1000);
+    setInterval(refreshWeather, 15 * 60 * 1000);
+    document.addEventListener('visibilitychange', function () {
+      if (!document.hidden) { refreshWeather(); refreshBtc(); }
+    });
+  })();
   </script>
 </body>
 </html>
