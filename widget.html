@@ -92,7 +92,7 @@
     <div class="card">
       <div class="card-h">
         <div class="t">🌤️ 오늘 날씨 · 미세먼지</div>
-        <div class="stamp" id="wxStamp">실시간</div>
+        <div class="stamp" id="wxStamp">불러오는 중</div>
       </div>
       <div class="wx-row">
         <div class="wx-col">
@@ -173,7 +173,7 @@
     <div class="card">
       <div class="card-h">
         <div class="t">🪙 비트코인 (업비트 원화)</div>
-        <div class="stamp" id="btcStamp">실시간</div>
+        <div class="stamp" id="btcStamp">불러오는 중</div>
       </div>
       <div style="display:flex; align-items:flex-end; justify-content:space-between; gap:8px;">
         <div>
@@ -336,7 +336,7 @@
         $('btcPrev').textContent = won(prev) + '원';
         var n = new Date();
         $('btcStamp').textContent = String(n.getHours()).padStart(2, '0') + ':' + String(n.getMinutes()).padStart(2, '0') + ' 실시간';
-      }).catch(function () {});
+      }).catch(function () { $('btcStamp').textContent = '07:50 기준'; });
     }
 
     refreshWeather();
