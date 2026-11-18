@@ -2,5 +2,23 @@
 <html lang="ko"><head><meta charset="utf-8"><title>viewport test</title>
 <style>html,body{margin:0;background:#e9edf2}iframe{border:0;display:block;margin:0 auto;background:#fff}</style>
 </head><body>
-<iframe src="./?v=1119e" width="390" height="844"></iframe>
+<iframe id="fr" src="./?v=1119e" width="390" height="844"></iframe>
+<script>
+document.getElementById('fr').addEventListener('load', function () {
+  var w = this.contentWindow;
+  setTimeout(function () {
+    try { if (w._sgV34 && w._sgV34.sel) w._sgV34.sel('2026-11-17'); } catch (e) {}
+    setTimeout(function () {
+      try {
+        var d = w.document;
+        var all = d.querySelectorAll('button[data-d], .sg-route-dates button');
+        for (var i = 0; i < all.length; i++) if (all[i].textContent.indexOf('11/17') >= 0) { all[i].click(); break; }
+      } catch (e) {}
+      setTimeout(function () {
+        try { w.document.getElementById('sgTravelMapCard').scrollIntoView({ block: 'start' }); } catch (e) {}
+      }, 400);
+    }, 500);
+  }, 2500);
+});
+</script>
 </body></html>
