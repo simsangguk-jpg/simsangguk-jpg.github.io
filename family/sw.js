@@ -1,10 +1,10 @@
-/* 상국수향지섭지율포털 Service Worker · V10 (2026-11-17 · V10 프리미엄 UI/정보구조 개편)
+/* 우리가족포털 Service Worker · V10d (2026-11-18 · 평문 개인정보 정리 배포)
    - /family/ 범위만 담당한다(상국포털 본체 캐시와 섞이지 않게 별도 캐시 이름 사용)
    - install 단계에서 확장 모듈 + v10.css/v10.js 까지 모두 프리캐시한다
    - 화면(HTML)은 네트워크 우선: 새로 배포한 내용이 앱에서도 바로 뜨도록
    - 그 밖의 정적 파일은 네트워크 우선, 실패 시 캐시
 */
-const SW_VERSION = 'family-portal-v10c-2026-11-17';
+const SW_VERSION = 'family-portal-v10d-2026-11-18';
 const OFFLINE_HTML = new URL('index.html', self.registration.scope).href;
 const PRECACHE = [
   './',

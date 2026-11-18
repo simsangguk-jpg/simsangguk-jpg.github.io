@@ -1,8 +1,8 @@
 /* ============================================================
-   상국수향지섭지율포털 · V3 🧸 가족 놀이터 (Three.js r128)
-   - 속초 바닷가 가족사진을 참고해 만든 3D 입체 가족 캐릭터 4명
-     (상국: 안경·남색 패딩 / 수향: 긴 머리·따뜻한 니트
-      지섭: 검정 코트 / 지율: 아이보리 패딩·조끼)
+   우리가족포털 · V3 🧸 가족 놀이터 (Three.js r128)
+   - 가족사진을 참고해 만든 3D 입체 가족 캐릭터 4명
+     (아빠: 안경·남색 패딩 / 엄마: 긴 머리·따뜻한 니트
+      첫째: 검정 코트 / 둘째: 아이보리 패딩·조끼)
    - 평소: 걷기·달리기·점프·빙글·서로 인사·웃기
    - 마우스/손가락으로 집어 던지면: 중력·포물선·바운스·구르기
      → 툴툴 털고 일어나기, 착지가 아프면 울상(눈물)
@@ -249,7 +249,7 @@ function spriteTex(kind) {
     g.fillStyle = '#8A6242';
     g.font = 'bold 34px -apple-system,"Malgun Gothic",sans-serif';
     g.textAlign = 'center'; g.textBaseline = 'middle';
-    g.fillText('속초', S / 2, S / 2 - 12);
+    g.fillText('바다', S / 2, S / 2 - 12);
     g.font = 'bold 19px -apple-system,"Malgun Gothic",sans-serif';
     g.fillText('우리 가족', S / 2, S / 2 + 22);
   }
@@ -358,7 +358,7 @@ function buildWorld(scene) {
   uGrp.rotation.z = 0.12;
   root.add(uGrp);
 
-  /* 속초 표지판 */
+  /* 바다 표지판 */
   var signGrp = new THREE.Group();
   var sp1 = new THREE.Mesh(geo('sp1', function () { return new THREE.CylinderGeometry(0.045, 0.045, 0.9, 8); }), mat(0x8A6242));
   sp1.position.y = 0.45;
@@ -419,25 +419,25 @@ function buildWorld(scene) {
 /* ---------------- 캐릭터 ---------------- */
 var CAST = [
   {
-    key: 'sangguk', name: '상국', role: '아빠', scale: 1.06, girth: 1.08,
+    key: 'dad', name: '아빠', role: '아빠', scale: 1.06, girth: 1.08,
     skin: 0xF0C6A0, hair: 0x241C18, hairStyle: 'short',
     top: 0x24314E, topAlt: 0x1A2439, inner: 0x8D939C, bottom: 0x2E3440, shoe: 0x14161A,
     style: 'puffer', glasses: true, x: -1.65, z: 0.35
   },
   {
-    key: 'suhyang', name: '수향', role: '엄마', scale: 0.98, girth: 0.96,
+    key: 'mom', name: '엄마', role: '엄마', scale: 0.98, girth: 0.96,
     skin: 0xF6D2B6, hair: 0x2C211B, hairStyle: 'long',
     top: 0xE7BFA4, topAlt: 0xD8AB8E, inner: 0xF8E9DA, bottom: 0x6B5C52, shoe: 0x3A3532,
     style: 'knit', x: -0.5, z: -0.25
   },
   {
-    key: 'jiseop', name: '지섭', role: '첫째아들', scale: 1.01, girth: 0.98,
+    key: 'kid1', name: '첫째', role: '첫째아들', scale: 1.01, girth: 0.98,
     skin: 0xF3CBA8, hair: 0x201A18, hairStyle: 'neat',
     top: 0x1A1C21, topAlt: 0x101216, inner: 0xB9BEC6, bottom: 0x202227, shoe: 0x131417,
     style: 'coat', x: 0.6, z: 0.25
   },
   {
-    key: 'jiyul', name: '지율', role: '둘째아들', scale: 0.84, girth: 1.04,
+    key: 'kid2', name: '둘째', role: '둘째아들', scale: 0.84, girth: 1.04,
     skin: 0xF8D7BD, hair: 0x4B3627, hairStyle: 'bowl',
     top: 0xF5F2EC, topAlt: 0x1C1F25, inner: 0xFFFFFF, bottom: 0xE6E6E3, shoe: 0xF8F8F6,
     style: 'vest', x: 1.7, z: -0.25
@@ -692,7 +692,7 @@ function buildCharacter(cfg) {
     head.add(tuft2);
   }
 
-  /* 안경(상국) */
+  /* 안경(아빠) */
   if (cfg.glasses) {
     var gGrp = new THREE.Group();
     var lensGeo = geo('lens', function () { return new THREE.TorusGeometry(0.086, 0.014, 8, 22); });
@@ -737,7 +737,7 @@ function buildCharacter(cfg) {
 
 /* ============================================================
    V4 · 악세사리(모자·안경·가방·옷 색) — 포인트 상점과 연결
-   setLook({sangguk:{hat:'cap',glass:'sun',bag:'pack',color:'#FF8FAB'}, ...})
+   setLook({dad:{hat:'cap',glass:'sun',bag:'pack',color:'#FF8FAB'}, ...})
    ============================================================ */
 var LOOK = {};
 
@@ -902,10 +902,10 @@ var SAY = {
     dance: ['신난다!', '흔들흔들~'],
     jump: ['점프!', '얍!']
   },
-  sangguk: { pet: ['하하, 좋아!', '아빠가 웃는다'], hello: ['어, 왔니?', '얘들아 안녕'], wave: ['아빠 왔다~'], fly: ['아빠가 난다!'], cry: ['허리야…'], cheer: ['우리 가족 최고!'], up: ['아빠는 튼튼해'] },
-  suhyang: { pet: ['어머, 고마워~', '히히'], hello: ['얘들아 왔구나', '밥 먹자~'], wave: ['여기 있어요~'], fly: ['살랑살랑~'], cry: ['아이쿠야…'], cheer: ['우리 가족 사랑해!'], up: ['괜찮아요~'] },
-  jiseop: { pet: ['ㅋㅋ 좋아', '또 해줘'], hello: ['어 왔어?', '뭐 해'], wave: ['안녕'], fly: ['날아간다!!'], cry: ['아 진짜…'], cheer: ['최고!'], up: ['ㅋㅋ 괜찮아'] },
-  jiyul: { pet: ['히히! 또! 또!', '간지러워~'], hello: ['형~ 아빠~', '엄마~ 같이 놀자!', '형아 놀자!'], wave: ['안녕안녕!'], fly: ['으아아~ 신난다!'], cry: ['엉엉 으앙'], cheer: ['최고야!!'], up: ['나는 씩씩해!'] }
+  dad: { pet: ['하하, 좋아!', '아빠가 웃는다'], hello: ['어, 왔니?', '얘들아 안녕'], wave: ['아빠 왔다~'], fly: ['아빠가 난다!'], cry: ['허리야…'], cheer: ['우리 가족 최고!'], up: ['아빠는 튼튼해'] },
+  mom: { pet: ['어머, 고마워~', '히히'], hello: ['얘들아 왔구나', '밥 먹자~'], wave: ['여기 있어요~'], fly: ['살랑살랑~'], cry: ['아이쿠야…'], cheer: ['우리 가족 사랑해!'], up: ['괜찮아요~'] },
+  kid1: { pet: ['ㅋㅋ 좋아', '또 해줘'], hello: ['어 왔어?', '뭐 해'], wave: ['안녕'], fly: ['날아간다!!'], cry: ['아 진짜…'], cheer: ['최고!'], up: ['ㅋㅋ 괜찮아'] },
+  kid2: { pet: ['히히! 또! 또!', '간지러워~'], hello: ['형~ 아빠~', '엄마~ 같이 놀자!', '형아 놀자!'], wave: ['안녕안녕!'], fly: ['으아아~ 신난다!'], cry: ['엉엉 으앙'], cheer: ['최고야!!'], up: ['나는 씩씩해!'] }
 };
 function say(c, kind) {
   var pool = (SAY[c.key] && SAY[c.key][kind]) || SAY.common[kind] || ['!'];

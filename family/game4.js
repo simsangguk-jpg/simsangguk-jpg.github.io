@@ -1,5 +1,5 @@
 /* ============================================================
-   상국수향지섭지율포털 V4 · 놀이 확장 (game4.js)
+   우리가족포털 V4 · 놀이 확장 (game4.js)
    🥚 다마고치·RPG 육성   🃏 일기 포켓몬 카드   🧮 수학·영어 퀴즈
    🛍️ 포인트 상점·악세사리 선물·교환(3D 반영)   🎋 가족 윷놀이
    - V14: 미니룸(🛏️ 마이룸)과 2D 다마고치는 '🥚 3D 다마고치 · 내 방'(tama3d.js)으로
@@ -820,21 +820,17 @@
   /* ============================================================
      3D 캐릭터에 악세사리 반영
      ============================================================ */
+  /* 구성원 역할 → 3D 캐릭터 키. 이름을 코드에 두지 않고 역할만으로 잇는다. */
   function key3dFor(m) {
-    var n = (m && m.name) || '';
-    if (n.indexOf('지율') >= 0) return 'jiyul';
-    if (n.indexOf('지섭') >= 0) return 'jiseop';
-    if (n.indexOf('수향') >= 0) return 'suhyang';
-    if (n.indexOf('상국') >= 0) return 'sangguk';
     switch (m && m.role) {
-      case '아빠': return 'sangguk';
-      case '엄마': return 'suhyang';
-      case '첫째아들': return 'jiseop';
-      case '둘째아들': return 'jiyul';
-      case '아들': return 'jiseop';
-      case '딸': return 'jiyul';
+      case '아빠': return 'dad';
+      case '엄마': return 'mom';
+      case '첫째아들': return 'kid1';
+      case '둘째아들': return 'kid2';
+      case '아들': return 'kid1';
+      case '딸': return 'kid2';
     }
-    return 'sangguk';
+    return 'dad';
   }
   function lookMap() {
     var g = G(), out = {};

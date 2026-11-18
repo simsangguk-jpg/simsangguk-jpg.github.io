@@ -35,66 +35,66 @@
 <body>
   <div class="w-box">
     <div class="w-head">
-      <div class="w-title">🟢 상국포털 스마트 위젯 <span style="font-size:10px;font-weight:700;color:#15803d;">V59 · 11/18 05:52 동기화</span></div>
+      <div class="w-title">🟢 상국포털 스마트 위젯</div>
       <div id="wDate" class="w-time"></div>
     </div>
 
     <div class="w-brief">
       <img src="./mippeul-avatar.png" alt="" aria-hidden="true" width="30" height="30" loading="lazy" decoding="async">
-      <div class="t">오늘 11/18(수) <b>근무 3일차 · 08:00 출근</b> — <b>05:20 기상, 06:08 출발</b>이면 07:40 도착입니다. 아침 <b>연천 3℃·파주 4℃</b>에 오후 5시 이슬비 12~18%, 내일은 <b>수능</b>이라 오전 도로가 붐빕니다.</div>
+      <div class="t" id="wGreet">오늘 하루도 좋은 하루예요. 날씨·일정·수익은 아래 타일에서 바로 확인하세요.</div>
     </div>
 
     <div class="w-grid">
-      <a id="wShiftTile" class="w-tile" href="https://simsangguk-jpg.github.io/" target="_blank" rel="noopener noreferrer">
-        <div class="w-lbl">📅 오늘 교대근무 (누르면 근무표)</div>
-        <div id="wShiftVal" class="w-val">계산 중...</div>
-        <div id="wShiftSub" class="w-sub"></div>
+      <a class="w-tile" href="https://simsangguk-jpg.github.io/" target="_blank" rel="noopener noreferrer">
+        <div class="w-lbl">📅 오늘 일정 (누르면 포털)</div>
+        <div class="w-val">포털에서 확인</div>
+        <div class="w-sub">근무표·할일·요약은 잠금 해제 뒤 포털에서 보여요</div>
       </a>
 
-      <a class="w-tile" href="https://weather.naver.com/today/02480580" target="_blank" rel="noopener noreferrer">
-        <div class="w-lbl">🌥️ 오늘(11/18 수) 파주 날씨 ↗</div>
-        <div class="w-val">🌥️ 흐림 1~10℃ · 현재 4℃</div>
-        <div class="w-sub">17시 이슬비 <b style="color:#1d4ed8;">18%</b> · 미세먼지 <b style="color:#15803d;">보통(PM10 31)</b> · 연천 <b>-2~8℃</b></div>
+      <a class="w-tile" href="https://weather.naver.com/" target="_blank" rel="noopener noreferrer">
+        <div class="w-lbl">🌥️ 오늘 날씨 ↗</div>
+        <div class="w-val">우리 동네 날씨</div>
+        <div class="w-sub">기온·강수·미세먼지 바로 보기</div>
       </a>
 
-      <a class="w-tile w-full" style="background:#fef2f2;border-color:#fecaca;" href="https://calendar.google.com/" target="_blank" rel="noopener noreferrer">
-        <div class="w-lbl" style="color:#dc2626;">⏰ 오늘(11/18 수) 핵심 일정 (누르면 캘린더)</div>
-        <div class="w-val" style="font-size:12px;">• 08:00 출근(합수리검문소) — 06:08 출발 · 07:40 도착</div>
-        <div class="w-sub" style="color:#b91c1c;font-weight:700;">• 수능 D-1(예비소집 10:00) · 엔비디아 실적 06:20 · 11/22 아버님 생신</div>
+      <a class="w-tile w-full" href="https://calendar.google.com/" target="_blank" rel="noopener noreferrer">
+        <div class="w-lbl">⏰ 오늘 일정 (누르면 캘린더)</div>
+        <div class="w-val" style="font-size:12px;">가족 일정은 포털 요약에서 한 번에</div>
+        <div class="w-sub">일정·기념일은 로그인한 포털 안에서만 표시됩니다</div>
       </a>
 
       <a class="w-tile w-full w-tip" href="https://simsangguk-jpg.github.io/" target="_blank" rel="noopener noreferrer">
-        <div class="w-lbl" style="color:#1d4ed8;">✅ 내일 할일 · 꿀정보 (터치 시 체크리스트)</div>
+        <div class="w-lbl" style="color:#1d4ed8;">✅ 오늘 할일 (터치 시 포털 체크리스트)</div>
         <div class="w-sub" style="margin-top:0;color:#1e3a8a;font-weight:700;">
-          • [필수] 08:00 출근(05:20 기상·06:08 출발) · 수능 D-1 준비 · 겨울 외투·우산<br>
-          • [추천] 아나운서 1분 낭독 · 우아한 말하기(유비무환) · 헬스 40분 · 애드센스 잔고 확인
+          • 포털에 적어 둔 오늘 할일·준비물을 확인해요<br>
+          • 날씨에 맞춰 겉옷·우산을 챙기고, 물 한 잔으로 시작해요
         </div>
       </a>
 
       <a class="w-tile w-full w-money" href="https://adsense.google.com/" target="_blank" rel="noopener noreferrer">
         <div class="w-lbl" style="color:#047857;">💰 수익 현황 (누르면 애드센스)</div>
-        <div class="w-val" style="font-size:12px;">애드센스 <b>$98.77</b> · 애드포스트 <b>31,583원</b></div>
-        <div class="w-sub" style="color:#065f46;font-weight:700;">최근 7일 +$2.12 · $100까지 $1.23 · 전환가능 2,083원(12/12 29,500원 지급 예정)</div>
+        <div class="w-val" style="font-size:12px;">잔액·지급 일정은 애드센스에서 확인</div>
+        <div class="w-sub" style="color:#065f46;font-weight:700;">금액은 이 화면에 남기지 않아요</div>
       </a>
 
       <a class="w-tile" href="https://finance.naver.com/" target="_blank" rel="noopener noreferrer">
         <div class="w-lbl">📈 증시 · 환율 ↗</div>
-        <div class="w-val" style="font-size:12px;">코스피 4,968.48 (-2.59%)</div>
-        <div class="w-sub">5,000선 붕괴 · 코스닥 650.06(-2.34%) · 나스닥 24,509.76(-2.49%) · 1,336.20원 · <b>엔비디아 실적 06:20</b></div>
+        <div class="w-val" style="font-size:12px;">지금 시세 보기</div>
+        <div class="w-sub">코스피·코스닥·환율은 열어서 확인</div>
       </a>
 
       <a class="w-tile" href="https://upbit.com/" target="_blank" rel="noopener noreferrer">
         <div class="w-lbl">🪙 비트코인 ↗</div>
-        <div class="w-val" style="font-size:12px;">8,794만 원 (▼0.66%)</div>
-        <div class="w-sub">업비트 11/17 20:32 · 달러 환산 약 $65,800</div>
+        <div class="w-val" style="font-size:12px;">시세 보기</div>
+        <div class="w-sub">업비트에서 실시간 확인</div>
       </a>
 
       <div class="w-tile w-full">
         <div class="w-lbl">✍️ 최신 발행 콘텐츠 (터치 시 이동)</div>
         <div class="w-sub" style="margin-top:0;color:#111827;font-weight:700;line-height:1.45;">
-          • <a href="https://feelyour15.tistory.com/185" target="_blank" rel="noopener noreferrer">티스토리 #185 아이폰 듀오 vs 갤럭시 Z 폴드8 ↗</a><br>
-          • <a href="https://blog.naver.com/simsangguk" target="_blank" rel="noopener noreferrer">네이버 13호 아침 살림템 정리 ↗</a><br>
-          • <a href="https://www.youtube.com/@%EB%AF%B8%EC%81%A0-f2x/shorts" target="_blank" rel="noopener noreferrer">쇼츠 명장면 2호 (점심 발행) ↗</a>
+          • <a href="https://feelyour15.tistory.com" target="_blank" rel="noopener noreferrer">티스토리 최신 글 ↗</a><br>
+          • <a href="https://blog.naver.com/simsangguk" target="_blank" rel="noopener noreferrer">네이버 블로그 ↗</a><br>
+          • <a href="https://www.youtube.com/@%EB%AF%B8%EC%81%A0-f2x/shorts" target="_blank" rel="noopener noreferrer">유튜브 쇼츠 ↗</a>
         </div>
       </div>
     </div>
@@ -112,38 +112,19 @@
   </div>
 
   <script>
-    /* 포털 본체와 동일한 28일(4-5-5-4) 교대근무 규칙 · 기준일 2026-11-16 근무 1일차 */
-    const SHIFT_ANCHOR = new Date(2026, 10, 16);
-    function getShiftState(d) {
-      const t = new Date(d.getFullYear(), d.getMonth(), d.getDate());
-      const diff = Math.round((t - SHIFT_ANCHOR) / 86400000);
-      const idx = ((diff % 28) + 28) % 28;
-      if (idx < 4) return { isWork: true, dayInBlock: idx + 1, blockLen: 4 };
-      if (idx < 9) return { isWork: false, dayInBlock: idx - 3, blockLen: 5 };
-      if (idx < 14) return { isWork: true, dayInBlock: idx - 8, blockLen: 5 };
-      if (idx < 18) return { isWork: false, dayInBlock: idx - 13, blockLen: 4 };
-      if (idx < 23) return { isWork: true, dayInBlock: idx - 17, blockLen: 5 };
-      return { isWork: false, dayInBlock: idx - 22, blockLen: 5 };
-    }
-    const now = new Date();
-    const days = ['일','월','화','수','목','금','토'];
-    document.getElementById('wDate').textContent = `${now.getMonth()+1}.${now.getDate()}(${days[now.getDay()]}) ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
-    const st = getShiftState(now);
-    let dNext = 1;
-    while (getShiftState(new Date(now.getFullYear(), now.getMonth(), now.getDate() + dNext)).isWork === st.isWork && dNext < 28) dNext++;
-    const ch = new Date(now.getFullYear(), now.getMonth(), now.getDate() + dNext);
-    const tile = document.getElementById('wShiftTile');
-    tile.style.background = st.isWork ? '#fef2f2' : '#ecfdf5';
-    tile.style.borderColor = st.isWork ? '#fecaca' : '#a7f3d0';
-    document.getElementById('wShiftVal').textContent = (st.isWork ? '🔴 근무' : '🟢 휴식') + ` (${st.dayInBlock}/${st.blockLen}일차)`;
-    /* 오늘 상태 + 내일 상태를 함께 보여 준다 (저녁에는 내일이 더 중요) */
-    const tm = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
-    const stm = getShiftState(tm);
-    const nextLabel = `${ch.getMonth()+1}/${ch.getDate()}(${days[ch.getDay()]})`;
-    const sameAsTomorrow = (ch.getMonth() === tm.getMonth() && ch.getDate() === tm.getDate());
-    const tail = (sameAsTomorrow && stm.isWork) ? '' : ` · 다음 ${st.isWork ? '휴식' : '출근'} ${nextLabel}`;
-    document.getElementById('wShiftSub').textContent =
-      `내일 ${tm.getMonth()+1}/${tm.getDate()}(${days[tm.getDay()]}) ${stm.isWork ? '🔴 근무 ' + stm.dayInBlock + '일차' : '🟢 휴식'}` + tail;
+    /* 이 위젯은 개인 정보를 담지 않는다 — 날짜·인사말만 화면에서 계산한다. */
+    var now = new Date();
+    var days = ['일','월','화','수','목','금','토'];
+    document.getElementById('wDate').textContent =
+      (now.getMonth() + 1) + '.' + now.getDate() + '(' + days[now.getDay()] + ') ' +
+      String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
+    var h = now.getHours();
+    var greet = h < 5 ? '늦은 시간까지 수고 많으세요. 오늘 하루도 편안하게 마무리해요.'
+      : h < 11 ? '좋은 아침이에요. 오늘 날씨와 일정을 아래 타일에서 확인하세요.'
+      : h < 17 ? '점심 잘 보내고 계신가요? 날씨·일정은 아래 타일에서 바로 볼 수 있어요.'
+      : h < 22 ? '오늘 하루도 수고하셨어요. 내일 일정과 수익 현황을 확인해 보세요.'
+      : '편안한 저녁 보내세요. 내일 날씨와 일정을 미리 확인해 두면 좋아요.';
+    document.getElementById('wGreet').textContent = greet;
   </script>
 </body>
 </html>

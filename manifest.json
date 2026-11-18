@@ -1,7 +1,7 @@
 {
   "name": "상국포털",
   "short_name": "상국포털",
-  "description": "심상국 님의 맞춤형 스마트 홈포털",
+  "description": "맞춤형 스마트 홈포털",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

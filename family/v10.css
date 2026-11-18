@@ -765,6 +765,7 @@ input[type="date"].field,input[type="time"].field,input[type="datetime-local"].f
 .sh9-cell .sg.work{background:#FBEAE6 !important;color:#A9523B !important}
 .sh9-cell .sg.rest{background:var(--mint-l) !important;color:var(--mint-d) !important}
 .sh9-cell .sg.vac{background:#F2EDFA !important;color:var(--violet) !important}
+.sh9-cell .sg.off{background:#F1F5F9 !important;color:#94A3B8 !important}
 .sh9-cell .su{background:#FDF1E3 !important;color:#A26A28 !important}
 .sh9-cell .sc{background:#F1F6FF !important;color:#315E96 !important}
 

@@ -1,5 +1,5 @@
 /* ============================================================
-   상국수향지섭지율포털 V4 · 생활·알림 확장 (extra4.js)
+   우리가족포털 V4 · 생활·알림 확장 (extra4.js)
    ① 카테고리 목차 + 플로팅 퀵 이동   ② 방문 횟수·최근 접속
    ③ 알림·진동 + 집/학교 도착·출발·완전체   ④ 가족 할일·공유 캘린더
    ⑤ 추억 사진 지도·XP   ⑥ 음식 칼로리 분석(표 + Gemini 선택)
@@ -591,7 +591,7 @@
       t.innerHTML = '<div class="card"><div class="card-head"><h2>✅ 가족 할일 목록</h2><span class="sub" id="v4TodoSum">0개</span></div>' +
         '<button type="button" class="btn soft" class="btn soft v4bigcal" style="margin-bottom:10px;padding:11px;font-size:12.5px">📅 홈의 큰 가족 달력에서 보기 (중요도·이력·경험치)</button>' +
         '<div class="fb-desc">누구나 추가하고, 끝나면 <b>실시 완료</b>를 눌러요. 완료한 사람과 시각이 함께 남아요.</div>' +
-        '<div style="display:flex;gap:7px;margin:9px 0"><input class="field" id="v4TodoIn" maxlength="60" placeholder="예: 지섭이 수학 숙제 확인" style="margin:0;flex:1"><button class="btn" id="v4TodoAdd" style="width:auto;padding:0 15px;border-radius:13px">추가</button></div>' +
+        '<div style="display:flex;gap:7px;margin:9px 0"><input class="field" id="v4TodoIn" maxlength="60" placeholder="예: 수학 숙제 확인" style="margin:0;flex:1"><button class="btn" id="v4TodoAdd" style="width:auto;padding:0 15px;border-radius:13px">추가</button></div>' +
         '<div class="seg" id="v4TodoSeg"><button type="button" data-ts="open" class="on">남은 일</button><button type="button" data-ts="done">완료</button></div>' +
         '<div id="v4TodoList" class="fb-list"></div></div>';
       var c = document.createElement('div'); c.id = 'life-cal'; c.className = 'hidden';
@@ -808,11 +808,11 @@
   }
   function memSheet() {
     F.openSheet('<h3>🗺️ 추억 남기기</h3><div class="sdesc">어디에 다녀왔는지 적어 주세요. 지역 이름을 세어 지도에 쌓아 드려요.</div>' +
-      '<div class="form-row"><label>지역 (시·군)</label><input class="field" id="v4MemRegion" maxlength="20" placeholder="예: 속초" list="v4Regions"></div>' +
-      '<datalist id="v4Regions"><option value="속초"><option value="파주"><option value="서울"><option value="강릉"><option value="양양"><option value="춘천"><option value="인제"><option value="제주"><option value="부산"><option value="경주"></datalist>' +
+      '<div class="form-row"><label>지역 (시·군)</label><input class="field" id="v4MemRegion" maxlength="20" placeholder="예: 강릉" list="v4Regions"></div>' +
+      '<datalist id="v4Regions"><option value="서울"><option value="강릉"><option value="강릉"><option value="양양"><option value="춘천"><option value="인제"><option value="제주"><option value="부산"><option value="경주"></datalist>' +
       '<div class="form-row"><label>장소 이름</label><input class="field" id="v4MemPlace" maxlength="40" placeholder="예: 영랑호 산책길"></div>' +
       '<div class="form-row"><label>날짜</label><input class="field" id="v4MemDate" type="date" value="' + F.todayYmd() + '"></div>' +
-      '<div class="form-row"><label>한 줄 메모</label><input class="field" id="v4MemNote" maxlength="60" placeholder="예: 지율이가 오리 보고 좋아했음"></div>' +
+      '<div class="form-row"><label>한 줄 메모</label><input class="field" id="v4MemNote" maxlength="60" placeholder="예: 오리 보고 좋아했음"></div>' +
       '<div class="form-row"><label>사진 (선택)</label><button type="button" class="btn ghost" id="v4MemPhoto">📷 사진 고르기</button><div id="v4MemPrev" style="margin-top:7px"></div></div>' +
       '<div style="display:flex;gap:8px;margin-top:6px"><button type="button" class="btn ghost" data-sheet-close>취소</button><button type="button" class="btn" id="v4MemSave">추억 저장</button></div>');
     var photo = null;
@@ -1272,7 +1272,7 @@
     var add = $('v4TubeAdd');
     if (add) add.addEventListener('click', function () {
       F.openSheet('<h3>＋ 우리 가족 링크</h3><div class="sdesc">아이들과 함께 볼 영상·책·게임 소식 링크를 남겨 주세요.</div>' +
-        '<div class="form-row"><label>제목</label><input class="field" id="v4TbTitle" maxlength="40" placeholder="예: 지섭이 추천 게임 영상"></div>' +
+        '<div class="form-row"><label>제목</label><input class="field" id="v4TbTitle" maxlength="40" placeholder="예: 아이 추천 게임 영상"></div>' +
         '<div class="form-row"><label>주소(링크)</label><input class="field" id="v4TbUrl" placeholder="https://" inputmode="url"></div>' +
         '<div class="form-row"><label>종류</label><select class="field" id="v4TbKind"><option value="youtube">유튜브 영상</option><option value="book">책</option><option value="game">게임</option></select></div>' +
         '<div style="display:flex;gap:8px;margin-top:6px"><button type="button" class="btn ghost" data-sheet-close>취소</button><button type="button" class="btn" id="v4TbSave">추가</button></div>');

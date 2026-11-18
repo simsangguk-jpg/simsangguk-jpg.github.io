@@ -2,8 +2,8 @@
    우리가족포털 V9 · 홈 대개편 (home9.js)
    ① 📖 오늘의 명언 & 가족끼리 주고받으면 좋은 말 (날짜 시드 · DB 오버라이드 · 원클릭 전송)
    ② 📷 1일 1장 대표사진 (선택·업로드 · AI 베스트컷 추천 · 확대 모달 · Blob 저장)
-   ③ 🗓️ 통합 근무표·등교표 배너 (상국 4주 교대 · 수향 출근일 · 지섭·지율 등교일)
-   ④ 🎂 가족 디데이 (지섭 2013-10-10 · 지율 2015-08-26 · D+ / 생일 카운트다운 · 추가 가능)
+   ③ 🗓️ 통합 근무표·등교표 배너 (근무표는 가족 저장소 설정 · 출근일·등교일)
+   ④ 🎂 가족 디데이 (저장소에 적어 둔 생일·기념일 · D+ / 생일 카운트다운 · 추가 가능)
    ⑤ 📰 학생·공부·학원·게임 뉴스 배너 5종 (RSS + 스냅숏 폴백)
    ⑥ 🎡 이번 주말 추천 + 주변 장소 검색 (네이버·카카오맵 연결)
    ⑦ 🎯 개인별 목표 배너 (이번 주 · 이번 달 · 장래희망 + 응원)
@@ -32,6 +32,20 @@
   function count(o) { return Object.keys(o || {}).length; }
   function memName(id) { var m = F && F.memOf(id); return m && m.name ? m.name : '가족'; }
   function memEmoji(id) { var m = F && F.memOf(id); return (m && m.emoji) || '🧑'; }
+  /* 구성원 이름·생일·학년은 코드가 아니라 가족 저장소(암호화된 DB)에서만 읽는다 */
+  function memList() { try { return (F && F.members) ? (F.members() || []) : []; } catch (e) { return []; } }
+  function famRoles() {
+    var r = memList().map(function (m) { return (m && m.role) || '가족'; });
+    return r.length ? r.join('·') : '가족';
+  }
+  function memField(id, f) {
+    var D = d();
+    var m = (D && D.members) ? D.members[id] : null;
+    var val = m && m[f];
+    return val ? String(val) : '';
+  }
+  function birthOf(id) { return memField(id, 'birth').slice(0, 10); }
+  function gradeOf(id) { return memField(id, 'grade'); }
   function clamp(v, a, b) { return v < a ? a : (v > b ? b : v); }
 
   function V9() {
@@ -39,7 +53,7 @@
     if (!D) return null;
     if (!D.v9 || typeof D.v9 !== 'object') D.v9 = {};
     var v = D.v9;
-    ['tama', 'room', 'minicar', 'moneyD', 'ddays', 'school', 'goals', 'sleep', 'layout', 'editLog', 'pod', 'archive', 'commute', 'schoolMode', 'dailyQuote', 'goalCheer', 'sb', 'mood', 'moodHist'].forEach(function (k) {
+    ['tama', 'room', 'minicar', 'moneyD', 'ddays', 'school', 'goals', 'sleep', 'layout', 'editLog', 'pod', 'archive', 'commute', 'schoolMode', 'shiftCfg', 'dailyQuote', 'goalCheer', 'sb', 'mood', 'moodHist'].forEach(function (k) {
       if (!v[k] || typeof v[k] !== 'object') v[k] = {};
     });
     return v;
@@ -178,7 +192,7 @@
         if (!global.FAM9AI) return;
         toast('💚 미쁠이 오늘의 새 말을 고르는 중…');
         global.FAM9AI.ask(
-          '우리 가족(아빠 상국·엄마 수향·중학생 지섭·지율이)에게 오늘 보여줄 문구를 JSON으로 만들어줘. ' +
+          '우리 가족(' + famRoles() + ')에게 오늘 보여줄 문구를 JSON으로 만들어줘. ' +
           '형식: {"quote":{"text":"명언 한 문장","by":"이름","src":"출전"},"fam":{"text":"가족끼리 주고받으면 좋은 따뜻한 한마디","from":"누구에게나"}}. ' +
           '명언은 유명하고 검증된 것, 가족 말은 아이들이 이해하기 쉽고 밝은 톤으로. 다른 설명 없이 JSON만.'
         ).then(function (txt) {
@@ -317,16 +331,33 @@
   /* ============================================================
      ③ 통합 근무표·등교표 배너
      ============================================================ */
-  var SHIFT_ANCHOR = new Date(2026, 10, 16);
+  /* 근무표 규칙과 1일차 기준일은 코드에 두지 않는다 — 가족 저장소(v.shiftCfg)에서 읽는다.
+     v.shiftCfg = { anchor: 'YYYY-MM-DD', cycle: [4,5,5,4,5,5] }  · cycle 은 근무·휴식을 번갈아 반복
+     처음 쓰는 가족은 설정에서 '근무표 1일차'만 정하면 아래 계산이 그대로 맞아떨어진다. */
+  var SHIFT_CYCLE_DEFAULT = [4, 5, 5, 4, 5, 5];
+  function shiftCfg() {
+    var v = V9();
+    var c = (v && v.shiftCfg) || {};
+    var cyc = (c.cycle instanceof Array && c.cycle.length) ? c.cycle : SHIFT_CYCLE_DEFAULT;
+    return { anchor: c.anchor || '', cycle: cyc };
+  }
   function shiftBase(dt) {
-    var diff = Math.round((dt - SHIFT_ANCHOR) / 86400000);
-    var idx = ((diff % 28) + 28) % 28;
-    if (idx < 4) return { isWork: true, label: '근무' };
-    if (idx < 9) return { isWork: false, label: '휴식' };
-    if (idx < 14) return { isWork: true, label: '근무' };
-    if (idx < 18) return { isWork: false, label: '휴식' };
-    if (idx < 23) return { isWork: true, label: '근무' };
-    return { isWork: false, label: '휴식' };
+    var cfg = shiftCfg();
+    var p = String(cfg.anchor || '').slice(0, 10).split('-');
+    if (p.length < 3) return null;
+    var a = new Date(Number(p[0]), Number(p[1]) - 1, Number(p[2]));
+    var cyc = cfg.cycle, total = 0, i;
+    for (i = 0; i < cyc.length; i++) total += Number(cyc[i]) || 0;
+    if (!total) return null;
+    var t = new Date(dt.getFullYear(), dt.getMonth(), dt.getDate());
+    var diff = Math.round((t - a) / 86400000);
+    var idx = ((diff % total) + total) % total;
+    var acc = 0;
+    for (i = 0; i < cyc.length; i++) {
+      acc += Number(cyc[i]) || 0;
+      if (idx < acc) return { isWork: (i % 2 === 0), label: (i % 2 === 0) ? '근무' : '휴식' };
+    }
+    return null;
   }
   function shiftOf(dt) {
     var key = ymd(dt.getTime());
@@ -336,16 +367,17 @@
       var val = o[key];
       if (val) ov = (typeof val === 'string') ? val : val.type;
     } catch (e) {}
-    var base = shiftBase(dt);
     if (ov === 'work') return { isWork: true, label: '근무', ov: 1 };
     if (ov === 'rest') return { isWork: false, label: '휴식', ov: 1 };
     if (ov === 'vacation') return { isWork: false, label: '휴가', ov: 1 };
+    var base = shiftBase(dt);
+    if (!base) return { isWork: false, label: '–', unknown: 1 };   /* 기준일을 아직 정하지 않음 */
     return { isWork: base.isWork, label: base.label };
   }
   function renderShift() {
     var v = V9(), box = $('v9ShiftStrip');
     if (!v || !box) return;
-    var commute = v.commute.su || { dows: [1, 3] };   /* 수향 출근 요일(0=일) */
+    var commute = v.commute.su || { dows: [1, 3] };   /* 출근 요일(0=일) */
     var vacation = v.schoolMode && v.schoolMode.vacation;
     var today = new Date(); today.setHours(0, 0, 0, 0);
     var wd = ['일', '월', '화', '수', '목', '금', '토'];
@@ -359,7 +391,7 @@
       html += '<div class="sh9-cell' + (i === 0 ? ' today' : '') + '">' +
         '<span class="d">' + (dt.getMonth() + 1) + '/' + dt.getDate() + '</span>' +
         '<span class="w">' + wd[dow] + '</span>' +
-        '<span class="sg ' + (sh.isWork ? 'work' : (sh.label === '휴가' ? 'vac' : 'rest')) + '">' + sh.label + '</span>' +
+        '<span class="sg ' + (sh.unknown ? 'off' : (sh.isWork ? 'work' : (sh.label === '휴가' ? 'vac' : 'rest'))) + '">' + sh.label + '</span>' +
         (su ? '<span class="su">출근</span>' : '') +
         (school ? '<span class="sc">등교</span>' : (vacation && dow >= 1 && dow <= 5 ? '<span class="sc off">방학</span>' : '')) +
         '</div>';
@@ -367,7 +399,9 @@
     if (box.__sig !== html) { box.__sig = html; box.innerHTML = html; }
     var note = $('v9ShiftNote');
     if (note) {
-      var n2 = '빨강=상국 근무 · 주황=수향 출근 · 파랑=지섭·지율 등교' + (vacation ? ' · 방학 중' : '');
+      var n2 = shiftCfg().anchor
+        ? ('빨강=근무 · 주황=출근 · 파랑=등교' + (vacation ? ' · 방학 중' : ''))
+        : '근무표 1일차(기준일)를 정하면 근무·휴식이 표시돼요 — 오른쪽 위 설정';
       if (note.textContent !== n2) note.textContent = n2;
     }
   }
@@ -378,15 +412,19 @@
       var ed = e.target.closest('#v9ShiftEdit');
       if (ed) {
         var c = v.commute.su || { dows: [1, 3] };
-        F.openSheet('<h3>🗓️ 수향 출근일 · 등교일 설정</h3>' +
-          '<div class="sdesc">수향 출근 요일과 아이들 등교(방학) 여부를 정해요. 상국 근무표는 상국포털의 4주 규칙·날짜별 변동을 그대로 따라요.</div>' +
-          '<div class="form-row"><label>수향 출근 요일</label><div class="dow-grid" id="v9Dow">' +
+        var anchorVal = shiftCfg().anchor;
+        F.openSheet('<h3>🗓️ 근무표 · 출근일 · 등교일 설정</h3>' +
+          '<div class="sdesc">출근 요일과 아이들 등교(방학) 여부, 근무표 1일차(기준일)를 정해요. 근무표는 4일 근무·5일 휴식 같은 주기(기본 4·5·5·4·5·5)를 번갈아 반복해 계산해요.</div>' +
+          '<div class="form-row"><label>근무표 1일차(기준일)</label><input class="field" id="v9ShiftAnchor" type="date" value="' + esc(shiftCfg().anchor) + '"></div>' +
+          '<div class="form-row"><label>출근 요일</label><div class="dow-grid" id="v9Dow">' +
           ['일', '월', '화', '수', '목', '금', '토'].map(function (w, i) {
             return '<button type="button" class="dow' + (c.dows && c.dows.indexOf(i) >= 0 ? ' on' : '') + '" data-v9dow="' + i + '">' + w + '</button>';
           }).join('') + '</div></div>' +
           '<div class="form-row"><label>아이들 학교</label><button type="button" class="btn ghost" id="v9VacToggle">' + (v.schoolMode.vacation ? '🏫 방학 중 (등교 표시 끔) — 눌러서 등교로' : '🎒 등교 중 — 눌러서 방학으로') + '</button></div>' +
           '<button type="button" class="btn" data-sheet-close style="margin-top:6px">저장하고 닫기</button>');
         var sheet = $('sheet');
+        var anchorEl = $('v9ShiftAnchor');
+        if (anchorEl) anchorEl.addEventListener('change', function () { anchorVal = anchorEl.value || ''; });
         sheet.addEventListener('click', function h(ev) {
           var dw = ev.target.closest('[data-v9dow]');
           if (dw) {
@@ -408,8 +446,12 @@
           if ($('sheet').classList.contains('hidden')) {
             v.commute.su = c;
             v.commute.at = now();
+            var av = $('v9ShiftAnchor');
+            if (av) anchorVal = av.value || anchorVal;
+            var cyc = shiftCfg().cycle;
+            v.shiftCfg = { anchor: anchorVal, cycle: cyc };
             save();
-            logEdit('근무표·출근일·등교일 수정', '수향 출근: ' + (c.dows || []).join(',') + ' · 방학: ' + (v.schoolMode.vacation ? '예' : '아니오'));
+            logEdit('근무표·출근일·등교일 수정', '출근 ' + (c.dows || []).join(',') + ' · 기준일 ' + (v.shiftCfg.anchor || '미지정') + ' · 방학: ' + (v.schoolMode.vacation ? '예' : '아니오'));
             box_sig_reset_shift();
             sheet.removeEventListener('click', h);
             closeObs.disconnect();
@@ -424,14 +466,17 @@
   /* ============================================================
      ④ 가족 디데이
      ============================================================ */
-  var BIRTHS = { jiseop: '2013-10-10', jiyul: '2015-08-26' };
+  /* 생일·기념일은 코드에 적지 않는다 — 가족 저장소(v.ddays)에 저장된 것과,
+     구성원 정보에 생일(m.birth)이 들어 있는 경우 그 값만 보여 준다. */
   function ddays() {
-    var v = V9();
-    if (!v) return [];
-    var out = [
-      { id: 'jiseop', t: '지섭', d: BIRTHS.jiseop },
-      { id: 'jiyul', t: '지율', d: BIRTHS.jiyul }
-    ];
+    var v = V9(), D = d();
+    if (!v || !D) return [];
+    var out = [];
+    Object.keys(D.members || {}).forEach(function (k) {
+      var m = D.members[k];
+      if (!m || m.d || !m.birth) return;
+      out.push({ id: k, t: m.name || '가족', d: String(m.birth).slice(0, 10), member: 1 });
+    });
     Object.keys(v.ddays).forEach(function (k) {
       var it = v.ddays[k];
       if (it && !it.del) out.push({ id: k, t: it.t, d: it.d, custom: 1 });
@@ -458,6 +503,7 @@
         (x.custom ? '<button type="button" class="dd9-del" data-v9ddel="' + esc(x.id) + '">✕</button>' : '') +
         '</div>';
     }).join('');
+    if (!html) html = '<div class="v4-empty">🎂 생일·기념일을 적어 두면 D+와 생일까지 남은 날이 보여요 — 오른쪽 위 ＋ 디데이 추가</div>';
     if (box.__sig !== html) { box.__sig = html; box.innerHTML = html; }
   }
   function wireDday() {
@@ -561,10 +607,10 @@
      ⑥ 이번 주말 추천 + 주변 장소 검색
      ============================================================ */
   var WEEKEND = [
-    { do: [{ t: '감악산 등산 + 맑은 공기 산책', q: '파주 감악산 등산' }, { t: '헤이리 예술마을 산책·전시', q: '파주 헤이리 마을' }], eat: [{ t: '파주식 당면찌개·버섯전골', q: '파주 당면찌개 맛집' }, { t: '다율동 국수·칼국수', q: '파주 다율동 국수' }] },
-    { do: [{ t: '프로방스 마을 사진 산책', q: '파주 프로방스 마을' }, { t: '우리 농산물 장보기·삼겹 바베큐', q: '파주 농산물 직거래 장터' }], eat: [{ t: '집에서 피자·수제버거 데이', q: '홈메이드 피자 레시피' }, { t: '숯불 갈비·한판 구이', q: '파주 숯불 갈비 맛집' }] },
-    { do: [{ t: '운정중앙공원 자전거·피크닉', q: '파주 운정중앙공원' }, { t: '영화관 한 편 + 팝콘', q: '파주 영화관 상영작' }], eat: [{ t: '족발·보쌈 주말 특식', q: '파주 족발 맛집' }, { t: '떡볶이·튀김 나들이', q: '파주 분식 맛집' }] },
-    { do: [{ t: '라라스포츠 수영·헬스 가족 배찌', q: '파주 체육관 수영장' }, { t: '보드게임 카페 오후', q: '파주 보드게임 카페' }], eat: [{ t: '마라탕·훠궈 도전', q: '파주 마라탕 훠궈' }, { t: '초콜릿 카페 브런치', q: '파주 브런치 카페' }] }
+    { do: [{ t: '가까운 산 등산 + 맑은 공기 산책', q: '가까운 등산 코스' }, { t: '미술관·전시 산책', q: '미술관 전시' }], eat: [{ t: '당면찌개·버섯전골', q: '당면찌개 맛집' }, { t: '국수·칼국수', q: '국수 맛집' }] },
+    { do: [{ t: '근교 드라이브 + 사진 산책', q: '드라이브 코스' }, { t: '우리 농산물 장보기·삼겹 바베큐', q: '농산물 직거래 장터' }], eat: [{ t: '집에서 피자·수제버거 데이', q: '홈메이드 피자 레시피' }, { t: '숯불 갈비·한판 구이', q: '숯불 갈비 맛집' }] },
+    { do: [{ t: '동네 공원 자전거·피크닉', q: '공원 피크닉' }, { t: '영화관 한 편 + 팝콘', q: '영화관 상영작' }], eat: [{ t: '족발·보쌈 주말 특식', q: '족발 맛집' }, { t: '떡볶이·튀김 나들이', q: '분식 맛집' }] },
+    { do: [{ t: '수영·헬스 가족 배찌', q: '수영장' }, { t: '보드게임 카페 오후', q: '보드게임 카페' }], eat: [{ t: '마라탕·훠궈 도전', q: '마라탕 훠궈' }, { t: '초콜릿 카페 브런치', q: '브런치 카페' }] }
   ];
   function weekIdx() {
     var t = new Date();
@@ -589,7 +635,7 @@
       '<div class="wk9-col"><div class="wk9-h">🍽️ 이번 주말 먹을 것</div>' + w.eat.map(item).join('') + '</div></div>' +
       '<div class="wk9-near"><span>🔍 주변 장소 바로 검색:</span>' +
       ['맛집', '카페', '공원', '영화관', '볼링장'].map(function (k) {
-        var l = mapLinks('파주 ' + k);
+        var l = mapLinks(k);
         return '<a href="' + l.n + '" target="_blank" rel="noopener">' + k + '·N</a><a href="' + l.k + '" target="_blank" rel="noopener">' + k + '·K</a>';
       }).join('') + '</div>';
     if (box.__sig !== html) { box.__sig = html; box.innerHTML = html; }
@@ -767,13 +813,18 @@
   /* ============================================================
      ⑨ 등교·귀가 안심 기록
      ============================================================ */
-  var KIDS = [
-    { id: 'jiseop', n: '지섭' }, { id: 'jiyul', n: '지율' }
-  ];
+  /* 등교·귀가 기록 대상은 구성원 중 아이 역할 — 이름은 저장소(암호화된 DB)에서 읽는다 */
+  var KID_ROLES = ['첫째아들', '둘째아들', '아들', '딸'];
+  function kids() {
+    return memList().filter(function (m) { return m && !m.d && KID_ROLES.indexOf(m.role) >= 0; })
+      .map(function (m) { return { id: m.id, n: m.name || (m.role || '아이') }; });
+  }
   function kidId() {
-    /* 내가 아이면 본인, 아니면 기본 지섭 선택 카드 */
+    /* 내가 아이면 본인, 부모면 카드 버튼으로 기록 */
     var r = roleOf();
-    return r === '첫째아들' ? 'jiseop' : (r === '둘째아들' ? 'jiyul' : '');
+    if (KID_ROLES.indexOf(r) < 0) return '';
+    var mine = memList().filter(function (m) { return m && !m.d && m.role === r; })[0];
+    return mine ? mine.id : '';
   }
   function roleOf() {
     var m = me();
@@ -785,10 +836,10 @@
     var v = V9(), box = $('v9SchoolBody');
     if (!v || !box) return;
     var yk = todayYmd();
-    var html = KIDS.map(function (k) {
+    var html = kids().map(function (k) {
       var day = (v.school[yk] || {})[k.id] || {};
       var step = function (t, done) { return '<span class="sc9-step' + (done ? ' on' : '') + '">' + t + '</span>'; };
-      return '<div class="sc9"><div class="sc9-head">🎒 ' + k.n + '</div>' +
+      return '<div class="sc9"><div class="sc9-head">🎒 ' + esc(k.n) + '</div>' +
         '<div class="sc9-flow">' + step('🏠 출발 ' + (day.depart ? '✅ ' + F.hhmm(day.depart) : '–'), day.depart) +
         step('🏫 등교 ' + (day.arrive ? '✅ ' + F.hhmm(day.arrive) : '–'), day.arrive) +
         step('🏡 하교 도착 ' + (day.home ? '✅ ' + F.hhmm(day.home) : '–'), day.home) + '</div>' +
@@ -798,11 +849,13 @@
           '<button type="button" class="btn soft" data-v9sch="' + k.id + ':home" style="padding:7px 10px;font-size:11.5px">🏡 집 도착</button></div>' : '') +
         '</div>';
     }).join('');
+    if (!html) html = '<div class="v4-empty">아이 계정을 가족으로 등록하면(역할: 첫째아들·둘째아들) 여기에서 등교·귀가를 기록할 수 있어요.</div>';
     if (box.__sig !== html) { box.__sig = html; box.innerHTML = html; }
     var sum = $('v9SchoolSum');
     if (sum) {
-      var done = KIDS.filter(function (k) { var d = (v.school[yk] || {})[k.id] || {}; return d.depart && d.arrive && d.home; }).length;
-      sum.textContent = '오늘 ' + done + '/2 안심 완료';
+      var ks = kids();
+      var done = ks.filter(function (k) { var d = (v.school[yk] || {})[k.id] || {}; return d.depart && d.arrive && d.home; }).length;
+      sum.textContent = '오늘 ' + done + '/' + ks.length + ' 안심 완료';
     }
   }
   function wireSchool() {
@@ -829,17 +882,8 @@
         renderSchool();
         toast('🎒 ' + label + ' ' + F.hhmm(rec[step]) + ' 기록 — 엄마·아빠가 보게 저장했어요');
       };
-      /* 앱 열람 시 위치 자동 판정: 집(파주) 근처면 태그 */
-      if (F.locate) {
-        F.locate(function (pos) {
-          var tag = '';
-          if (pos && pos.coords) {
-            var dLat = Math.abs(pos.coords.latitude - 37.9245), dLon = Math.abs(pos.coords.longitude - 126.8319);
-            tag = (dLat < 0.01 && dLon < 0.01) ? '집 근처' : '외부';
-          }
-          finish(tag);
-        });
-      } else finish('');
+      /* 집 좌표는 코드에 두지 않는다 — 위치 태그 없이 누른 시각만 기록한다 */
+      finish('');
     });
   }
 
@@ -981,8 +1025,7 @@
      ============================================================ */
   var chatHist = [];
   var MIPP_GREET = '안녕하세요! 저는 미쁠이에요 💚 기분·일정·용돈·근무표까지 포털에 기록된 우리 가족 이야기를 보고 답해 드려요. 무엇이든 물어보세요!';
-  var FAM_CTX = '우리 가족: 아빠 상국(육군 준위, 파주 거주, 교대근무), 엄마 수향, 첫째 지섭(중학생, 2013년생), 둘째 지율(2015년생). ' +
-    '너는 심상국 가족의 AI 비서 "미쁠"이야. 초록색 ㅅ자 모양의 다정한 마스코트이고, 가족 모두 너를 미쁠이라고 불러. ' +
+  var FAM_CTX = '너는 우리 가족의 AI 비서 "미쁠"이야. 초록색 ㅅ자 모양의 다정한 마스코트이고, 가족 모두 너를 미쁠이라고 불러. ' +
     '한국어로 다정하고 간결하게(보통 2~4문장) 답하고, 가족이 서로 아끼고 재미있게 지내도록 도와줘. ' +
     '아래에 [지금]·[가족 특징]·[가족별 기록]·[일정] 같은 우리가족포털 실시간 기록이 함께 주어지면 그것을 근거로 답해. ' +
     '포털에 실제로 있는 값(이름·기분·날짜·금액·근무표)은 그대로 인용하고, 기록이 없는 항목은 지어내지 말고 "아직 포털에 기록이 없어요"라고 솔직히 말해. ' +
@@ -997,8 +1040,6 @@
      - 화면에 보이는 값을 그대로 옮겨 적는다(가공·추측 없음)
      ============================================================ */
   var LIVE_LIM = { cal: 15, pastCal: 3, todo: 10, chat: 5, notice: 4, money: 4, wish: 8, cheer: 3, plan: 4, shift: 14 };
-  var BIRTH_BY_NAME = { '지섭': '2013-10-10', '지율': '2015-08-26' };
-  var GRADE_BY_NAME = { '지섭': '중학생', '지율': '초등학생' };
 
   function clipTxt(s, n) {
     var t = String(s == null ? '' : s).replace(/\s+/g, ' ').trim();
@@ -1094,14 +1135,14 @@
     var feat = ms.map(function (m) {
       var f = [];
       var nm = String(m.name || '');
-      if (m.role === '아빠') { f.push('육군 준위(영상정보 분야)'); f.push('파주 집↔연천 부대 출퇴근'); f.push('4주 교대근무'); }
+      if (m.role === '아빠') { if (shiftCfg().anchor) f.push('교대근무'); }
       else if (m.role === '엄마') {
         var dn = (suDows || []).slice().sort().map(function (i) { return ['일', '월', '화', '수', '목', '금', '토'][i]; }).join('·');
         f.push('출근 요일 ' + (dn || '미지정'));
-      } else if (GRADE_BY_NAME[nm]) f.push(GRADE_BY_NAME[nm] + (vac ? ' · 지금 방학' : ' · 등교 중'));
-      if (BIRTH_BY_NAME[nm]) {
-        f.push(BIRTH_BY_NAME[nm].replace(/-/g, '.') + '생');
-        var bl = birthLeft(BIRTH_BY_NAME[nm]);
+      } else if (gradeOf(m.id)) f.push(gradeOf(m.id) + (vac ? ' · 지금 방학' : ' · 등교 중'));
+      if (birthOf(m.id)) {
+        f.push(birthOf(m.id).replace(/-/g, '.') + '생');
+        var bl = birthLeft(birthOf(m.id));
         if (bl != null) f.push('생일 ' + (bl === 0 ? '오늘' : 'D-' + bl));
       }
       if (!f.length) f.push(m.role || '가족');
@@ -1221,11 +1262,12 @@
     for (var i = 0; i < LIVE_LIM.shift; i++) {
       var dt2 = new Date(t0 + i * 86400000);
       var sh = shiftOf(dt2);
-      var bits = ['상국 ' + (sh.label || (sh.isWork ? '근무' : '휴식'))];
-      if ((suDows || []).indexOf(dt2.getDay()) >= 0) bits.push('수향 출근');
+      var bits = [];
+      if (!sh.unknown) bits.push('아빠 ' + (sh.label || (sh.isWork ? '근무' : '휴식')));
+      if ((suDows || []).indexOf(dt2.getDay()) >= 0) bits.push('엄마 출근');
       var dow = dt2.getDay();
       if (dow >= 1 && dow <= 5) bits.push(vac ? '아이들 방학' : '아이들 등교');
-      shiftBits.push(mdKo(dt2) + ' ' + bits.join('·'));
+      shiftBits.push(mdKo(dt2) + ' ' + (bits.join('·') || '기록 없음'));
     }
     L.push('[근무·출근·등교] ' + shiftBits.join(' | '));
 
@@ -1876,7 +1918,7 @@
       sh.id = 'v9ShiftCard';
       sh.className = 'card';
       sh.style.cssText = 'border:1.5px solid #F5D9C8;background:linear-gradient(180deg,#FFF6F0,#FFFFFF)';
-      sh.innerHTML = '<div class="card-head"><h2>🗓️ 통합 근무표 · 등교표</h2><button type="button" class="v4-tag" id="v9ShiftEdit" style="border:none">수향 출근·방학 설정</button></div>' +
+      sh.innerHTML = '<div class="card-head"><h2>🗓️ 통합 근무표 · 등교표</h2><button type="button" class="v4-tag" id="v9ShiftEdit" style="border:none">출근·방학 설정</button></div>' +
         '<div class="sh9-strip" id="v9ShiftStrip"></div>' +
         '<div class="hint" id="v9ShiftNote">–</div>';
       home.insertBefore(sh, brief ? brief.nextSibling : null);

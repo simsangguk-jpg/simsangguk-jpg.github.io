@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=5">
 <meta name="theme-color" content="#0A4C39">
 <meta name="robots" content="noindex, nofollow, noarchive">
-<title>상국수향지섭지율포털 V10</title>
-<meta name="description" content="상국·수향·지섭·지율 우리 가족 전용 공간">
+<title>우리가족포털 V10</title>
+<meta name="description" content="우리 가족 전용 공간">
 <link rel="manifest" href="./manifest.webmanifest">
 <link rel="icon" href="./icon-192.png">
 <link rel="apple-touch-icon" href="./apple-touch-icon.png">
@@ -15,7 +15,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="우리가족포털">
 <meta name="format-detection" content="telephone=no">
-<link rel="stylesheet" href="./v10.css?v=12">
+<link rel="stylesheet" href="./v10.css?v=13">
 <style>
 :root{
   --bg:#F5F7F8;
@@ -510,7 +510,7 @@ body.pg-lock{overflow:hidden}
 <!-- ============ 부팅 ============ -->
 <div class="boot" id="bootScreen">
   <img src="./icon-192.png" alt="우리가족포털">
-  <div class="b-title">상국수향지섭지율포털</div>
+  <div class="b-title">우리가족포털</div>
   <div class="b-sub">가족 공간을 열고 있어요</div>
   <div class="spinner" style="margin-top:6px"></div>
 </div>
@@ -519,7 +519,7 @@ body.pg-lock{overflow:hidden}
 <div class="auth hidden" id="authScreen">
   <div class="auth-card">
     <img class="auth-logo" src="./icon-192.png" alt="우리 가족">
-    <div class="auth-title">상국수향지섭지율포털</div>
+    <div class="auth-title">우리가족포털</div>
     <div class="auth-sub">🔒 가족만 들어오는 우리 집</div>
 
     <div class="tabs2" id="authTabs">
@@ -542,7 +542,7 @@ body.pg-lock{overflow:hidden}
     <!-- 회원가입 -->
     <form id="joinForm" class="hidden">
       <div class="row2">
-        <input class="field" id="joinName" placeholder="이름·호칭 (예: 수향)" maxlength="12" required>
+        <input class="field" id="joinName" placeholder="이름·호칭 (예: 엄마)" maxlength="12" required>
         <select class="field" id="joinRole">
           <option value="아빠">아빠</option>
           <option value="엄마">엄마</option>
@@ -577,7 +577,7 @@ body.pg-lock{overflow:hidden}
       <button class="icon-btn" id="btnMe" aria-label="내 설정">⚙️</button>
     </div>
     <div class="wx-banner" id="wxBanner">
-      <div class="wx-row" id="wxRow"><div class="wx-chip"><div class="p">파주</div><div class="t">–</div><div class="d">불러오는 중</div></div><div class="wx-chip"><div class="p">연천</div><div class="t">–</div><div class="d">불러오는 중</div></div></div>
+      <div class="wx-row" id="wxRow"><div class="wx-chip"><div class="p">날씨</div><div class="t">–</div><div class="d">불러오는 중</div></div></div>
       <div class="cheer-line" id="cheerLine"><span class="who">💬</span><span class="txt">오늘도 우리 가족 화이팅!</span></div>
     </div>
     <div class="syncbar" id="syncBar"><span class="dot" id="syncDot"></span><span id="syncText">가족 클라우드 연결 중…</span></div>
@@ -637,7 +637,7 @@ body.pg-lock{overflow:hidden}
 
       <button type="button" class="pg-top" id="pgTopBtn">
         <span class="ico">🧸</span>
-        <span class="tx"><b>우리 가족 놀이터 (3D)</b><small>상국·수향·지섭·지율이 뛰어놀아요 · 잡아서 던져 보세요</small></span>
+        <span class="tx"><b>우리 가족 놀이터 (3D)</b><small>가족 캐릭터 4명이 뛰어놀아요 · 잡아서 던져 보세요</small></span>
         <span class="go">놀러 가기 ›</span>
       </button>
 
@@ -762,9 +762,9 @@ body.pg-lock{overflow:hidden}
         <div class="card-head"><h2>🗓️ 약속 장소 공유</h2><span class="sub">만날 곳 정하기</span></div>
         <form id="planForm">
           <div class="form-row"><label>무슨 약속인가요?</label><input class="field" id="planWhat" placeholder="예: 저녁 같이 먹기" maxlength="30" required></div>
-          <div class="form-row"><label>장소</label><input class="field" id="planWhere" placeholder="예: 다율동 홈플러스 앞" maxlength="40" required></div>
+          <div class="form-row"><label>장소</label><input class="field" id="planWhere" placeholder="예: ○○마트 앞" maxlength="40" required></div>
           <div class="form-row"><label>시간</label><input class="field" id="planWhen" type="datetime-local" required></div>
-          <div class="form-row"><label>메모 (선택)</label><input class="field" id="planMemo" placeholder="예: 지섭이는 학원 끝나고" maxlength="60"></div>
+          <div class="form-row"><label>메모 (선택)</label><input class="field" id="planMemo" placeholder="예: 첫째는 학원 끝나고" maxlength="60"></div>
           <button class="btn soft" type="submit">📌 약속 공유하기</button>
         </form>
       </div>
@@ -837,7 +837,7 @@ body.pg-lock{overflow:hidden}
             <button class="btn soft" id="btnMnAdd" style="flex:1;padding:11px;font-size:13px">＋ 내역 추가</button>
             <button class="btn" id="btnMnAsk" style="flex:1;padding:11px;font-size:13px">🙋 용돈 요청</button>
           </div>
-          <div class="hint">지섭·지율이의 “받을 용돈”을 적어 두면 미받은 용돈이 한눈에 보여요. 받을 때 💵 지급완료를 누르면 잔액에 반영되고, 현금·카드·계좌이체도 함께 남습니다.</div>
+          <div class="hint">아이들의 “받을 용돈”을 적어 두면 미받은 용돈이 한눈에 보여요. 받을 때 💵 지급완료를 누르면 잔액에 반영되고, 현금·카드·계좌이체도 함께 남습니다.</div>
         </div>
       </div>
 
@@ -888,7 +888,7 @@ body.pg-lock{overflow:hidden}
           <button type="button" class="btn soft" id="pgFull">🔍 크게 보기</button>
           <button type="button" class="btn ghost" id="pgReset">🔄 처음 자리로</button>
         </div>
-        <div class="hint">속초 바닷가 가족사진을 보고 만든 4명이에요 — 아빠 안경·남색 패딩, 엄마 긴 머리, 지섭 검정 코트, 지율 아이보리 패딩. 집어 던지면 중력을 받아 날아가 구르고, 아프면 울고, 툴툴 털고 일어나요. 이 화면은 사진·기록과 따로 움직이고 저장되는 자료는 없어요.</div>
+        <div class="hint">가족사진을 보고 만든 4명이에요 — 아빠 안경·남색 패딩, 엄마 긴 머리, 첫째 검정 코트, 둘째 아이보리 패딩. 집어 던지면 중력을 받아 날아가 구르고, 아프면 울고, 툴툴 털고 일어나요. 이 화면은 사진·기록과 따로 움직이고 저장되는 자료는 없어요.</div>
       </div>
     </section>
 
@@ -925,24 +925,24 @@ body.pg-lock{overflow:hidden}
 <input type="file" id="filePicker" accept="image/*" multiple class="hidden">
 <div class="sheet hidden" id="sheet"><div class="sheet-inner" id="sheetInner"></div></div>
 <div class="toast" id="toast"></div>
-<script src="./extra4.js?v=15a"></script>
-<script src="./game4.js?v=14a"></script>
-<script src="./mind5.js?v=7a"></script>
-<script src="./cal7.js?v=7a"></script>
-<script src="./extra7.js?v=7a"></script>
-<script src="./extra8.js?v=10a"></script>
-<script src="./home8.js?v=8a"></script>
+<script src="./extra4.js?v=15b"></script>
+<script src="./game4.js?v=14b"></script>
+<script src="./mind5.js?v=7b"></script>
+<script src="./cal7.js?v=7b"></script>
+<script src="./extra7.js?v=7b"></script>
+<script src="./extra8.js?v=10b"></script>
+<script src="./home8.js?v=8b"></script>
 <script src="./tama3d.js?v=14a"></script>
 <script src="./minicar3d.js?v=14a"></script>
 <script src="./life9.js?v=15b"></script>
-<script src="./home9.js?v=16b"></script>
+<script src="./home9.js?v=17a"></script>
 <script src="./v10.js?v=16b"></script>
 <script>
 (function () {
 'use strict';
 
 /* ============================================================
-   상국수향지섭지율포털 · 가족 전용 앱
+   우리가족포털 · 가족 전용 앱
    - 데이터: 가족 공용 클라우드(textdb)에 AES-256-GCM 암호화 저장
    - 열쇠: 가족 초대코드로 감싼 마스터 키(gate 문서) → 코드를 아는 사람만 열림
    - 개인 계정: PBKDF2-SHA256(12만 회) 해시로 저장
@@ -1026,21 +1026,10 @@ function roleEmoji(role) {
   };
   return m[role] || '🧑';
 }
-/* 우리 가족 이름 → 확정 호칭(지섭 = 첫째아들, 지율 = 둘째아들)
-   - 예전에 '아들'/'딸'로 저장된 계정도 화면에서는 맞는 호칭으로 보이게 한다(DB는 건드리지 않음) */
-var FAM_ROLE_BY_NAME = { '상국': '아빠', '수향': '엄마', '지섭': '첫째아들', '지율': '둘째아들' };
+/* 호칭은 가입할 때 고른 역할(role)을 그대로 쓴다 — 이름·생일은 코드가 아니라
+   암호화된 가족 저장소(DOC.members)에만 둔다. */
 function roleOf(m) {
-  var role = (m && m.role) || '';
-  var name = String((m && m.name) || '').replace(/\s+/g, '');
-  if (name) {
-    for (var k in FAM_ROLE_BY_NAME) {
-      if (name.indexOf(k) !== -1) {
-        if (!role || role === '아들' || role === '딸' || role === '가족') return FAM_ROLE_BY_NAME[k];
-        return role;
-      }
-    }
-  }
-  return role || '가족';
+  return String((m && m.role) || '').trim() || '가족';
 }
 function roleLabel(m) {
   return roleOf(m) || '가족';
@@ -1408,7 +1397,7 @@ async function doJoin() {
     if (db) DOC = mergeDoc(DOC || emptyDB(), db);
     if (DOC.members[id] && !DOC.members[id].d) { errEl.textContent = '이미 사용 중인 아이디예요. 다른 아이디로 해 주세요.'; return; }
     var sameName = Object.keys(DOC.members).filter(function (k) { return !DOC.members[k].d && DOC.members[k].name === name; });
-    if (sameName.length) { errEl.textContent = '같은 호칭이 이미 있어요. 구분되게 적어 주세요(예: 지섭).'; return; }
+    if (sameName.length) { errEl.textContent = '같은 호칭이 이미 있어요. 구분되게 적어 주세요.'; return; }
     var saltBytes = crypto.getRandomValues(new Uint8Array(16));
     var salt = bytesToB64(saltBytes);
     var hash = await hashPassword(pw, salt, 120000);
@@ -2083,7 +2072,7 @@ function letterSheet(opts) {
     '<option value="all"' + (to === 'all' ? ' selected' : '') + '>👨‍👩‍👧‍👦 가족 전체</option>' +
     others.map(function (m) { return '<option value="' + esc(m.id) + '"' + (to === m.id ? ' selected' : '') + '>' + esc(m.emoji + ' ' + m.name) + '</option>'; }).join('') +
     '</select></div>' +
-    '<div class="form-row"><label>제목</label><input class="field" id="shLtTitle" maxlength="40" placeholder="예: 지섭이에게" value="' + esc(opts.title || '') + '"></div>' +
+    '<div class="form-row"><label>제목</label><input class="field" id="shLtTitle" maxlength="40" placeholder="예: 첫째에게" value="' + esc(opts.title || '') + '"></div>' +
     '<div class="form-row"><label>편지 내용</label><textarea class="field" id="shLtBody" rows="6" maxlength="2000" style="resize:vertical;line-height:1.6" placeholder="하고 싶은 말을 적어 주세요"></textarea></div>' +
     '<button type="button" class="btn ghost" id="shLtPhoto" style="padding:10px;font-size:13px">📷 사진 첨부 (갤러리·구글 포토)</button>' +
     '<div class="lt-photos" id="shLtPhotos"></div>' +
@@ -2755,6 +2744,7 @@ function pushMyLocation(quiet) {
   getGeoPos(function (pos) {
     pushFromPos(pos);
     setLocNotice('');
+    if (Date.now() - wxAt > 60000) loadWeather();
   }, function (err) {
     if (err && err.code === 1) geoPermState = 'denied';
     else if (geoPermState === 'denied') geoPermState = '';
@@ -2780,7 +2770,7 @@ function renderMap(force) {
   var w = box.clientWidth || 352, h = box.clientHeight || 230;
   var pts = liveEntries().filter(function (p) { return Date.now() - p.at < 86400000; });
   var mine = myLive();
-  var center = mapCenter || (mine && typeof mine.lat === 'number' ? { lat: mine.lat, lon: mine.lon } : (pts.length ? { lat: pts[0].lat, lon: pts[0].lon } : { lat: 37.7251, lon: 126.766 }));
+  var center = mapCenter || (mine && typeof mine.lat === 'number' ? { lat: mine.lat, lon: mine.lon } : (pts.length ? { lat: pts[0].lat, lon: pts[0].lon } : { lat: 36.5, lon: 127.8 }));
   var sig = mapZoom + '|' + center.lat.toFixed(4) + '|' + center.lon.toFixed(4) + '|' + w + 'x' + h + '|' +
     pts.map(function (p) { return p.id + ':' + p.lat.toFixed(4) + ':' + p.lon.toFixed(4); }).join(',');
   var empty = $('mapEmpty');
@@ -2911,7 +2901,7 @@ function recoSheet() {
   openSheet(
     '<h3>' + (recoCat === 'spot' ? '🍽️ 맛집 추천' : '✈️ 여행지 추천') + '</h3>' +
     '<div class="sdesc">가족에게 알려 주고 싶은 곳을 남겨 주세요.</div>' +
-    '<div class="form-row"><label>장소 이름</label><input class="field" id="shRName" maxlength="40" placeholder="예: 다율동 국수집"></div>' +
+    '<div class="form-row"><label>장소 이름</label><input class="field" id="shRName" maxlength="40" placeholder="예: 동네 국수집"></div>' +
     '<div class="form-row"><label>한줄평</label><input class="field" id="shRNote" maxlength="80" placeholder="예: 손칼국수가 진해요"></div>' +
     '<div class="form-row"><label>별점</label><div class="star-input" id="shStars">' +
     [1, 2, 3, 4, 5].map(function (n) { return '<button type="button" class="st' + (n <= 4 ? ' on' : '') + '" data-star="' + n + '">★</button>'; }).join('') +
@@ -3249,10 +3239,22 @@ function autoRefreshMyLoc() {
 }
 
 /* ---------------- 날씨 ---------------- */
-var WX_PLACES = [
-  { id: 'paju', name: '파주', lat: 37.7251, lon: 126.7660 },
-  { id: 'yeoncheon', name: '연천', lat: 38.0964, lon: 127.0746 }
-];
+/* 날씨 지역은 코드에 적지 않는다.
+   ① 가족 저장소(DOC.v9.wxPlaces)에 저장된 지역  ② 지금 위치를 공유한 구성원의 위치 */
+var wxGeoOnce = false;
+function wxSavedPlaces() {
+  var out = [];
+  var st = DOC && DOC.v9 && DOC.v9.wxPlaces;
+  if (st && typeof st === 'object') {
+    Object.keys(st).forEach(function (k) {
+      var p = st[k];
+      if (p && !p.d && typeof p.lat === 'number' && typeof p.lon === 'number') {
+        out.push({ id: k, name: p.name || '저장한 지역', lat: p.lat, lon: p.lon });
+      }
+    });
+  }
+  return out;
+}
 function symInfo(s) {
   s = String(s || '').toLowerCase();
   if (s.indexOf('thunder') >= 0) return { e: '⛈️', t: '천둥·번개' };
@@ -3343,6 +3345,11 @@ function placeWeather(p) {
     .catch(function () { return wxOpenMeteo(p); })
     .catch(function () { return { name: p.name, err: true }; });
 }
+function paintWeatherNone() {
+  var row = $('wxRow');
+  if (!row) return;
+  row.innerHTML = '<div class="wx-chip"><div class="p">날씨</div><div class="t">–</div><div class="d">위치를 공유하면 보여요</div></div>';
+}
 function paintWeather(list) {
   var row = $('wxRow');
   row.innerHTML = list.map(function (w) {
@@ -3357,11 +3364,17 @@ function paintWeather(list) {
   }).join('');
 }
 function loadWeather() {
-  var places = WX_PLACES.slice();
+  var places = wxSavedPlaces();
   var mine = DOC && DOC.live && DOC.live[ME.id];
   if (mine && mine.at && (Date.now() - mine.at) < 1000 * 3600 * 3) {
     places.push({ id: 'here', name: '내 위치', lat: mine.lat, lon: mine.lon });
   }
+  if (!places.length) {
+    paintWeatherNone();
+    if (!wxGeoOnce) { wxGeoOnce = true; pushMyLocation(true); }   /* 위치를 한 번만 조용히 확인 */
+    return;
+  }
+  wxGeoOnce = true;
   Promise.all(places.map(placeWeather)).then(function (list) {
     wxCache = list; wxAt = Date.now();
     paintWeather(list);
@@ -3870,7 +3883,7 @@ function ensurePlay(cb) {
   if (pgLoading) return;
   pgLoading = true;
   var s = document.createElement('script');
-  s.src = './play3d.js?v=7a';
+  s.src = './play3d.js?v=7b';
   s.async = true;
   s.onload = function () { pgLoading = false; if (window.FamPlay) cb(); else toast('놀이터를 불러오지 못했어요'); };
   s.onerror = function () { pgLoading = false; toast('놀이터를 불러오지 못했어요. 잠시 후 다시 열어 주세요'); };

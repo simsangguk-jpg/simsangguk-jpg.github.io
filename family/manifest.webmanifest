@@ -1,7 +1,7 @@
 {
-  "name": "상국수향지섭지율포털",
+  "name": "우리가족포털",
   "short_name": "우리가족포털",
-  "description": "상국·수향·지섭·지율 우리 가족 전용 공간",
+  "description": "우리 가족 전용 공간",
   "lang": "ko",
   "dir": "ltr",
   "start_url": "/family/",
