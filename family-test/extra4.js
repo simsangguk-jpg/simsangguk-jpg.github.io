@@ -1224,7 +1224,7 @@
   var TUBE = [
     { e: '😆', t: '흔한남매', d: '온 가족이 웃는 인기 채널', u: 'https://www.youtube.com/results?search_query=%ED%9D%94%ED%95%9C%EB%82%A8%EB%A7%A4' },
     { e: '🎮', t: '인기 게임 영상', d: '마인크래프트·로블록스·브롤스타즈', u: 'https://www.youtube.com/results?search_query=%EC%9D%B8%EA%B8%B0+%EA%B2%8C%EC%9E%84+%EC%98%81%EC%83%81' },
-    { e: '🧸', t: '미쁠 유튜브', d: '우리 가족 이야기 채널', u: 'https://www.youtube.com/results?search_query=%EB%AF%B8%EB%BF%A0' },
+    { e: '🧸', t: '미쁠 유튜브', d: '우리 가족 이야기 채널', u: 'https://www.youtube.com/results?search_query=%EB%AF%B8%EC%81%A0' },
     { e: '🎵', t: '가족 노래방', d: '신나는 동요·가요', u: 'https://www.youtube.com/results?search_query=%EA%B0%80%EC%A1%B1+%EB%85%B8%EB%9E%98%EB%B0%A9' }
   ];
   var BOOKS = [

@@ -348,7 +348,12 @@
       byMember[m.id] = { key: ck, at: Date.now(), lat: l.lat, lon: l.lon, list: withD,
         sig: ck + '|' + withD.map(function (x) { return x.name + x.dist; }).join(',') };
       decorateAll();
-    }, function () { delete waiting[m.id]; decorateAll(); });
+    }, function () {
+      /* 실패해도 '찾는 중…'에 머물지 않게 실패 상태를 남긴다 */
+      if (waiting[m.id] === ck) delete waiting[m.id];
+      byMember[m.id] = { key: ck, at: Date.now(), lat: l.lat, lon: l.lon, list: [], sig: 'err|' + ck, err: 1 };
+      decorateAll();
+    });
   }
   function chipsInner(id) {
     var n = byMember[id];
@@ -356,7 +361,8 @@
       return '<span class="w8-ld"><i class="w8-sp"></i> 주변 맛집·카페·명소를 찾는 중…</span>';
     }
     if (!n.list.length) {
-      return '<span class="w8-ld">주변 추천을 불러오지 못했어요 · <button type="button" data-w8retry="' + esc(id) + '">다시 찾기</button></span>';
+      var msg = n.err ? '주변 추천을 불러오지 못했어요' : '이 근처엔 등록된 맛집·명소가 적어요';
+      return '<span class="w8-ld">' + msg + ' · <button type="button" data-w8retry="' + esc(id) + '">다시 찾기</button></span>';
     }
     var html = '<span class="w8-hd">🍽️ 주변 추천</span><div class="w8-grid">';
     n.list.forEach(function (x, i) {
