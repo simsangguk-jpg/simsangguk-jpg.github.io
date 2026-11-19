@@ -335,11 +335,15 @@
      v.shiftCfg = { anchor: 'YYYY-MM-DD', cycle: [4,5,5,4,5,5] }  · cycle 은 근무·휴식을 번갈아 반복
      처음 쓰는 가족은 설정에서 '근무표 1일차'만 정하면 아래 계산이 그대로 맞아떨어진다. */
   var SHIFT_CYCLE_DEFAULT = [4, 5, 5, 4, 5, 5];
+  /* 근무표 1일차는 가족 저장소(v9.shiftCfg.anchor)에서 읽는다.
+     아직 정하지 않은 가족은 상국 님이 확정한 기준일(2026-11-16 · 11/1 근무·11/6 근무·11/11 휴식과 일치)로 계산해
+     근무표가 '–'로 비어 보이지 않게 한다. 설정에서 다른 날짜로 바꾸면 그 값이 우선한다. */
+  var SHIFT_ANCHOR_FALLBACK = '2026-11-16';
   function shiftCfg() {
     var v = V9();
     var c = (v && v.shiftCfg) || {};
     var cyc = (c.cycle instanceof Array && c.cycle.length) ? c.cycle : SHIFT_CYCLE_DEFAULT;
-    return { anchor: c.anchor || '', cycle: cyc };
+    return { anchor: c.anchor || SHIFT_ANCHOR_FALLBACK, cycle: cyc, custom: !!c.anchor };
   }
   function shiftBase(dt) {
     var cfg = shiftCfg();
@@ -1556,6 +1560,7 @@
             '<span class="pt">' + (r.pts > 0 ? '+' : '') + r.pts + '</span></div>';
         }).join('');
       })() +
+      (sbRows(sb, function (r) { return r.st === 'ok'; }).length > 6 ? '<button type="button" class="btn ghost" id="sb9All" style="margin-top:6px;padding:9px 12px;font-size:12px">📜 전체 이력 보기</button>' : '') +
       /* 미쁠 조언 */
       '<div class="sb9-adv"><div class="sb9-h">💡 미쁠의 맞춤 조언</div>' +
       '<div id="sb9AdvTxt">' + esc(sb.advice && sb.advice.text || sbRuleAdvice(sb)) + '</div>' +
@@ -1578,32 +1583,61 @@
     };
     return '최근 ' + esc(catName(sb, topId)) + '을(를) ' + topN + '번 반복했어요. ' + (TIP[catName(sb, topId)] || '같은 실수가 반복되면 가족과 함께 대책을 정해 보세요. 잘한 일도 꾸준히 챙겨 주면 상점이 쑥쑥 쌓여요!');
   }
-  function sbGiveSheet(kind) {
+  function sbGiveSheet(kind0) {
     var sb = sbOf();
-    var v = V9();
-    var cats = Object.keys(sb.cat).map(function (k) { sb.cat[k]._id = k; return sb.cat[k]; })
-      .filter(function (c) { return !c.del && c.kind === kind; })
-      .sort(function (a, b) { return b.pts - a.pts; });
-    F.openSheet('<h3>' + (kind === 'plus' ? '🏅 상점 주기' : '⚠️ 벌점 주기') + '</h3>' +
+    var kind = kind0 === 'minus' ? 'minus' : 'plus';
+    function catsOf(k) {
+      return Object.keys(sb.cat).map(function (x) { sb.cat[x]._id = x; return sb.cat[x]; })
+        .filter(function (c) { return !c.del && c.kind === k; })
+        .sort(function (a, b) { return b.pts - a.pts; });
+    }
+    var others = F.members().filter(function (m) { return me() && m.id !== me().id; });
+    function optsOf(k) {
+      var cs = catsOf(k);
+      if (!cs.length) return '<option value="">(항목 없음 — ⚙️ 항목 편집에서 추가)</option>';
+      return cs.map(function (c) {
+        return '<option value="' + c._id + '">' + (c.pts > 0 ? '+' : '') + c.pts + ' · ' + esc(c.t) + '</option>';
+      }).join('');
+    }
+    F.openSheet('<h3>🏅 상점·벌점 주기</h3>' +
+      '<div class="sdesc">칭찬은 상점, 약속을 어겼을 때는 벌점으로 남겨요. 준 점수는 가족 모두에게 바로 보여요.</div>' +
+      '<div class="seg sb9-kind" id="sb9Kind" style="margin-bottom:10px">' +
+      '<button type="button" data-sb9kind="plus" class="' + (kind === 'plus' ? 'on' : '') + '">🏅 상점 주기</button>' +
+      '<button type="button" data-sb9kind="minus" class="' + (kind === 'minus' ? 'on' : '') + '">⚠️ 벌점 주기</button>' +
+      '</div>' +
       '<div class="form-row"><label>누구에게</label><select class="field" id="sb9To">' +
-      F.members().filter(function (m) { return me() && m.id !== me().id; }).map(function (m) {
+      others.map(function (m) {
         return '<option value="' + m.id + '">' + m.emoji + ' ' + esc(m.name) + '</option>';
       }).join('') + '</select></div>' +
-      '<div class="form-row"><label>항목</label><select class="field" id="sb9Cat">' +
-      cats.map(function (c) { return '<option value="' + c._id + '">' + (c.pts > 0 ? '+' : '') + c.pts + ' · ' + esc(c.t) + '</option>'; }).join('') + '</select></div>' +
+      '<div class="form-row"><label>항목</label><select class="field" id="sb9CatSel">' + optsOf(kind) + '</select></div>' +
       '<div class="form-row"><label>메모 (선택)</label><input class="field" id="sb9Note" maxlength="60" placeholder="예: 오늘 스스로 수학 숙제 다 했어요"></div>' +
       '<div style="display:flex;gap:8px;margin-top:6px"><button type="button" class="btn ghost" data-sheet-close>취소</button><button type="button" class="btn" id="sb9GiveSave">부여하기</button></div>');
+    var sheet = $('sheet');
+    if (sheet) {
+      sheet.addEventListener('click', function (ev) {
+        var k = ev.target.closest('[data-sb9kind]');
+        if (!k) return;
+        kind = k.getAttribute('data-sb9kind');
+        var btns = sheet.querySelectorAll('[data-sb9kind]');
+        for (var i = 0; i < btns.length; i++) btns[i].classList.toggle('on', btns[i] === k);
+        var sel = $('sb9CatSel');
+        if (sel) sel.innerHTML = optsOf(kind);
+      });
+    }
     $('sb9GiveSave').onclick = function () {
-      var to = $('sb9To').value, cat = $('sb9Cat').value, note = ($('sb9Note').value || '').trim();
+      var toEl = $('sb9To'), catEl = $('sb9CatSel'), noteEl = $('sb9Note');
+      var to = toEl ? toEl.value : '', cat = catEl ? catEl.value : '';
+      var note = noteEl ? (noteEl.value || '').trim() : '';
       if (!to || !cat) { toast('대상·항목을 골라 주세요'); return; }
       var sb2 = sbOf();
       var c = sb2.cat[cat];
+      if (!c) { toast('항목을 다시 골라 주세요'); return; }
       var id = 'r' + now().toString(36) + Math.random().toString(36).slice(2, 4);
-      sb.rec[id] = { from: mid(), to: to, cat: cat, pts: c.pts, note: note, st: 'ok', ymd: todayYmd(), at: now() };
+      sb2.rec[id] = { from: mid(), to: to, cat: cat, pts: c.pts, note: note, st: 'ok', ymd: todayYmd(), at: now() };
       save();
-      logEdit('상벌점 ' + (kind === 'plus' ? '상점' : '벌점') + ' 부여', memName(to) + ' ' + (c.pts > 0 ? '+' : '') + c.pts + '점 · ' + c.t);
+      logEdit('상벌점 ' + (c.pts > 0 ? '상점' : '벌점') + ' 부여', memName(to) + ' ' + (c.pts > 0 ? '+' : '') + c.pts + '점 · ' + c.t);
       F.closeSheet();
-      $('v9SbBody').__sig = null;
+      if ($('v9SbBody')) $('v9SbBody').__sig = null;
       renderSb();
       toast((c.pts > 0 ? '🏅 ' : '⚠️ ') + memName(to) + '님에게 ' + (c.pts > 0 ? '+' : '') + c.pts + '점을 부여했어요');
     };
@@ -1615,7 +1649,7 @@
     F.openSheet('<h3>🙋 잘한 일 건의 올리기</h3>' +
       '<div class="sdesc">근거 사진과 함께 엄마·아빠에게 올리면, 확인 후 칭찬 승인 + 상점 + (용돈까지) 한 번에 처리돼요!</div>' +
       '<div class="form-row"><label>누구의 잘한 일인가요</label><select class="field" id="sb9SugTo">' +
-      F.members().filter(function (m) { return m.role === '첫째아들' || m.role === '둘째아들'; }).map(function (m) {
+      F.members().filter(function (m) { return m.role === '첫째아들' || m.role === '둘째아들' || m.role === '아들' || m.role === '딸'; }).map(function (m) {
         return '<option value="' + m.id + '">' + m.emoji + ' ' + esc(m.name) + '</option>';
       }).join('') + '</select></div>' +
       '<div class="form-row"><label>상점 항목</label><select class="field" id="sb9SugCat">' +
@@ -1691,6 +1725,29 @@
     renderSb();
     toast('🎉 칭찬 승인! +' + r.pts + '점을 부여했어요');
   }
+  function sbAllSheet() {
+    var sb = sbOf();
+    var rows = sbRows(sb, function (r) { return r.st === 'ok'; });
+    var groups = {}, order = [];
+    rows.forEach(function (r) {
+      var yk = r.ymd || todayYmd();
+      if (!groups[yk]) { groups[yk] = []; order.push(yk); }
+      groups[yk].push(r);
+    });
+    var html = '<h3>📜 상벌점 전체 이력</h3><div class="sdesc">승인된 상점·벌점 ' + rows.length + '건을 날짜별로 모았어요.</div>';
+    if (!rows.length) html += '<div class="v4-empty">아직 기록이 없어요 — 잘한 일을 서로 알려 주세요!</div>';
+    order.slice(0, 20).forEach(function (yk) {
+      html += '<div class="sb9-h" style="margin-top:10px">' + esc(yk) + '</div>';
+      groups[yk].forEach(function (r) {
+        html += '<div class="sb9-row"><span class="ic">' + (r.pts > 0 ? '🏅' : '⚠️') + '</span>' +
+          '<span class="tx"><b>' + esc(memName(r.to)) + '</b> · ' + esc(catName(sb, r.cat)) + (r.note ? '<small>' + esc(r.note) + '</small>' : '') + '</span>' +
+          '<span class="who">' + esc(memName(r.from)) + '</span>' +
+          '<span class="pt">' + (r.pts > 0 ? '+' : '') + r.pts + '</span></div>';
+      });
+    });
+    html += '<button type="button" class="btn" data-sheet-close style="margin-top:10px">닫기</button>';
+    F.openSheet(html);
+  }
   function sbCatSheet() {
     var sb = sbOf();
     var cats = Object.keys(sb.cat).map(function (k) { sb.cat[k]._id = k; return sb.cat[k]; })
@@ -1753,6 +1810,8 @@
       }
       var sg = e.target.closest('#sb9Suggest');
       if (sg) { sbSuggestSheet(); return; }
+      var al = e.target.closest('#sb9All');
+      if (al) { sbAllSheet(); return; }
       var ct = e.target.closest('#sb9Cat');
       if (ct) { sbCatSheet(); return; }
       var ok = e.target.closest('[data-sb9ok]');
@@ -1812,7 +1871,7 @@
         (when ? '<small class="at">' + esc(when) + '</small>' : '') +
         '</button>';
     }).join('') + '</div>' +
-    '<div class="mo9-foot"><button type="button" class="btn ghost" id="mo9Mind" style="padding:7px 12px;font-size:11.5px">🧠 마음 현황판으로 자세히 보기</button></div>';
+    '<div class="mo9-foot"><span class="mo9-tip">내 칸을 누르면 오늘 기분을 남길 수 있어요</span></div>';
     if (box.__sig !== html) { box.__sig = html; box.innerHTML = html; }
   }
   function moodSheet() {

@@ -732,7 +732,8 @@
   function secArchive() {
     return '<div class="card" id="v9Arch" style="border:1.5px solid #E2DFF5;background:linear-gradient(180deg,#F8F7FF,#FFFFFF)">' +
       '<div class="card-head"><h2>🗂️ 그날 그날 기록 보기</h2><span class="sub">날짜별 아카이브</span></div>' +
-      '<div class="fb-desc">앱을 켤 때마다 그날의 상태(귀가 현황·용돈·다마고치·자료 수)가 자동 저장돼요. 날짜를 골라 그날의 기록을 꺼내 보고, 전체 데이터를 JSON으로 백업할 수도 있어요.</div>' +
+      '<div class="fb-desc">앱을 켤 때마다 그날의 상태(귀가 현황·용돈·자료 수)가 자동 저장돼요. 사진·일기·편지·상벌점까지 날짜로 모아 보려면 <b>기록 › 날짜별 기록</b>을 여세요. 전체 데이터는 JSON으로 백업할 수 있어요.</div>' +
+      '<button type="button" class="btn soft" id="v9ArchGoHist" style="margin-top:8px;padding:10px;font-size:12.5px">🗂️ 날짜별 기록 열기</button>' +
       '<div style="display:flex;gap:7px;margin-top:8px">' +
       '<input class="field" id="v9ArchDate" type="date" style="margin-bottom:0;flex:1">' +
       '<button type="button" class="btn ghost" id="v9ArchGo" style="width:auto;padding:0 14px">조회</button></div>' +
@@ -750,10 +751,14 @@
     var v = V9(), box = $('v9ArchBody');
     if (!box) return;
     var a = v.archive[yk];
+    /* 지난 날짜에 스냅숏이 없으면 지금 상태를 '그날 기록'으로 지어내지 않는다.
+       (예전에는 조회할 때마다 오늘 상태를 그날 기록처럼 저장해 과거가 뒤섞였다) */
     if (!a) {
-      snapshotDay(v, yk);
-      save();
-      a = v.archive[yk];
+      box.innerHTML = '<div class="v4-wish"><b>📅 ' + esc(yk) + '</b>' +
+        '<div class="v4-empty" style="margin-top:6px">이 날은 저장된 상태 스냅숏이 없어요.<br>' +
+        '그날의 사진·일기·편지·상벌점·용돈·일정은 <b>기록 › 날짜별 기록</b>에서 볼 수 있어요.</div>' +
+        '<button type="button" class="btn soft" id="v9ArchOpenHist" style="margin-top:8px">🗂️ 날짜별 기록에서 보기</button></div>';
+      return;
     }
     var html = '<div class="v4-wish"><b>📅 ' + esc(yk) + ' 기록</b>';
     var ms = F.members();
@@ -780,6 +785,19 @@
       if (go) {
         var yk = ($('v9ArchDate').value || todayYmd());
         showArchive(yk);
+        return;
+      }
+      var gh = e.target.closest('#v9ArchGoHist');
+      if (gh) {
+        if (window.FAMHIST) window.FAMHIST.go(todayYmd());
+        if (window.FAMNAV) window.FAMNAV.go('record', 'day');
+        return;
+      }
+      var oh = e.target.closest('#v9ArchOpenHist');
+      if (oh) {
+        var yk2 = ($('v9ArchDate') && $('v9ArchDate').value) || todayYmd();
+        if (window.FAMHIST) window.FAMHIST.go(yk2);
+        if (window.FAMNAV) window.FAMNAV.go('record', 'day');
         return;
       }
       var bk = e.target.closest('#v9Backup');
