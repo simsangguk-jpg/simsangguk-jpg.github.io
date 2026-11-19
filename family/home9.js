@@ -923,6 +923,7 @@
       if (!id) return;
       /* 꾸미기 버튼 줄·히어로는 카드가 아니므로 목록에서 뺀다 */
       if (ch.classList && ch.classList.contains('v9-editbar')) return;
+      if (id === 'v10Hero') return;
       var known = HOME_CARDS.filter(function (c) { return c.id === id; })[0];
       if (known) out.push(known);
       else {
