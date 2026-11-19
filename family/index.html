@@ -15,7 +15,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="우리가족포털">
 <meta name="format-detection" content="telephone=no">
-<link rel="stylesheet" href="./v10.css?v=13">
+<link rel="stylesheet" href="./v10.css?v=18">
 <style>
 :root{
   --bg:#F5F7F8;
@@ -962,18 +962,25 @@ body::after{
       </div>
     </section>
 
-    <!-- ===== V10 · 일정 (근무표·디데이·용돈·약속) — v10.js 가 카드를 옮겨 채운다 ===== -->
+    <!-- ===== V12 · 일정 (한 번에 한 기능: 달력·근무/등교·디데이·용돈·상벌점·약속) ===== -->
     <section id="view-sched" class="hidden"></section>
 
-    <!-- ===== V4 · 전체(카테고리 목차 + 생활 업그레이드) ===== -->
+    <!-- ===== V12 · 기록 (날짜별 과거 기록·사진첩·위치·백업) ===== -->
+    <section id="view-record" class="hidden"></section>
+
+    <!-- ===== V12 · 우리집 (가족·마음/선물·소식·추천·생활도구) ===== -->
+    <section id="view-house" class="hidden"></section>
+
+    <!-- ===== V4 · 전체(카테고리 목차) — V12부터는 화면에 쓰지 않는 보관 영역 ===== -->
     <section id="view-all" class="hidden"></section>
   </main>
 
   <nav class="tabbar" id="tabbar">
-    <button type="button" data-v10tab="home" class="on"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10.6 12 4l8 6.6V19a1.4 1.4 0 0 1-1.4 1.4H5.4A1.4 1.4 0 0 1 4 19z"/><path d="M9.6 20.4v-6.1h4.8v6.1"/></svg></span>홈</button>
-    <button type="button" data-v10tab="share"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20.3 11.6a7.7 7.7 0 0 1-11.2 7l-4.1 1.3 1.3-4A7.7 7.7 0 1 1 20.3 11.6z"/><path d="M8.9 11.6h.01M12 11.6h.01M15.1 11.6h.01"/></svg></span>소통<span class="badge-dot hidden" id="tabChatDot">0</span><span class="badge-dot hidden" id="tabLifeDot" style="display:none">0</span></button>
-    <button type="button" data-v10tab="sched"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3.8" y="5.6" width="16.4" height="14.4" rx="3.2"/><path d="M8.2 3.4v4M15.8 3.4v4M3.8 10.4h16.4"/><path d="M7.9 14.2h.01M12 14.2h.01M16.1 14.2h.01"/></svg></span>일정</button>
-    <button type="button" data-v10tab="house"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="9.2" cy="8.8" r="3.1"/><path d="M3.6 19.4c.7-3.2 2.9-4.9 5.6-4.9s4.9 1.7 5.6 4.9"/><path d="M16.2 6.9a2.6 2.6 0 1 1 1.9 4.4c-.7 0-1.4-.3-1.9-.8"/><path d="M17.9 14.9c2 .4 3.4 1.9 3.9 4.5"/></svg></span>우리집<span class="badge-dot hidden" id="tabAllDot">0</span></button>
+    <button type="button" data-v10tab="home" class="on" aria-label="홈"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10.6 12 4l8 6.6V19a1.4 1.4 0 0 1-1.4 1.4H5.4A1.4 1.4 0 0 1 4 19z"/><path d="M9.6 20.4v-6.1h4.8v6.1"/></svg></span>홈</button>
+    <button type="button" data-v10tab="share" aria-label="소통"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20.3 11.6a7.7 7.7 0 0 1-11.2 7l-4.1 1.3 1.3-4A7.7 7.7 0 1 1 20.3 11.6z"/><path d="M8.9 11.6h.01M12 11.6h.01M15.1 11.6h.01"/></svg></span>소통<span class="badge-dot hidden" id="tabChatDot">0</span><span class="badge-dot hidden" id="tabLifeDot" style="display:none">0</span></button>
+    <button type="button" data-v10tab="sched" aria-label="일정"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3.8" y="5.6" width="16.4" height="14.4" rx="3.2"/><path d="M8.2 3.4v4M15.8 3.4v4M3.8 10.4h16.4"/><path d="M7.9 14.2h.01M12 14.2h.01M16.1 14.2h.01"/></svg></span>일정</button>
+    <button type="button" data-v10tab="record" aria-label="기록"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4.2 6.4A2 2 0 0 1 6.2 4.4h11.6a2 2 0 0 1 2 2v13.2H6.2a2 2 0 0 1-2-2z"/><path d="M8 8.6h8M8 12h8M8 15.4h5"/></svg></span>기록</button>
+    <button type="button" data-v10tab="house" aria-label="우리집"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="9.2" cy="8.8" r="3.1"/><path d="M3.6 19.4c.7-3.2 2.9-4.9 5.6-4.9s4.9 1.7 5.6 4.9"/><path d="M16.2 6.9a2.6 2.6 0 1 1 1.9 4.4c-.7 0-1.4-.3-1.9-.8"/><path d="M17.9 14.9c2 .4 3.4 1.9 3.9 4.5"/></svg></span>우리집<span class="badge-dot hidden" id="tabAllDot">0</span></button>
   </nav>
 </div>
 
@@ -994,14 +1001,15 @@ body::after{
 <input type="file" id="filePicker" accept="image/*" multiple class="hidden">
 <div class="sheet hidden" id="sheet"><div class="sheet-inner" id="sheetInner"></div></div>
 <div class="toast" id="toast"></div>
-<script src="./extra4.js?v=15b"></script>
-<script src="./cal7.js?v=7b"></script>
-<script src="./extra7.js?v=7b"></script>
-<script src="./extra8.js?v=10b"></script>
-<script src="./home8.js?v=8b"></script>
-<script src="./life9.js?v=15b"></script>
-<script src="./home9.js?v=17a"></script>
-<script src="./v10.js?v=16b"></script>
+<script src="./extra4.js?v=18a"></script>
+<script src="./cal7.js?v=18a"></script>
+<script src="./extra7.js?v=18a"></script>
+<script src="./extra8.js?v=18a"></script>
+<script src="./home8.js?v=18a"></script>
+<script src="./life9.js?v=18a"></script>
+<script src="./home9.js?v=18a"></script>
+<script src="./hist11.js?v=1"></script>
+<script src="./v10.js?v=18a"></script>
 <script>
 (function () {
 'use strict';
@@ -1678,9 +1686,11 @@ function renderPhotos() {
   var html = '<button type="button" class="photo-add" id="photoAdd"><span style="font-size:20px">＋</span>사진 올리기</button>';
   html += ids.map(function (k) {
     var p = DOC.photos[k];
+    var pd = p.at ? new Date(p.at) : null;
+    var pwhen = pd ? (pd.getMonth() + 1) + '/' + pd.getDate() : '';
     return '<div class="photo-cell" data-photo="' + esc(k) + '">' +
       (p.thumb ? '<img src="' + p.thumb + '" alt="가족 사진" loading="lazy">' : '') +
-      (p.cap ? '<div class="cap">' + esc(p.cap) + '</div>' : '') + '</div>';
+      '<div class="cap">' + (p.cap ? esc(p.cap) + ' · ' : '') + '<span class="d">' + esc(pwhen) + '</span></div></div>';
   }).join('');
   grid.innerHTML = html;
   $('photoHint').textContent = ids.length >= MAX_PHOTOS ? ('사진은 최근 ' + MAX_PHOTOS + '장까지 보관돼요. 새로 올리면 오래된 사진부터 정리됩니다.') : '사진은 폰에서 자동으로 줄여 올려요. 눌러서 크게 보고 저장할 수 있어요.';
@@ -2880,12 +2890,16 @@ function mapRecenter() {
    ============================================================ */
 var lifeTab = 'letters';
 function paintLife() {
-  ['letters', 'notices', 'diary', 'money', 'reco', 'todo', 'cal', 'feedback'].forEach(function (t) {
-    var el = $('life-' + t);
-    if (el) el.classList.toggle('hidden', t !== lifeTab);
-    var b = document.querySelector('#lifeNav button[data-life="' + t + '"]');
-    if (b) b.classList.toggle('on', t === lifeTab);
-  });
+  /* V12: 생활 화면의 패널을 고정 목록이 아니라 실제로 있는 패널 전부로 토글한다.
+     (소통>응원 패널 life-cheer 처럼 나중에 붙는 패널도 한 번에 한 개만 보이게) */
+  var panels = document.querySelectorAll('#view-life > div[id^="life-"]');
+  for (var i = 0; i < panels.length; i++) {
+    panels[i].classList.toggle('hidden', panels[i].id !== 'life-' + lifeTab);
+  }
+  var navs = document.querySelectorAll('#lifeNav button');
+  for (var j = 0; j < navs.length; j++) {
+    navs[j].classList.toggle('on', navs[j].getAttribute('data-life') === lifeTab);
+  }
 }
 function openLife(tab) {
   lifeTab = tab || 'letters';
@@ -3810,12 +3824,15 @@ function lateSheet() {
 }
 function switchView(v) {
   currentView = v;
-  ['home', 'chat', 'photos', 'map', 'life', 'play', 'sched', 'all'].forEach(function (name) {
+  /* V12: 하단 탭 5개(홈·소통·일정·기록·우리집)에 맞춰 화면 섹션을 고른다.
+     'all'(예전 전체 화면)은 우리집 탭으로, 'play'는 더 이상 쓰지 않는다. */
+  var shown = (v === 'all') ? 'house' : (v === 'play' ? 'house' : v);
+  ['home', 'chat', 'photos', 'map', 'life', 'sched', 'record', 'house'].forEach(function (name) {
     var el = $('view-' + name);
-    if (el) el.classList.toggle('hidden', name !== v);
-    var btn = document.querySelector('#tabbar button[data-view="' + name + '"]');
-    if (btn) btn.classList.toggle('on', name === v);
+    if (el) el.classList.toggle('hidden', name !== shown);
   });
+  var va = $('view-all');
+  if (va) va.classList.add('hidden');
   if (v === 'map') {
     var ml = myLive();
     if (!mapCenter && ml && typeof ml.lat === 'number') mapCenter = { lat: ml.lat, lon: ml.lon };
@@ -3828,6 +3845,7 @@ function switchView(v) {
   if (v === 'chat') { renderChat(true); markChatSeen(); }
   if (v === 'life') { paintLife(); renderLetters(); renderNotices(); renderDiary(); renderMoney(); renderReco(); }
   if (window.__FAM_VIEW) { try { window.__FAM_VIEW(v); } catch (e) { console.warn('v4 view', e); } }
+  if (window.FAMNAV && window.FAMNAV.sync) { try { window.FAMNAV.sync(v); } catch (e) {} }
   if (v === 'chat') window.scrollTo({ top: document.body.scrollHeight });
   else window.scrollTo({ top: 0, behavior: 'smooth' });
 }
@@ -3861,6 +3879,7 @@ window.FAM = {
   ago: ago, hhmm: hhmm, dateLabel: dateLabel, dateKo: dateKo,
   won: won, ymdOf: ymdOf, todayYmd: todayYmd, pad2: pad2,
   openSheet: openSheet, closeSheet: closeSheet,
+  openLife: function (t) { openLife(t); },
   view: function (v) { switchView(v); },
   curView: function () { return currentView; },
   render: function () { renderAll(); },

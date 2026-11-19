@@ -946,9 +946,8 @@ input[type="date"].field,input[type="time"].field,input[type="datetime-local"].f
   .v10-hero .wx-chip .t{font-size:22px}
   .v10-hero .wx-row{gap:10px}
 
-  /* 일정 페이지는 카드 높이가 들쭉날쭉 → 데스크톱은 단으로 흐르게 */
-  #view-sched{display:block !important;column-count:2;column-gap:18px;max-width:1120px}
-  #view-sched>*{break-inside:avoid;margin-bottom:18px}
+  /* 일정 페이지는 V12부터 패널(.pane) 하나만 보인다 — 숨김(.hidden)이 항상 이기도록
+     display:block !important 를 두지 않는다(예전엔 이 규칙 때문에 일정 화면이 늘 보였다). */
 
   /* 채팅은 읽기 좋은 폭으로 */
   #view-chat,#view-photos{max-width:780px;margin:0 auto}
@@ -992,3 +991,92 @@ input[type="date"].field,input[type="time"].field,input[type="datetime-local"].f
 @media (prefers-reduced-motion:reduce){
   *{animation-duration:.001ms !important;transition-duration:.001ms !important}
 }
+
+/* ============================================================================
+   V12 · 탭 1개 = 기능 1개 (패널)
+   ========================================================================== */
+.pane{display:none}
+.pane.on{display:block}
+.pane>*{margin-bottom:14px}
+.pane>*:last-child{margin-bottom:0}
+#view-sched>.pane,#view-record>.pane,#view-house>.pane{width:100%}
+@media (min-width:900px){
+  #view-home,#view-record,#view-house,#view-sched{display:block}
+  #view-home{display:grid}
+  .pane.on{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;align-items:start;max-width:1120px;margin:0 auto}
+  .pane.on>*{margin-bottom:0;min-width:0}
+  .pane.on>#famCalBanner,.pane.on>#v9SbCard,.pane.on>#hstCard,
+  .pane.on>#v10PlanForm,.pane.on>#v9ShiftCard,.pane.on>#v10PlanCard{grid-column:1/-1}
+}
+
+/* 점 표시(탭 알림)가 붙어도 라벨이 밀리지 않게 */
+.tabbar button .badge-dot{pointer-events:none}
+
+/* ============================================================================
+   V12 · 과거 기록(날짜별) 카드
+   ========================================================================== */
+.hst-card .hst-nav{display:flex;gap:6px;align-items:center;margin:2px 0 8px}
+.hst-card .hst-nav .field{margin-bottom:0;flex:1;padding:10px 12px;font-size:13.5px}
+.hst-card .hst-nav .arw{width:38px;height:38px;border-radius:12px;background:#EFF7FD;color:#2470A2;font-size:18px;font-weight:800;line-height:1}
+.hst-card .hst-nav .today{padding:0 12px;height:38px;border-radius:12px;background:#E7F4FD;color:#2470A2;font-size:12px;font-weight:800;white-space:nowrap}
+.hst-days{display:flex;gap:6px;overflow-x:auto;padding:2px 1px 8px;scrollbar-width:none}
+.hst-days::-webkit-scrollbar{display:none}
+.hst-days button{flex:none;display:flex;flex-direction:column;align-items:center;gap:1px;min-width:52px;padding:6px 8px;border-radius:12px;background:#F1F8FD;border:1px solid #E3EFF9;color:#4A6E85;font-size:11.5px;font-weight:800}
+.hst-days button i{font-style:normal;font-size:9.5px;font-weight:800;color:#8FA9BC}
+.hst-days button.on{background:linear-gradient(180deg,#5AA9DA,#3E8CC7);color:#fff;border-color:transparent}
+.hst-days button.on i{color:rgba(255,255,255,.85)}
+.hst-days .none{font-size:11.5px;color:#8FA9BC;font-weight:700}
+.hst-sum{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:9px}
+.hst-sum span{font-size:11px;font-weight:800;color:#24708F;background:#EAF6FD;border:1px solid #DDEEF9;border-radius:20px;padding:4px 9px}
+.hst-sum span.none{color:#8FA9BC;background:#F3F7FA;border-color:#E8EFF4}
+.hst-shift{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:11px}
+.hst-shift .sg{font-size:11.5px;font-weight:800;padding:4px 10px;border-radius:20px;background:#F3F7FA;color:#5D7484}
+.hst-shift .sg.work{background:#FFEAE6;color:#C0432B}
+.hst-shift .sg.rest{background:#E9F5EC;color:#2C7A44}
+.hst-shift .sg.vac{background:#EAF0FF;color:#3A5BC7}
+.hst-shift .lb{font-size:11.5px;color:#6E8CA0;font-weight:700}
+.hst-shift .tag{font-size:10.5px;font-weight:800;padding:3px 8px;border-radius:20px;background:#FFF4E3;color:#9A6520}
+.hst-shift .tag.blue{background:#EAF3FF;color:#2F6FD0}
+.hst-shift .tag.gray{background:#F1F4F6;color:#7A8B98}
+.hst-h{font-size:12px;font-weight:800;color:#5C7E93;margin:12px 2px 6px;letter-spacing:-.2px}
+.hst-box{display:flex;flex-direction:column;gap:1px;background:rgba(248,252,255,.85);border:1px solid #E7F1F9;border-radius:14px;padding:5px 10px}
+.hst-row{display:flex;gap:8px;align-items:flex-start;padding:6px 0;border-bottom:1px dashed #EAF2F8}
+.hst-row:last-child{border-bottom:none}
+.hst-row .ic{font-size:14px;line-height:1.4;width:18px;flex:none;text-align:center}
+.hst-row .tx{flex:1;min-width:0;font-size:12.5px;line-height:1.45;word-break:keep-all}
+.hst-row .tx b{font-weight:800}
+.hst-row .tx small{display:block;color:#6E8CA0;font-size:11px;margin-top:1px}
+.hst-row.done .tx{opacity:.72}
+.hst-row .pt.plus{color:#1C8A55}
+.hst-row .pt.minus{color:#C0432B}
+.hst-empty{margin-top:10px;padding:20px 12px;text-align:center;font-size:12.5px;line-height:1.65;color:#7E97A8;background:#F7FBFE;border:1px dashed #DDEBF6;border-radius:14px}
+.hst-photos{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.hst-ph{position:relative;padding:0;border-radius:12px;overflow:hidden;background:#EAF3F9;aspect-ratio:1/1}
+.hst-ph img{width:100%;height:100%;object-fit:cover;display:block}
+.hst-ph .no{display:flex;align-items:center;justify-content:center;height:100%;font-size:20px}
+.hst-ph em{position:absolute;left:0;right:0;bottom:0;padding:10px 5px 3px;font-style:normal;font-size:9.5px;color:#fff;background:linear-gradient(transparent,rgba(0,0,0,.5));white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:left}
+.hst-note{background:rgba(248,252,255,.85);border:1px solid #E7F1F9;border-radius:14px;padding:9px 11px;margin-bottom:7px}
+.hst-note .who{display:flex;align-items:center;gap:5px;font-size:11.5px;color:#5C7E93}
+.hst-note .who b{font-size:12px;color:#26404F}
+.hst-note .who em{font-style:normal;font-size:10.5px;color:#8FA9BC;margin-left:auto}
+.hst-note .ttl{font-size:12.5px;font-weight:800;margin-top:4px}
+.hst-note .txt{font-size:12.5px;line-height:1.55;margin-top:3px;white-space:pre-wrap;word-break:keep-all}
+.hst-moods{display:grid;grid-template-columns:repeat(2,1fr);gap:6px}
+.hst-mood{display:flex;flex-direction:column;align-items:center;gap:1px;background:rgba(248,252,255,.85);border:1px solid #E7F1F9;border-radius:14px;padding:8px 6px}
+.hst-mood .e{font-size:20px}
+.hst-mood b{font-size:11.5px}
+.hst-mood small{font-size:10px;color:#6E8CA0;text-align:center;line-height:1.35}
+.hst-mood em{font-style:normal;font-size:9.5px;color:#9FB3C2}
+.hst-more{font-size:11px;color:#8FA9BC;text-align:center;padding:4px 0}
+@media (min-width:900px){
+  .hst-photos{grid-template-columns:repeat(4,1fr)}
+  .hst-moods{grid-template-columns:repeat(4,1fr)}
+}
+
+/* V12 · 아침 브리핑 접기/펼치기 */
+#briefCard .card-head .chip-btn{margin-left:auto;padding:5px 10px;font-size:11px;border-radius:20px}
+#briefCard.brief-collapsible:not(.open) #briefBody{max-height:120px;overflow:hidden;
+  -webkit-mask-image:linear-gradient(180deg,#000 62%,rgba(0,0,0,0));mask-image:linear-gradient(180deg,#000 62%,rgba(0,0,0,0))}
+#briefCard.brief-collapsible{padding-bottom:12px}
+/* 사진첩 날짜 표기 */
+.photo-cell .cap .d{opacity:.82;font-weight:700}

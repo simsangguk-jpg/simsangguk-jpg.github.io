@@ -4,23 +4,19 @@
    - 화면(HTML)은 네트워크 우선: 새로 배포한 내용이 앱에서도 바로 뜨도록
    - 그 밖의 정적 파일은 네트워크 우선, 실패 시 캐시
 */
-const SW_VERSION = 'family-portal-v10d-2026-11-18';
+const SW_VERSION = 'family-portal-v12-2026-11-19';
 const OFFLINE_HTML = new URL('index.html', self.registration.scope).href;
 const PRECACHE = [
   './',
   './index.html',
   './extra4.js',
-  './game4.js',
-  './play3d.js',
-  './mind5.js',
   './cal7.js',
   './extra7.js',
   './extra8.js',
   './home8.js',
-  './tama3d.js',
-  './minicar3d.js',
   './life9.js',
   './home9.js',
+  './hist11.js',
   './v10.js',
   './v10.css',
   './manifest.webmanifest',
