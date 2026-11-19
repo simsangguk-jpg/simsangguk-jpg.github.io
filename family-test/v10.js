@@ -19,6 +19,7 @@
   var activeTab = 'home';
   var activeItem = 'today';
   var pending = null;       /* 탭에서 직접 고른 항목 — switchView 의 자동 동기화가 덮어쓰지 않게 */
+  var lastItem = {};        /* 탭별로 마지막에 보던 기능 — 탭을 다시 눌러도 그 자리로 */
   var softNav = false;
 
   function $(id) { return DOC_.getElementById(id); }
@@ -204,8 +205,9 @@
   function go(tabId, itemId, opts) {
     var tab = tabOf(tabId);
     if (!tab) return;
-    var item = itemOf(tabId, itemId);
+    var item = itemOf(tabId, itemId || lastItem[tabId]);
     if (!item) return;
+    lastItem[tabId] = item.id;
     mark(tabId, item.id);
     if (item.pane) showPane(paneId(tabId, item.pane));
     pending = item.id;

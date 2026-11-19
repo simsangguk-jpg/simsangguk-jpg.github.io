@@ -507,7 +507,10 @@
         (x.custom ? '<button type="button" class="dd9-del" data-v9ddel="' + esc(x.id) + '">✕</button>' : '') +
         '</div>';
     }).join('');
-    if (!html) html = '<div class="v4-empty">🎂 생일·기념일을 적어 두면 D+와 생일까지 남은 날이 보여요 — 오른쪽 위 ＋ 디데이 추가</div>';
+    if (!html) {
+      html = '<div class="v4-empty">🎂 가족 생일을 등록하면 D+와 생일까지 남은 날이 자동으로 보여요.</div>' +
+        '<button type="button" class="btn soft" id="v9BirthSet" style="margin-top:8px;padding:10px;font-size:12.5px">🎂 가족 생일 등록하기</button>';
+    }
     if (box.__sig !== html) { box.__sig = html; box.innerHTML = html; }
   }
   function wireDday() {
@@ -531,6 +534,38 @@
           $('v9DdayBody').__sig = null;
           renderDday();
           toast('디데이를 추가했어요');
+        };
+        return;
+      }
+      var bs = e.target.closest('#v9BirthSet');
+      if (bs) {
+        var mems = F.members();
+        F.openSheet('<h3>🎂 가족 생일 등록</h3>' +
+          '<div class="sdesc">가족 저장소에 한 번만 넣어 두면 D+와 생일까지 남은 날이 자동으로 계산돼요.</div>' +
+          mems.map(function (m) {
+            var cur = '';
+            try { cur = (F.doc().members[m.id] || {}).birth || ''; } catch (err) { cur = ''; }
+            return '<div class="form-row"><label>' + esc(m.emoji || '') + ' ' + esc(m.name) + '</label>' +
+              '<input class="field" data-v9birth="' + esc(m.id) + '" type="date" value="' + esc(cur) + '"></div>';
+          }).join('') +
+          '<div style="display:flex;gap:8px;margin-top:6px"><button type="button" class="btn ghost" data-sheet-close>취소</button>' +
+          '<button type="button" class="btn" id="v9BirthSave">저장</button></div>');
+        $('v9BirthSave').onclick = function () {
+          var D = F.doc();
+          var n = 0;
+          document.querySelectorAll('[data-v9birth]').forEach(function (inp) {
+            var id = inp.getAttribute('data-v9birth');
+            var val = (inp.value || '').trim();
+            if (!D.members[id]) return;
+            if (val) { D.members[id].birth = val; D.members[id].at = now(); n++; }
+            else if (D.members[id].birth) { delete D.members[id].birth; D.members[id].at = now(); }
+          });
+          if (!n) { toast('생일을 한 명 이상 넣어 주세요'); return; }
+          save();
+          F.closeSheet();
+          if ($('v9DdayBody')) $('v9DdayBody').__sig = null;
+          renderDday();
+          toast('🎂 가족 생일 ' + n + '명을 저장했어요');
         };
         return;
       }
