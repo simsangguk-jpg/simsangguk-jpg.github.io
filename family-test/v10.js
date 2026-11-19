@@ -188,6 +188,7 @@
     });
   }
 
+  function paneId(tabId, pane) { return (String(pane).indexOf('pane-') === 0) ? pane : ('pane-' + tabId + '-' + pane); }
   function showPane(id) {
     if (!id) return;
     var el = $(id);
@@ -206,7 +207,7 @@
     var item = itemOf(tabId, itemId);
     if (!item) return;
     mark(tabId, item.id);
-    if (item.pane) showPane(item.pane);
+    if (item.pane) showPane(paneId(tabId, item.pane));
     pending = item.id;
     softNav = !!(opts && opts.soft);
     try {
@@ -221,7 +222,7 @@
       pending = null;
     }
     /* 화면이 바뀐 뒤 그 패널의 렌더를 한 번 더(늦게 만들어지는 카드 대비) */
-    setTimeout(function () { try { arrange(); if (item.pane) showPane(item.pane); } catch (e) { } }, 60);
+    setTimeout(function () { try { arrange(); if (item.pane) showPane(paneId(tabId, item.pane)); } catch (e) { } }, 60);
     if (!(opts && opts.keepScroll) && item.view !== 'chat') {
       try { window.scrollTo({ top: 0, behavior: 'auto' }); } catch (e) { }
     }
@@ -466,7 +467,7 @@
     wireEtaSheet();
     /* 지금 탭의 패널이 사라졌으면 다시 그린다 */
     var item = itemOf(activeTab, activeItem);
-    if (item && item.pane) showPane(item.pane);
+    if (item && item.pane) showPane(paneId(activeTab, item.pane));
   }
 
   function setup() {
