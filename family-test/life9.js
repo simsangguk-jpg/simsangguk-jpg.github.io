@@ -821,7 +821,9 @@
   function ensureSections() {
     var all = $('view-all');
     if (!all) return;
-    var anchor = $('v4Tube') || all.children[1] || null;
+    var anchor = $('v4Tube');
+    if (!anchor || anchor.parentNode !== all) anchor = all.children[1] || null;
+    if (anchor && anchor.parentNode !== all) anchor = null;
     /* V11: 위시리스트는 💗 좋아하는 것과 한 카드로 통합됐다(extra4.js).
        그 카드가 없는 예전 화면에서만 따로 그려 준다. */
     if (!$('v9Wish')) {

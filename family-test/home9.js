@@ -1928,6 +1928,12 @@
   /* ============================================================
      카드 마크업
      ============================================================ */
+  /* V12: 카드가 다른 탭(패널)으로 옮겨져 있으면 홈의 기준 노드로 insertBefore 하면 오류가 난다.
+     기준 노드가 홈의 자식일 때만 그 앞에 넣고, 아니면 끝에 붙인다. */
+  function insHome(home, el, ref) {
+    if (ref && ref.parentNode === home && ref !== el) home.insertBefore(el, ref);
+    else home.appendChild(el);
+  }
   function ensureHomeCards() {
     var home = $('view-home');
     if (!home) return;
@@ -1942,14 +1948,14 @@
     });
     var brief = $('briefCard');
     /* 삽입 앵커를 한 번 고정해 카드 순서가 뒤집히지 않게 한다 */
-    var anchor = brief ? brief.nextSibling : null;
+    var anchor = (brief && brief.parentNode === home) ? brief.nextSibling : null;
     var mk = function (id, cls, html) {
       if ($(id)) return;
       var div = document.createElement('div');
       div.id = id;
       div.className = cls || 'card';
       div.innerHTML = html;
-      home.insertBefore(div, anchor);
+      insHome(home, div, anchor);
     };
     /* 명언: 날씨 카드(overcast) 인근 → briefCard 위에 둔다 */
     /* 기분 보드: 홈 가장 위(꾸미기 버튼 바로 아래) 고정 */
@@ -1960,8 +1966,8 @@
       mo.style.cssText = 'border:1.5px solid #F6D9E4;background:linear-gradient(180deg,#FFF5F8,#FFFFFF)';
       mo.innerHTML = '<div class="card-head"><h2>🎭 지금 우리 가족 기분</h2><span class="sub">실시간 · 원터치 공유</span></div><div id="v9MoodBody"></div>';
       /* 가장 위쪽 고정: 달력 배너 위(꾸미기 버튼 바로 아래) */
-      var top = $('famCalBanner') || home.firstChild;
-      home.insertBefore(mo, top);
+      var top = $('famCalBanner');
+      insHome(home, mo, (top && top.parentNode === home) ? top : home.firstChild);
     }
     if (!$('v9QuoteCard')) {
       var q = document.createElement('div');
@@ -1969,7 +1975,7 @@
       q.className = 'card';
       q.style.cssText = 'border:1.5px solid #EDE3C8;background:linear-gradient(180deg,#FFFBF0,#FFFFFF)';
       q.innerHTML = '<div class="card-head"><h2>📖 오늘의 명언 & 가족 한마디</h2><span class="sub" id="v9QuoteDate">–</span></div><div id="v9QuoteBody"></div>';
-      home.insertBefore(q, brief || home.firstChild);
+      insHome(home, q, (brief && brief.parentNode === home) ? brief : home.firstChild);
     }
     mk('v9PodCard', 'card', '<div class="card-head"><h2>⭐ 오늘의 대표사진</h2><span class="sub" id="v9PodDate">–</span></div><div id="v9PodBody"></div>');
     if (!$('v9ShiftCard')) {
@@ -1980,7 +1986,7 @@
       sh.innerHTML = '<div class="card-head"><h2>🗓️ 통합 근무표 · 등교표</h2><button type="button" class="v4-tag" id="v9ShiftEdit" style="border:none">출근·방학 설정</button></div>' +
         '<div class="sh9-strip" id="v9ShiftStrip"></div>' +
         '<div class="hint" id="v9ShiftNote">–</div>';
-      home.insertBefore(sh, brief ? brief.nextSibling : null);
+      insHome(home, sh, (brief && brief.parentNode === home) ? brief.nextSibling : null);
     }
     mk('v9DdayCard', 'card', '<div class="card-head"><h2>🎂 우리 가족 디데이</h2><button type="button" class="v4-tag" id="v9DdayAdd" style="border:none">＋ 디데이 추가</button></div><div id="v9DdayBody"></div>');
     mk('v9GoalsCard', 'card', '<div class="card-head"><h2>🎯 우리 가족 목표 배너</h2><span class="sub">이번 주 · 이번 달 · 장래희망</span></div><div id="v9GoalsBody"></div>');
