@@ -316,6 +316,26 @@
     dedupe(id, el);
     if (el.parentNode !== pane) pane.appendChild(el);
   }
+  function placeEl(el, paneId) {
+    var pane = $(paneId);
+    if (!el || !pane) return;
+    if (el.parentNode !== pane) pane.appendChild(el);
+  }
+  /* 용돈: #life-money 안의 카드(원래 카드 + v9Money)를 통째로 옮긴다 */
+  function moveMoney() {
+    var host = $('life-money');
+    var pane = $('pane-sched-money');
+    if (!host || !pane) return;
+    Array.prototype.slice.call(host.children).forEach(function (ch) {
+      if (ch.nodeType === 1 && ch.classList && ch.classList.contains('card')) placeEl(ch, 'pane-sched-money');
+    });
+    if (pane.children.length > 1) {
+      /* 원래 카드를 위로 */
+      var first = pane.firstChild;
+      var v9m = $('v9Money');
+      if (v9m && first === v9m && pane.children.length > 1) pane.appendChild(v9m);
+    }
+  }
 
   function buildPanes() {
     Object.keys(PANE_ORDER).forEach(function (sec) {
@@ -505,6 +525,7 @@
     park();
     movePhotos();
     buildPanes();
+    moveMoney();
     buildHouseHero();
     movePlanForm();
     wireBrief();
