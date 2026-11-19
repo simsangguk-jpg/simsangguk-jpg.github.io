@@ -625,7 +625,7 @@
   }
   function secMoney() {
     return '<div class="card" id="v9Money" style="border:1.5px solid #FFE3C2;background:linear-gradient(180deg,#FFF9F2,#FFFFFF)">' +
-      '<div class="card-head"><h2>💰 오늘의 용돈기입장</h2><span class="sub" id="v9MnBal">–</span></div>' +
+      '<div class="card-head"><h2>🖊️ 오늘 한 줄 용돈 기록</h2><span class="sub" id="v9MnBal">–</span></div>' +
       '<div class="fb-desc">매일 받은 용돈·쓴 용돈과 목적을 한 줄로 남기면 <b>남은 잔액이 자동 계산</b>되고, 날짜별로 영구 저장돼요(구글드라이브 백업 포함).</div>' +
       '<div style="display:flex;gap:6px;margin-top:8px">' +
       '<select class="field" id="v9MnK" style="flex:0 0 96px;margin-bottom:0"><option value="got">💵 받음</option><option value="spent">🛍️ 사용</option></select>' +

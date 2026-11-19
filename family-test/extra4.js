@@ -167,51 +167,42 @@
   var CATS = [
     {
       t: '소통·알림', c: '#0E9F6E', items: [
-        { e: '👋', n: '접속 기록', v: 'all', s: 'v4Visit' },
-        { e: '🔔', n: '알림·진동', v: 'all', s: 'v4Notif' },
         { e: '💬', n: '가족 채팅', v: 'chat' },
-        { e: '📢', n: '공지·편지', v: 'life' }
+        { e: '📢', n: '공지·편지', v: 'life', life: 'notices' },
+        { e: '💬', n: '응원 한마디', v: 'life', life: 'cheer' },
+        { e: '🔔', n: '알림·진동', v: 'house', item: 'tools', s: 'v4Notif' }
       ]
     },
     {
-      t: '위치·생활', c: '#4C8DFF', items: [
-        { e: '🏠', n: '집·학교', v: 'all', s: 'v4Geo' },
+      t: '일정', c: '#4C8DFF', items: [
+        { e: '📅', n: '가족 달력', v: 'sched', item: 'cal' },
+        { e: '🗓️', n: '근무·등교', v: 'sched', item: 'shift' },
+        { e: '🎂', n: '디데이·목표', v: 'sched', item: 'dday' },
+        { e: '💰', n: '용돈', v: 'sched', item: 'money' }
+      ]
+    },
+    {
+      t: '생활·기록', c: '#FF7A66', items: [
         { e: '✅', n: '가족 할일', v: 'life', life: 'todo' },
-        { e: '📅', n: '가족 캘린더', v: 'life', life: 'cal' },
-        { e: '📍', n: '가족 위치', v: 'map' }
-      ]
-    },
-    {
-      t: '추억·여행·음식', c: '#FF7A66', items: [
-        { e: '🗺️', n: '추억 지도', v: 'all', s: 'v4Mem' },
-        { e: '🍽️', n: '칼로리', v: 'all', s: 'v4Food' },
-        { e: '🍜', n: '맛집·여행', v: 'life', life: 'reco' },
+        { e: '📍', n: '가족 위치', v: 'map' },
+        { e: '🗂️', n: '날짜별 기록', v: 'record', item: 'day' },
         { e: '📷', n: '가족 사진', v: 'photos' }
       ]
     },
     {
-      t: '놀이터·다마고치·미니카', c: '#8B7CF6', items: [
-        { e: '🧸', n: '3D 놀이터', v: 'play', pane: '3d' },
-        { e: '🥚', n: '다마고치·내 방', v: 'play', pane: 'tama3d' },
-        { e: '🏎️', n: '미니카', v: 'play', pane: 'minicar' },
-        { e: '🃏', n: '카드 가방', v: 'play', pane: 'card' }
+      t: '우리집', c: '#8B7CF6', items: [
+        { e: '🍜', n: '맛집·여행', v: 'life', life: 'reco' },
+        { e: '🎁', n: '좋아하는 것·위시', v: 'house', item: 'mind' },
+        { e: '🤝', n: '고민·조언', v: 'house', item: 'mind', s: 'v4Worry' },
+        { e: '🏠', n: '집·학교 도착', v: 'house', item: 'family', s: 'v4Geo' }
       ]
     },
     {
-      t: '마음·선물', c: '#F0659B', items: [
-        { e: '🧠', n: '마음 돌봄', v: 'all', s: 'v5Mind' },
-        /* 좋아하는 것 + 위시리스트는 한 카드로 통합(V11) — 목차도 한 항목만 둔다 */
-        { e: '🎁', n: '좋아하는 것·위시', v: 'all', s: 'v9Wish' },
-        { e: '🤝', n: '고민·조언', v: 'all', s: 'v4Worry' },
-        { e: '🛍️', n: '포인트 상점', v: 'play', pane: 'shop' }
-      ]
-    },
-    {
-      t: '윷놀이·즐길거리', c: '#F59E0B', items: [
-        { e: '🎋', n: '윷놀이', v: 'play', pane: 'yut' },
-        { e: '🧮', n: '수학·영어', v: 'play', pane: 'quiz' },
-        { e: '📺', n: '유튜브', v: 'all', s: 'v4Tube' },
-        { e: '📚', n: '도서·게임', v: 'all', s: 'v4Tube' }
+      t: '즐길거리·교육', c: '#F59E0B', items: [
+        { e: '📺', n: '유튜브·도서', v: 'house', item: 'news', s: 'v4Tube' },
+        { e: '📚', n: '교육·학습 사이트', v: 'house', item: 'news', s: 'v9NewsCard' },
+        { e: '🍽️', n: '음식 칼로리', v: 'house', item: 'tools', s: 'v4Food' },
+        { e: '🗺️', n: '추억 지도', v: 'house', item: 'family', s: 'v4Mem' }
       ]
     }
   ];
@@ -268,21 +259,19 @@
     var menu = $('v4Menu'), fab = $('v4Fab');
     if (menu) menu.classList.add('hidden');
     if (fab) fab.classList.remove('on');
-    if (it.v === 'play') {
-      F.view('play');
-      setTimeout(function () {
-        if (global.GAME4 && it.pane) global.GAME4.pane(it.pane);
-        if (it.s) scrollTo(it.s);
-      }, 120);
-      return;
-    }
-    if (it.v === 'life') {
+    /* V13: 없어진 놀이 모듈(play)로 보내지 않고, 실제로 있는 화면으로만 이동한다 */
+    if (it.life) {
       F.view('life');
       setTimeout(function () {
         var b = document.querySelector('#lifeNav button[data-life="' + it.life + '"]');
         if (b) b.click();
         if (it.s) scrollTo(it.s);
       }, 120);
+      return;
+    }
+    if (it.item && global.FAMNAV && global.FAMNAV.go) {
+      global.FAMNAV.go(it.v, it.item);
+      if (it.s) setTimeout(function () { scrollTo(it.s); }, 220);
       return;
     }
     F.view(it.v);

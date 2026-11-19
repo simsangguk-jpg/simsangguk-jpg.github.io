@@ -4,7 +4,7 @@
    ② 📷 1일 1장 대표사진 (선택·업로드 · AI 베스트컷 추천 · 확대 모달 · Blob 저장)
    ③ 🗓️ 통합 근무표·등교표 배너 (근무표는 가족 저장소 설정 · 출근일·등교일)
    ④ 🎂 가족 디데이 (저장소에 적어 둔 생일·기념일 · D+ / 생일 카운트다운 · 추가 가능)
-   ⑤ 📰 학생·공부·학원·게임 뉴스 배너 5종 (RSS + 스냅숏 폴백)
+   ⑤ 📰 교육·학습 사이트 9곳 (중복·빈 페이지 정리판)
    ⑥ 🎡 이번 주말 추천 + 주변 장소 검색 (네이버·카카오맵 연결)
    ⑦ 🎯 개인별 목표 배너 (이번 주 · 이번 달 · 장래희망 + 응원)
    ⑧ 😴 수면시간·피로도·에너지 (원터치 취침/기상 + 자동 추정 → 다마고치 컨디션 연동)
@@ -503,14 +503,15 @@
       var toB = Math.round((next - today) / 86400000);
       return '<div class="dd9' + (x.custom ? ' custom' : '') + '"><b>🎂 ' + esc(x.t) + '</b>' +
         '<span>D+' + days.toLocaleString('ko-KR') + '째</span>' +
-        '<span class="bb">' + (toB === 0 ? '🎉 오늘 생일!' : '생일 D-' + toB) + '</span>' +
+        '<span class="bb">' + (toB === 0 ? (x.custom ? '🎉 오늘!' : '🎉 오늘 생일!') : ((x.custom ? '' : '생일 ') + 'D-' + toB)) + '</span>' +
         (x.custom ? '<button type="button" class="dd9-del" data-v9ddel="' + esc(x.id) + '">✕</button>' : '') +
         '</div>';
     }).join('');
     if (!html) {
-      html = '<div class="v4-empty">🎂 가족 생일을 등록하면 D+와 생일까지 남은 날이 자동으로 보여요.</div>' +
-        '<button type="button" class="btn soft" id="v9BirthSet" style="margin-top:8px;padding:10px;font-size:12.5px">🎂 가족 생일 등록하기</button>';
+      html = '<div class="v4-empty">🎂 가족 생일을 등록하면 D+와 생일까지 남은 날이 자동으로 보여요.</div>';
     }
+    /* 생일이 이미 등록돼 있어도 나머지 가족 생일을 넣을 수 있게 항상 둔다 */
+    html += '<button type="button" class="btn soft" id="v9BirthSet" style="margin-top:8px;padding:10px;font-size:12.5px">🎂 가족 생일 등록·수정</button>';
     if (box.__sig !== html) { box.__sig = html; box.innerHTML = html; }
   }
   function wireDday() {
@@ -579,68 +580,35 @@
   }
 
   /* ============================================================
-     ⑤ 학생·공부·학원·게임 뉴스 배너 5종
-     ============================================================ */
-  var NEWS_SECTIONS = [
-    { id: 'study', e: '🎓', n: '공부 계획·학습법', q: '초등 중학생 학습 계획 공부법 뉴스', fb: { t: '우리 아이 학습 계획 세우기', u: 'https://www.moe.go.kr/' } },
-    { id: 'trip', e: '🚌', n: '소풍·체험·교육과정', q: '초등학교 체험학습 소풍 교육과정 뉴스', fb: { t: '체험학습·소풍 소식', u: 'https://www.moe.go.kr/' } },
-    { id: 'suneung', e: '📝', n: '수능·시험', q: '수능 일정 시험 제도 뉴스', fb: { t: '수능·시험 일정', u: 'https://www.suneung.re.kr/' } },
-    { id: 'edu', e: '🧒', n: '아이 학습·교육', q: '초등 교육 학원 제도 뉴스', fb: { t: '교육·학원 뉴스', u: 'https://www.moe.go.kr/' } },
-    { id: 'game', e: '🎮', n: '아이·게임', q: '아이들 게임 게임제도 뉴스', fb: { t: '게임 소식', u: 'https://www.game.or.kr/' } }
+     ⑤ 교육·학습 사이트 — "같은 사이트/빈 페이지" 정리판
+     · 예전에는 5개 주제가 모두 교육부(moe.go.kr) 한 곳을 가리키거나
+       죽은 링크(game.or.kr)라서 눌러도 같은·빈 페이지가 떴다.
+     · 지금은 서로 다른 공식 사이트만 한 번씩만 둔다(중복 0).
+   ============================================================ */
+  var EDU_SITES = [
+    { e: '📺', n: 'EBS 초·중·고 학습', d: '강의·문제·교재', u: 'https://www.ebs.co.kr/', tag: '학습' },
+    { e: '📐', n: 'EBSMath', d: '수학 개념·문제 풀이', u: 'https://www.ebsmath.co.kr/', tag: '수학' },
+    { e: '🧭', n: '국가교육과정정보센터', d: '교육과정·편제 안내', u: 'https://ncic.re.kr/', tag: '교육과정' },
+    { e: '🎓', n: '커리어넷', d: '진로·직업 정보', u: 'https://www.career.go.kr/', tag: '진로' },
+    { e: '📚', n: '국립어린이청소년도서관', d: '독서·책 추천', u: 'https://www.nlcy.go.kr/', tag: '독서' },
+    { e: '🏛️', n: '국립중앙도서관', d: '자료 검색·독서', u: 'https://www.nl.go.kr/', tag: '도서관' },
+    { e: '📖', n: '두산백과', d: '궁금한 것 찾아보기', u: 'https://www.doopedia.co.kr/', tag: '백과' },
+    { e: '📝', n: '수능 정보', d: '일정·제도(교육과정평가원)', u: 'https://www.suneung.re.kr/main.do?s=suneung', tag: '수능' },
+    { e: '🎮', n: '게임물관리위원회', d: '게임 등급·이용 안내', u: 'https://www.grac.or.kr/', tag: '게임' }
   ];
-  function newsCache() { try { return JSON.parse(localStorage.getItem(LS_NEWS) || '{}'); } catch (e) { return {}; } }
-  function newsCacheSet(o) { try { localStorage.setItem(LS_NEWS, JSON.stringify(o)); } catch (e) {} }
   function renderNews() {
     var box = $('v9NewsBody');
     if (!box) return;
-    var cache = newsCache();
-    var html = NEWS_SECTIONS.map(function (s) {
-      var items = (cache[s.id] || []);
-      var inner;
-      if (items.length) {
-        inner = items.slice(0, 2).map(function (it) {
-          return '<a class="nw9-item" href="' + esc(it.u) + '" target="_blank" rel="noopener"><span class="t">' + esc(it.t) + '</span><span class="w">' + esc(it.w || '') + '</span></a>';
-        }).join('');
-      } else {
-        inner = '<a class="nw9-item fb" href="' + esc(s.fb.u) + '" target="_blank" rel="noopener"><span class="t">' + esc(s.fb.t) + '</span><span class="w">바로 열기</span></a>';
-      }
-      return '<div class="nw9"><div class="nw9-h">' + s.e + ' ' + s.n + '</div>' + inner + '</div>';
-    }).join('');
+    var html = EDU_SITES.map(function (s) {
+      return '<a href="' + esc(s.u) + '" target="_blank" rel="noopener" style="display:flex;gap:10px;align-items:center;padding:9px 2px;border-bottom:1px dashed #EDF1F4;text-decoration:none;color:inherit">' +
+        '<span style="width:30px;text-align:center;font-size:17px;flex:none">' + s.e + '</span>' +
+        '<span style="flex:1;min-width:0"><b style="display:block;font-size:13px;font-weight:800;letter-spacing:-.2px">' + esc(s.n) + '</b>' +
+        '<small style="display:block;font-size:11px;color:#79838F;line-height:1.35">' + esc(s.d) + '</small></span>' +
+        '<span style="flex:none;font-size:10px;font-weight:800;color:#0A7D56;background:#E7F8F1;border-radius:20px;padding:3px 8px">' + esc(s.tag) + '</span></a>';
+    }).join('') +
+      '<div class="hint" style="margin-top:8px">공식 사이트 9곳을 주제별로 하나씩만 모았어요. 같은 사이트가 두 번 나오지 않아요.</div>';
     if (box.__sig !== html) { box.__sig = html; box.innerHTML = html; }
   }
-  function parseRss(xmlText) {
-    var doc = new DOMParser().parseFromString(xmlText, 'text/xml');
-    var items = Array.prototype.slice.call(doc.querySelectorAll('item')).slice(0, 2);
-    return items.map(function (it) {
-      var t = (it.querySelector('title') || {}).textContent || '';
-      var l = (it.querySelector('link') || {}).textContent || '';
-      var d = (it.querySelector('pubDate') || {}).textContent || '';
-      var w = '';
-      try { w = new Date(d).toLocaleDateString('ko-KR', { month: 'numeric', day: 'numeric' }); } catch (e) {}
-      return { t: t.replace(/ - [\가-힣\s]+뉴스.*$/, '').slice(0, 70), u: l, w: w };
-    }).filter(function (x) { return x.t && x.u; });
-  }
-  function fetchNews() {
-    var cache = newsCache();
-    var at = cache.at || 0;
-    if (now() - at < 30 * 60000) return;
-    NEWS_SECTIONS.forEach(function (s) {
-      var feed = 'https://news.google.com/rss/search?q=' + encodeURIComponent(s.q) + '&hl=ko&gl=KR&ceid=KR:ko';
-      fetch('https://r.jina.ai/' + feed, { cache: 'no-store' })
-        .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.text(); })
-        .then(function (txt) {
-          var items = parseRss(txt);
-          if (!items.length) throw new Error('empty');
-          cache[s.id] = items;
-          cache.at = now();
-          newsCacheSet(cache);
-          box_sig_reset_news();
-          renderNews();
-        })
-        .catch(function () { /* 폴백 유지 */ });
-    });
-  }
-  function box_sig_reset_news() { var b = $('v9NewsBody'); if (b) b.__sig = null; }
 
   /* ============================================================
      ⑥ 이번 주말 추천 + 주변 장소 검색
@@ -941,7 +909,7 @@
     { id: 'v9SleepCard', n: '😴 수면·피로도·에너지' },
     { id: 'v9SchoolCard', n: '🎒 등교·귀가 안심' },
     { id: 'v9SbCard', n: '🏅 가족 상벌점' },
-    { id: 'v9NewsCard', n: '📰 공부·게임 뉴스' },
+    { id: 'v9NewsCard', n: '📰 교육·학습 사이트' },
     { id: 'v9WkCard', n: '🎡 주말 추천·주변 검색' },
     { id: 'v9LogCard', n: '🕘 홈 꾸미기 이력' }
   ];
@@ -953,6 +921,8 @@
     Array.prototype.forEach.call(home.children, function (ch) {
       var id = ch.id;
       if (!id) return;
+      /* 꾸미기 버튼 줄·히어로는 카드가 아니므로 목록에서 뺀다 */
+      if (ch.classList && ch.classList.contains('v9-editbar')) return;
       var known = HOME_CARDS.filter(function (c) { return c.id === id; })[0];
       if (known) out.push(known);
       else {
@@ -1952,11 +1922,6 @@
       if (!v) return;
       var sel = e.target.closest('[data-mo9sel="1"]');
       if (sel) { moodSheet(); return; }
-      var mind = e.target.closest('#mo9Mind');
-      if (mind) {
-        if (global.FAM4) { try { global.FAM4.jump({ v: 'all', s: 'v5Mind' }); } catch (err) {} }
-        else F.view('all');
-      }
     });
   }
 
@@ -2027,7 +1992,7 @@
     mk('v9GoalsCard', 'card', '<div class="card-head"><h2>🎯 우리 가족 목표 배너</h2><span class="sub">이번 주 · 이번 달 · 장래희망</span></div><div id="v9GoalsBody"></div>');
     mk('v9SleepCard', 'card', '<div class="card-head"><h2>😴 수면·피로도·에너지</h2><span class="sub">원터치 기록 · 자동 추정</span></div><div id="v9SleepBody"></div>');
     mk('v9SchoolCard', 'card', '<div class="card-head"><h2>🎒 등교·귀가 안심 기록</h2><span class="sub" id="v9SchoolSum">–</span></div><div id="v9SchoolBody"></div>');
-    mk('v9NewsCard', 'card', '<div class="card-head"><h2>📰 공부·학원·게임 뉴스</h2><span class="sub">실시간 5분야</span></div><div id="v9NewsBody"></div>');
+    mk('v9NewsCard', 'card', '<div class="card-head"><h2>📰 교육·학습 사이트</h2><span class="sub">공식 사이트 9곳</span></div><div id="v9NewsBody"></div>');
     mk('v9WkCard', 'card', '<div class="card-head"><h2>🎡 이번 주말 뭐할까 · 뭐먹을까</h2><span class="sub">네이버·카카오맵 바로 연결</span></div><div id="v9WkBody"></div>');
     mk('v9SbCard', 'card', '<div class="card-head"><h2>🏅 우리 가족 상벌점</h2><span class="sub" id="v9SbSum">–</span></div><div id="v9SbBody"></div>');
     mk('v9LogCard', 'card', '<div class="card-head"><h2>🕘 홈 꾸미기 기록</h2><span class="sub">누가 · 언제 · 무엇을</span></div><div id="v9LogBody"></div>');
@@ -2060,7 +2025,6 @@
     renderSb();
     renderLog();
     robotBtn();
-    try { fetchNews(); } catch (e) {}
     try {
       var sbx = V9() && sbOf();
       var tots = sbx ? sbTotals(sbx) : {};
