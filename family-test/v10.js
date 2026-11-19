@@ -448,6 +448,53 @@
     });
   }
 
+  /* 우리집 > 가족 머리 카드 */
+  function buildHouseHero() {
+    var pane = $('pane-house-family');
+    if (!pane) return;
+    if (!$('houseHero')) {
+      var d = DOC_.createElement('div');
+      d.id = 'houseHero';
+      d.className = 'card';
+      d.innerHTML = '<div class="card-head"><h2>🏡 우리 가족</h2><span class="sub" id="houseHeroSub">가족 · 마음 · 소식</span></div>' +
+        '<div class="v10-famrow" id="houseFamRow"></div>' +
+        '<div class="hint" style="margin-top:10px">가족 모두의 기록·설정·지난 이야기를 여기에 모았어요.</div>';
+      pane.insertBefore(d, pane.firstChild);
+    }
+    paintFamRow();
+  }
+  function paintFamRow() {
+    var box = $('houseFamRow');
+    if (!box || !F || !F.doc()) return;
+    var ms = F.members();
+    var html = ms.map(function (m) {
+      return '<div class="m"><span class="av">' + esc(m.emoji || '🧑') + '</span>' +
+        '<span class="nm">' + esc(m.name || '가족') + '</span>' +
+        '<span class="rl">' + esc(m.role || '가족') + '</span></div>';
+    }).join('');
+    if (box.__sig !== html) { box.__sig = html; box.innerHTML = html; }
+  }
+
+  /* 아침 브리핑이 길어 홈이 무거워 보이지 않게 — 접어 두고 '자세히'로 펼친다 */
+  function wireBrief() {
+    var card = $('briefCard');
+    if (!card) return;
+    card.classList.add('brief-collapsible');
+    if ($('briefToggle')) return;
+    var head = q('.card-head', card);
+    if (!head) return;
+    var b = DOC_.createElement('button');
+    b.type = 'button';
+    b.id = 'briefToggle';
+    b.className = 'chip-btn';
+    b.textContent = '자세히 ▾';
+    head.appendChild(b);
+    b.addEventListener('click', function () {
+      var open = card.classList.toggle('open');
+      b.textContent = open ? '접기 ▴' : '자세히 ▾';
+    });
+  }
+
   /* ---------------------------------------------------------------- 9. 실행 */
   function arrange() {
     if (!F || !F.doc()) return;
@@ -458,7 +505,9 @@
     park();
     movePhotos();
     buildPanes();
+    buildHouseHero();
     movePlanForm();
+    wireBrief();
     buildFeedback();
     ['ntBanner', 'chatTopBtn', 'fbTopBtn', 'pgTopBtn'].forEach(function (id) {
       var el = $(id);

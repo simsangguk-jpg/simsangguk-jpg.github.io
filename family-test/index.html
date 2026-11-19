@@ -1002,15 +1002,15 @@ body::after{
 <input type="file" id="filePicker" accept="image/*" multiple class="hidden">
 <div class="sheet hidden" id="sheet"><div class="sheet-inner" id="sheetInner"></div></div>
 <div class="toast" id="toast"></div>
-<script src="./extra4.js?v=t067672"></script>
-<script src="./cal7.js?v=t067672"></script>
-<script src="./extra7.js?v=t067672"></script>
-<script src="./extra8.js?v=t067672"></script>
-<script src="./home8.js?v=t067672"></script>
-<script src="./life9.js?v=t067672"></script>
-<script src="./home9.js?v=t067672"></script>
-<script src="./hist11.js?v=t067672"></script>
-<script src="./v10.js?v=t067672"></script>
+<script src="./extra4.js?v=t067988"></script>
+<script src="./cal7.js?v=t067988"></script>
+<script src="./extra7.js?v=t067988"></script>
+<script src="./extra8.js?v=t067988"></script>
+<script src="./home8.js?v=t067988"></script>
+<script src="./life9.js?v=t067988"></script>
+<script src="./home9.js?v=t067988"></script>
+<script src="./hist11.js?v=t067988"></script>
+<script src="./v10.js?v=t067988"></script>
 <script>
 (function () {
 'use strict';
@@ -1687,9 +1687,11 @@ function renderPhotos() {
   var html = '<button type="button" class="photo-add" id="photoAdd"><span style="font-size:20px">＋</span>사진 올리기</button>';
   html += ids.map(function (k) {
     var p = DOC.photos[k];
+    var pd = p.at ? new Date(p.at) : null;
+    var pwhen = pd ? (pd.getMonth() + 1) + '/' + pd.getDate() : '';
     return '<div class="photo-cell" data-photo="' + esc(k) + '">' +
       (p.thumb ? '<img src="' + p.thumb + '" alt="가족 사진" loading="lazy">' : '') +
-      (p.cap ? '<div class="cap">' + esc(p.cap) + '</div>' : '') + '</div>';
+      '<div class="cap">' + (p.cap ? esc(p.cap) + ' · ' : '') + '<span class="d">' + esc(pwhen) + '</span></div></div>';
   }).join('');
   grid.innerHTML = html;
   $('photoHint').textContent = ids.length >= MAX_PHOTOS ? ('사진은 최근 ' + MAX_PHOTOS + '장까지 보관돼요. 새로 올리면 오래된 사진부터 정리됩니다.') : '사진은 폰에서 자동으로 줄여 올려요. 눌러서 크게 보고 저장할 수 있어요.';
