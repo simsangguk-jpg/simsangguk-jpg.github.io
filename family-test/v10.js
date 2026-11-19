@@ -318,7 +318,7 @@
 
   function buildPanes() {
     Object.keys(PANE_ORDER).forEach(function (sec) {
-      if (!$('view-' + sec)) return;
+      if (!$(sec)) return;
       PANE_ORDER[sec].forEach(function (p) { ensurePane(p); });
     });
     /* 날짜별 기록 카드 */
