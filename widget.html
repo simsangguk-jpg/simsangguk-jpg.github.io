@@ -421,7 +421,7 @@
       });
       var pa = SNAP.pa || {}, yc = SNAP.yc || {};
       var rain = Math.max(pa.rain || 0, yc.rain || 0);
-      var snow = (pa.sky && (pa.sky.indexOf('눈') >= 0 || pa.sky.indexOf('이슬비') >= 0));
+      var snow = !!(pa.sky && pa.sky.indexOf('눈') >= 0);
       $('wxRain').innerHTML = (snow ? '❄️ 눈·비 ' : '☔ 비 올 확률 ') + '<b>' + rain + '%</b>' +
         ' · 습도 ' + (pa.hum || '-') + '%';
       var worst = pa.pm25g || pa.pm10g || '';
@@ -462,7 +462,7 @@
             var hi = day.temperature_2m_max ? Math.round(day.temperature_2m_max[0]) : null;
             var rain = (day.precipitation_probability_max || [])[0];
             var hum = c.relative_humidity_2m;
-            LIVE[w.key] = { t: t, f: f, lo: lo, hi: hi, rain: rain, hum: hum };
+            LIVE[w.key] = { t: t, f: f, lo: lo, hi: hi, rain: rain, hum: hum, code: c.weather_code };
             $(w.key + 'T').textContent = t;
             var s = sky(c.weather_code); if (s) $(w.key + 'Sky').textContent = s;
             if (lo !== null && hi !== null) $(w.key + 'Range').textContent = lo + ' ~ ' + hi + '℃ · 체감 ' + f + '℃';
@@ -474,18 +474,22 @@
         .catch(function () { /* 스냅샷 유지 */ });
     }
 
+    function isSnowCode(c) { return (c >= 71 && c <= 77) || c === 85 || c === 86; }
+
     function paintLiveRain() {
       var pa = LIVE.pa, yc = LIVE.yc;
       if (pa.t === undefined && yc.t === undefined) return;
       var rain = Math.max(pa.rain || 0, yc.rain || 0);
-      var code = pa.rain !== undefined ? pa.rain : null;
-      var line = '☔ 비 올 확률 <b>' + rain + '%</b>';
-      if (pa.t !== undefined && yc.t !== undefined && pa.rain !== yc.rain) {
-        line = '☔ 비 <b>' + pa.rain + '%·' + yc.rain + '%</b> (파주·연천)';
+      var snow = isSnowCode(pa.code) || isSnowCode(yc.code);
+      var icon = snow ? '❄️ 눈' : '☔ 비';
+      var line;
+      if (pa.rain !== undefined && yc.rain !== undefined && pa.rain !== yc.rain) {
+        line = icon + ' <b>' + pa.rain + '%·' + yc.rain + '%</b> (파주·연천)';
+      } else {
+        line = icon + ' 올 확률 <b>' + rain + '%</b>';
       }
       if (pa.hum !== undefined) line += ' · 습도 ' + pa.hum + '%';
       $('wxRain').innerHTML = line;
-      void code;
     }
 
     function refreshAir() {
