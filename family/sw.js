@@ -1,10 +1,10 @@
-/* 우리가족포털 Service Worker · V13 (2026-11-19 · 교육 링크 중복 정리·죽은 링크 제거 배포분)
+/* 우리가족포털 Service Worker · V14 (2026-11-23 · 상국포털로 돌아가기 제거·죽은 3D 파일 정리분)
    - /family/ 범위만 담당한다(상국포털 본체 캐시와 섞이지 않게 별도 캐시 이름 사용)
    - install 단계에서 확장 모듈 + v10.css/v10.js 까지 모두 프리캐시한다
    - 화면(HTML)은 네트워크 우선: 새로 배포한 내용이 앱에서도 바로 뜨도록
    - 그 밖의 정적 파일은 네트워크 우선, 실패 시 캐시
 */
-const SW_VERSION = 'family-portal-v13-2026-11-19';
+const SW_VERSION = 'family-portal-v14-2026-11-23';
 const OFFLINE_HTML = new URL('index.html', self.registration.scope).href;
 const PRECACHE = [
   './',

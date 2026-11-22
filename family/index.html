@@ -3022,7 +3022,6 @@ function settingsSheet() {
     '<button type="button" class="sheet-item" id="shSync"><span class="ico">🔄</span>지금 동기화<span class="val" id="shSyncVal">' + (lastSync ? ago(lastSync) : '대기') + '</span></button>' +
     '<button type="button" class="sheet-item" id="shCode"><span class="ico">🔑</span>가족 초대코드 바꾸기</button>' +
     '<button type="button" class="sheet-item" id="shInstall"><span class="ico">📲</span>홈 화면에 앱으로 설치</button>' +
-    '<button type="button" class="sheet-item" id="shPortal"><span class="ico">🏠</span>상국포털로 돌아가기</button>' +
     '<button type="button" class="sheet-item" id="shOut" style="color:#D9534F"><span class="ico">🚪</span>로그아웃</button>' +
     '<div class="hint" style="margin-top:12px">사진·위치·귀가 정보는 암호화되어 가족 저장소에만 보관됩니다. 이 앱은 가족 외에는 열리지 않아요.</div>'
   );
@@ -3033,7 +3032,6 @@ function settingsSheet() {
   $('shCode').onclick = function () { codeSheet(); };
   $('shInstall').onclick = function () { triggerInstall(); };
   $('shOut').onclick = function () { closeSheet(); logOut(); };
-  $('shPortal').onclick = function () { location.href = '../'; };
 }
 
 function codeSheet() {
