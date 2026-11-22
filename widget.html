@@ -2,345 +2,380 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="robots" content="noindex, nofollow, noarchive">
   <meta name="color-scheme" content="dark">
   <meta name="theme-color" content="#0A0B0E">
-  <title>상국포털 스마트 위젯</title>
+  <title>상국포털 위젯</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
   <style>
     /* ==========================================================================
-       상국포털 위젯 · Tesla Cybercab 다크·골드 테마 (2026-11-23)
-       - 베이스 #0A0B0E · 카드 #13161C · 서브/칩 #1B1F27 · 1px 미세 보더
-       - 샴페인 골드 액센트 #D4AF37 / #E5C158 · 라운드 12~16px
-       - Inter + Pretendard, 숫자는 tabular-nums
+       상국포털 위젯 · 한 화면 컴팩트 (2026-11-23)
+       - 바탕화면 위젯 한 프레임(약 500×520 / 380×500)에 스크롤·잘림 없이
+        ① 오늘 근무 며칠차  ② 오늘 날씨  ③ 이번 달 월력표 달력
+       - 테마: 사이버캡 다크·골드 (#0A0B0E / #13161C / #1B1F27 / #D4AF37 · #E5C158)
+       - 개인정보 없음(실명·주소·계정잔액·수익 금액 없음) · noindex 유지
        ========================================================================== */
     :root{
       color-scheme: dark;
       --bg:#0A0B0E; --surf:#13161C; --surf2:#1B1F27; --surf3:#23272F;
       --gold:#D4AF37; --gold2:#E5C158; --gold-d:#9C7C22;
       --ink:#F5F6F8; --ink2:#C9D0DC; --ink3:#8C96A8;
-      --line:rgba(255,255,255,.08); --line2:rgba(255,255,255,.06);
-      --line-g:rgba(212,175,55,.26);
-      --up:#FCA5A5; --up-bg:rgba(248,113,113,.12); --up-ln:rgba(248,113,113,.26);
-      --dn:#93C5FD; --dn-bg:rgba(96,165,250,.12); --dn-ln:rgba(96,165,250,.26);
+      --line:rgba(255,255,255,.08); --line-g:rgba(212,175,55,.26);
+      --work-bg:rgba(248,113,113,.10); --work-ln:rgba(248,113,113,.24); --work-tx:#FCA5A5;
+      --rest-bg:rgba(52,211,153,.09);  --rest-ln:rgba(52,211,153,.22);  --rest-tx:#6EE7B7;
     }
     *{ box-sizing:border-box; margin:0; padding:0; }
+    html,body{ height:100%; }
     html{ -webkit-text-size-adjust:100%; }
     body{
-      font-family:'Inter','Pretendard Variable',Pretendard,-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',sans-serif;
+      font-family:'Pretendard Variable',Pretendard,'Inter',-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',sans-serif;
       background:var(--bg); color:var(--ink);
-      padding:12px 10px 16px; letter-spacing:-.01em;
-      -webkit-font-smoothing:antialiased;
+      letter-spacing:-.01em; -webkit-font-smoothing:antialiased;
       font-feature-settings:'tnum' 1;
+      overflow:hidden;
     }
-    b,strong{ font-weight:700; }
     a{ text-decoration:none; color:inherit; -webkit-tap-highlight-color:transparent; }
-    .w-box{ max-width:480px; margin:0 auto; }
 
-    /* 헤더 */
-    .w-head{ display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:9px; padding:0 2px; }
-    .w-title{ display:flex; align-items:center; gap:7px; font-size:13.5px; font-weight:700; color:var(--ink); letter-spacing:-.02em; }
-    .w-title::before{ content:''; flex:0 0 auto; width:3px; height:13px; border-radius:2px; background:linear-gradient(180deg,var(--gold2),var(--gold-d)); }
-    .w-time{ font-size:10.5px; font-weight:600; color:var(--ink2); background:var(--surf2); border:1px solid var(--line); border-radius:8px; padding:3px 8px; white-space:nowrap; font-variant-numeric:tabular-nums; }
+    /* 위젯 앱 자체 오버레이(좌상단 시계·우상단 ↻)를 피하는 상단 여백 */
+    .w{
+      height:100%;
+      display:flex; flex-direction:column; gap:6px;
+      padding:42px 11px 8px;
+      max-width:560px; margin:0 auto;
+    }
 
-    /* 미쁠 한마디 */
-    .w-brief{ display:flex; gap:9px; align-items:flex-start; background:var(--surf2); border:1px solid var(--line); border-left:2px solid var(--gold); border-radius:12px; padding:9px 11px; margin-bottom:9px; }
-    .w-brief img{ flex:0 0 auto; width:26px; height:26px; border-radius:50%; object-fit:cover; object-position:center; background:var(--surf3); border:1px solid var(--line-g); }
-    .w-brief .t{ font-size:11.5px; font-weight:500; color:var(--ink2); line-height:1.55; }
-    .w-brief .t b{ color:var(--gold2); font-weight:700; }
+    /* ── 헤더 ───────────────────────────────────────────── */
+    .w-head{ display:flex; align-items:center; justify-content:space-between; gap:8px; flex:0 0 auto; padding:0 2px; }
+    .w-brand{ display:inline-flex; align-items:center; gap:6px; font-size:12.5px; font-weight:700; color:var(--ink2); letter-spacing:-.01em; }
+    .w-brand::before{ content:''; width:3px; height:12px; border-radius:2px; background:linear-gradient(180deg,var(--gold2),var(--gold-d)); }
+    .w-date{ font-size:11px; font-weight:600; color:var(--ink3); font-variant-numeric:tabular-nums; white-space:nowrap; }
 
-    /* 카드 */
-    .card{ background:var(--surf); border:1px solid var(--line); border-radius:16px; padding:11px 12px; margin-bottom:9px; }
-    .card-h{ display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:9px; }
-    .card-h .t{ font-size:12px; font-weight:700; color:var(--ink); letter-spacing:-.01em; }
-    .stamp{ flex:0 0 auto; font-size:9.5px; font-weight:700; color:var(--gold2); background:rgba(212,175,55,.10); border:1px solid var(--line-g); border-radius:999px; padding:2px 8px; white-space:nowrap; font-variant-numeric:tabular-nums; }
-    .stamp.gray{ color:var(--ink3); background:var(--surf2); border-color:var(--line); }
-    .stamp.blue{ color:var(--gold2); background:rgba(212,175,55,.10); border-color:var(--line-g); }
-    .note{ font-size:10px; font-weight:500; color:var(--ink3); margin-top:6px; line-height:1.5; }
-    .note b{ color:var(--ink2); font-weight:700; }
-    .src{ font-size:9px; font-weight:500; color:var(--ink3); margin-top:5px; line-height:1.4; }
+    /* ── 공통 카드 ──────────────────────────────────────── */
+    .card{ background:var(--surf); border:1px solid var(--line); border-radius:14px; padding:8px 10px; flex:0 0 auto; }
+    .hd{ display:flex; align-items:center; justify-content:space-between; gap:6px; margin-bottom:6px; }
+    .hd-t{ font-size:12.5px; font-weight:700; color:var(--ink); letter-spacing:-.01em; }
+    .pill{
+      flex:0 0 auto; font-size:11px; font-weight:700; color:var(--gold2);
+      background:rgba(212,175,55,.10); border:1px solid var(--line-g); border-radius:999px;
+      padding:1px 7px; white-space:nowrap; font-variant-numeric:tabular-nums;
+    }
 
-    /* 날씨 */
-    .wx-row{ display:grid; grid-template-columns:1fr 1fr; gap:7px; }
-    .wx-col{ background:var(--surf2); border:1px solid var(--line); border-radius:12px; padding:8px 9px; }
-    .wx-name{ display:flex; justify-content:space-between; align-items:center; gap:4px; font-size:11px; font-weight:700; color:var(--ink2); }
-    .wx-sky{ font-size:9.5px; font-weight:600; color:var(--ink3); }
-    .wx-temp{ display:flex; align-items:flex-start; gap:1px; font-size:26px; font-weight:700; color:var(--ink); line-height:1.1; margin:3px 0 2px; letter-spacing:-.03em; font-variant-numeric:tabular-nums; }
-    .wx-temp b{ font-size:26px; font-weight:700; line-height:1.1; color:var(--ink); }
-    .wx-temp span{ font-size:12px; font-weight:600; color:var(--ink3); margin-top:7px; }
-    .wx-line{ font-size:10px; font-weight:500; color:var(--ink2); line-height:1.5; }
-    .wx-line b{ font-weight:700; color:var(--ink); }
-    .wx-pm{ display:inline-block; font-size:9px; font-weight:600; color:var(--ink3); background:rgba(255,255,255,.04); border:1px solid var(--line); border-radius:6px; padding:2px 6px; margin-top:5px; line-height:1.3; }
+    /* ── ① 오늘 근무 ─────────────────────────────────────── */
+    .sh{
+      background:linear-gradient(180deg,rgba(212,175,55,.07) 0%,rgba(212,175,55,.015) 60%,rgba(212,175,55,0) 100%),var(--surf);
+      border:1px solid rgba(212,175,55,.22); border-radius:14px; padding:8px 10px;
+      flex:0 0 auto;
+    }
+    .sh-top{ display:flex; align-items:center; gap:7px; }
+    .sh-dot{ flex:0 0 auto; width:8px; height:8px; border-radius:50%; background:var(--gold); box-shadow:0 0 0 3px rgba(212,175,55,.13); }
+    .sh.rest .sh-dot{ background:#34D399; box-shadow:0 0 0 3px rgba(52,211,153,.15); }
+    .sh.work .sh-dot{ background:#F87171; box-shadow:0 0 0 3px rgba(248,113,113,.15); }
+    .sh-main{ font-size:20px; font-weight:800; letter-spacing:-.03em; line-height:1.1; font-variant-numeric:tabular-nums; white-space:nowrap; }
+    .sh-main b{ color:var(--gold2); font-weight:800; }
+    .sh.rest .sh-main b{ color:var(--rest-tx); }
+    .sh.work .sh-main b{ color:var(--work-tx); }
+    .sh-pips{ display:inline-flex; align-items:center; gap:3px; margin-left:auto; }
+    .sh-pips i{ width:5px; height:5px; border-radius:50%; background:rgba(255,255,255,.14); }
+    .sh-pips i.on{ background:var(--gold); }
+    .sh.rest .sh-pips i.on{ background:#34D399; }
+    .sh.work .sh-pips i.on{ background:#F87171; }
+    .sh-sub{ display:flex; align-items:center; justify-content:space-between; gap:8px; margin-top:3px; }
+    .sh-sub span{ font-size:12.5px; font-weight:600; color:var(--ink2); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .sh-sub em{ font-style:normal; font-size:11px; font-weight:600; color:var(--ink3); white-space:nowrap; }
 
-    /* 오늘 핵심 체크 */
-    .card.check{ background:linear-gradient(180deg,rgba(212,175,55,.075) 0%,rgba(212,175,55,.015) 55%,rgba(212,175,55,0) 100%),var(--surf); border-color:rgba(212,175,55,.22); }
-    .check .card-h .t{ color:var(--gold2); }
-    .check .stamp{ color:#0A0B0E; background:var(--gold); border-color:var(--gold); font-weight:800; }
-    .chk{ display:flex; gap:7px; align-items:flex-start; font-size:11px; font-weight:500; color:var(--ink2); line-height:1.5; padding:4px 0; border-top:1px dashed var(--line2); }
-    .chk:first-of-type{ border-top:0; padding-top:1px; }
-    .chk b{ font-weight:700; color:var(--ink); }
-    .chk .tm{ flex:0 0 auto; min-width:34px; text-align:center; font-size:9.5px; font-weight:700; color:var(--gold2); background:rgba(212,175,55,.12); border:1px solid rgba(212,175,55,.26); border-radius:6px; padding:1px 5px; margin-top:1px; font-variant-numeric:tabular-nums; }
+    /* ── ② 오늘 날씨 ─────────────────────────────────────── */
+    .wx-2{ display:grid; grid-template-columns:1fr 1fr; gap:6px; }
+    .wx-c{ background:var(--surf2); border:1px solid var(--line); border-radius:10px; padding:5px 8px 6px; min-width:0; }
+    .wx-n{ display:flex; align-items:baseline; justify-content:space-between; gap:4px; font-size:12.5px; font-weight:700; color:var(--ink2); }
+    .wx-n span{ font-size:11px; font-weight:600; color:var(--ink3); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .wx-t{ display:flex; align-items:flex-start; gap:1px; font-size:20px; font-weight:800; line-height:1.05; letter-spacing:-.03em; font-variant-numeric:tabular-nums; margin:1px 0 0; }
+    .wx-t b{ font-size:20px; font-weight:800; line-height:1.05; }
+    .wx-t i{ font-style:normal; font-size:11px; font-weight:600; color:var(--ink3); margin-top:5px; }
+    .wx-r{ font-size:11px; font-weight:600; color:var(--ink3); font-variant-numeric:tabular-nums; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .wx-l{ display:flex; align-items:center; gap:4px; font-size:11px; font-weight:500; color:var(--ink2); line-height:1.45; margin-top:4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .wx-l b{ font-weight:700; color:var(--ink); }
+    .wx-l:last-child{ margin-top:2px; }
 
-    /* 시세 미니 카드 */
-    .mini .lbl{ font-size:10.5px; font-weight:600; color:var(--ink3); margin-bottom:3px; }
-    .big{ font-size:20px; font-weight:700; color:var(--ink); letter-spacing:-.02em; line-height:1.2; font-variant-numeric:tabular-nums; }
-    .big.sm{ font-size:17px; }
-    .chg{ display:inline-flex; align-items:center; font-size:10.5px; font-weight:700; border-radius:6px; padding:1px 5px; margin-top:4px; border:1px solid transparent; font-variant-numeric:tabular-nums; }
-    .sub{ font-size:10px; font-weight:500; color:var(--ink3); margin-top:4px; line-height:1.4; }
-    .up{ color:var(--up); background:var(--up-bg); border-color:var(--up-ln); }
-    .down{ color:var(--dn); background:var(--dn-bg); border-color:var(--dn-ln); }
-    .flat{ color:var(--ink3); background:rgba(255,255,255,.05); border-color:var(--line); }
+    /* ── ③ 월력표 달력 ───────────────────────────────────── */
+    .cal{ display:flex; flex-direction:column; flex:1 1 auto; min-height:0; }
+    .lg{ display:inline-flex; align-items:center; gap:4px; font-size:11px; font-weight:600; color:var(--ink3); white-space:nowrap; }
+    .lg i{ width:7px; height:7px; border-radius:2px; display:inline-block; }
+    .lg i.work{ background:rgba(248,113,113,.55); }
+    .lg i.rest{ background:rgba(52,211,153,.55); margin-left:5px; }
+    .dow{ display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); gap:3px; flex:0 0 auto; margin-bottom:3px; }
+    .dow span{ text-align:center; font-size:11px; font-weight:700; color:var(--ink3); }
+    .dow span:first-child{ color:#E08A8A; }
+    .dow span:last-child{ color:#8AB4E0; }
+    .grid{ display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); grid-auto-rows:minmax(0,1fr); gap:3px; flex:1 1 auto; min-height:0; }
+    .cc{
+      position:relative; min-height:0; min-width:0; overflow:hidden;
+      display:flex; flex-direction:column; align-items:center; justify-content:center;
+      border-radius:7px; border:1px solid transparent; background:transparent;
+      padding:1px 1px 2px; line-height:1.1;
+    }
+    .cc.work{ background:var(--work-bg); border-color:var(--work-ln); }
+    .cc.rest{ background:var(--rest-bg); border-color:var(--rest-ln); }
+    .cc .cc-d{ font-size:11px; font-weight:600; color:var(--ink2); font-variant-numeric:tabular-nums; }
+    .cc.work .cc-d{ color:var(--work-tx); }
+    .cc.rest .cc-d{ color:var(--rest-tx); }
+    .cc.dim .cc-d{ color:rgba(140,150,168,.45); }
+    .cc.sun:not(.work):not(.rest) .cc-d{ color:#E0A0A0; }
+    .cc.sat:not(.work):not(.rest) .cc-d{ color:#9AB8DE; }
+    .cc .cc-l{ font-size:9px; font-weight:600; color:var(--ink2); max-width:100%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-top:1px; letter-spacing:-.03em; }
+    .cc.today{
+      background:rgba(212,175,55,.14); border:1.5px solid var(--gold);
+      box-shadow:0 0 0 1px rgba(212,175,55,.14) inset;
+    }
+    .cc.today .cc-d{ color:var(--gold2); font-weight:800; }
+    .cc .cc-b{
+      position:absolute; top:1px; right:2px;
+      font-size:8px; font-weight:800; line-height:1.2; color:#0A0B0E;
+      background:var(--gold); border-radius:999px; padding:0 3px;
+      font-variant-numeric:tabular-nums;
+    }
 
-    /* 리스트 행 */
-    .row{ display:flex; justify-content:space-between; align-items:center; gap:8px; padding:5px 0; border-top:1px dashed var(--line2); }
-    .row:first-of-type{ border-top:0; padding-top:1px; }
-    .row>span{ display:inline-flex; align-items:baseline; flex:0 0 auto; }
-    .row .n{ font-size:11px; font-weight:600; color:var(--ink2); }
-    .row .v{ font-size:12px; font-weight:700; color:var(--ink); font-variant-numeric:tabular-nums; }
-    .row .r{ font-size:9.5px; font-weight:700; margin-left:6px; white-space:nowrap; border-radius:5px; padding:1px 4px; border:1px solid transparent; font-variant-numeric:tabular-nums; }
+    /* ── 하단 포털 링크 ──────────────────────────────────── */
+    .all{ flex:0 0 auto; display:flex; align-items:center; justify-content:center; gap:5px;
+      font-size:11px; font-weight:600; color:var(--ink3); padding:1px 0 0; }
+    .all b{ color:var(--ink2); font-weight:700; }
+    .all:active{ color:var(--gold2); }
 
-    /* 최신 글 */
-    .post{ display:block; padding:7px 0; border-top:1px dashed var(--line2); }
-    .post:first-of-type{ border-top:0; padding-top:1px; }
-    .post .tag{ display:inline-block; font-size:8.5px; font-weight:700; border-radius:5px; padding:1px 5px; margin-right:5px; vertical-align:1px; border:1px solid transparent; letter-spacing:0; }
-    .post .tag.t{ color:#FDBA74; background:rgba(251,146,60,.12); border-color:rgba(251,146,60,.26); }
-    .post .tag.n{ color:#6EE7B7; background:rgba(52,211,153,.10); border-color:rgba(52,211,153,.22); }
-    .post .tag.m{ color:#C4B5FD; background:rgba(167,139,250,.12); border-color:rgba(167,139,250,.24); }
-    .post .tag.y{ color:#FDBA74; background:rgba(251,146,60,.12); border-color:rgba(251,146,60,.26); }
-    .post .pt{ font-size:11px; font-weight:600; color:var(--ink); line-height:1.45; }
-    .post .pd{ font-size:9.5px; font-weight:500; color:var(--ink3); margin-top:2px; font-variant-numeric:tabular-nums; }
-    .post:active .pt{ color:var(--gold2); }
-
-    /* 바로가기 버튼 */
-    .w-links{ display:grid; grid-template-columns:repeat(4,1fr); gap:6px; margin-top:10px; }
-    .w-btn{ display:block; text-align:center; background:var(--surf2); border:1px solid var(--line); border-radius:10px; padding:8px 3px; font-size:10.5px; font-weight:600; color:var(--ink2); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; line-height:1.25; transition:border-color .15s,background .15s,color .15s; }
-    .w-btn.green{ background:rgba(212,175,55,.07); border-color:rgba(212,175,55,.24); color:var(--gold2); }
-    .w-btn.red{ background:rgba(248,113,113,.07); border-color:rgba(248,113,113,.22); color:var(--up); }
-    .w-btn.w2{ grid-column:span 2; }
-    .w-btn:active{ border-color:rgba(212,175,55,.5); background:var(--surf3); }
-    .w-links .w-btn:nth-last-child(2){ border-color:rgba(212,175,55,.32); color:var(--gold2); }
-    .w-links .w-btn:last-child{ background:var(--gold); border-color:var(--gold); color:#0A0B0E; font-weight:800; }
-
-    @media (max-width:379px){
-      .w-btn{ font-size:9.5px; padding:8px 2px; }
-      .wx-temp{ font-size:24px; }
-      .big{ font-size:18px; }
+    /* 좁은 폭(360~420) 압축 */
+    @media (max-width:430px){
+      .w{ padding:38px 9px 7px; gap:5px; }
+      .sh-main{ font-size:20px; }
+      .wx-c{ padding:4px 7px 5px; }
+      .cc .cc-l{ font-size:8.5px; }
+    }
+    @media (max-height:470px){
+      .w{ padding-top:30px; gap:4px; }
+      .sh-main{ font-size:16px; }
+      .wx-t, .wx-t b{ font-size:16px; }
     }
   </style>
 </head>
 <body>
-  <div class="w-box">
+  <div class="w">
     <div class="w-head">
-      <div class="w-title">🟢 상국포털 스마트 위젯</div>
-      <div id="wDate" class="w-time"></div>
+      <span class="w-brand">상국포털</span>
+      <span class="w-date" id="wDate">11/23(월)</span>
     </div>
 
-    <div class="w-brief">
-      <img src="./mippeul-avatar.png" alt="" aria-hidden="true" width="26" height="26" loading="lazy" decoding="async">
-      <div class="t" id="wGreet">오늘 날씨·증시·환율·비트코인 수치를 이 화면에서 바로 볼 수 있어요.</div>
-    </div>
-
-    <!-- 날씨 -->
-    <div class="card">
-      <div class="card-h">
-        <div class="t">🌤️ 오늘 날씨 · 미세먼지</div>
-        <div class="stamp" id="wxStamp">불러오는 중</div>
+    <!-- ① 오늘 근무 며칠차 -->
+    <section class="sh" id="wShift">
+      <div class="sh-top">
+        <span class="sh-dot"></span>
+        <span class="sh-main" id="shMain">휴식 <b>4/5</b>일차</span>
+        <span class="sh-pips" id="shPips"></span>
       </div>
-      <div class="wx-row">
-        <div class="wx-col">
-          <div class="wx-name"><span>파주</span><span class="wx-sky" id="paSky">흐림</span></div>
-          <div class="wx-temp"><b id="paT">1</b><span>℃</span></div>
-          <div class="wx-line">체감 <b id="paF">-2℃</b> · <span id="paRange">0 ~ 12℃</span></div>
-          <div class="wx-line">강수 <b id="paRain">96%</b> · 습도 77%</div>
-          <div class="wx-pm" id="paPm">PM10 30 좋음 · PM2.5 22 보통</div>
+      <div class="sh-sub">
+        <span id="shNext">다음 출근 11/25(수) 08:00</span>
+        <em id="shNote">오늘 일정 없음</em>
+      </div>
+    </section>
+
+    <!-- ② 오늘 날씨 -->
+    <section class="card">
+      <div class="hd">
+        <span class="hd-t">오늘 날씨</span>
+        <span class="pill" id="wxStamp">불러오는 중</span>
+      </div>
+      <div class="wx-2">
+        <div class="wx-c">
+          <div class="wx-n">파주<span id="paSky">—</span></div>
+          <div class="wx-t"><b id="paT">2</b><i>℃</i></div>
+          <div class="wx-r" id="paRange">0 ~ 14℃ · 체감 -2℃</div>
         </div>
-        <div class="wx-col">
-          <div class="wx-name"><span>연천</span><span class="wx-sky" id="ycSky">대체로 흐림</span></div>
-          <div class="wx-temp"><b id="ycT">-1</b><span>℃</span></div>
-          <div class="wx-line">체감 <b id="ycF">-2℃</b> · <span id="ycRange">-2 ~ 8℃</span></div>
-          <div class="wx-line">강수 <b id="ycRain">98%</b> · 습도 80%</div>
-          <div class="wx-pm" id="ycPm">PM10 24 좋음 (PM2.5 통신장애)</div>
+        <div class="wx-c">
+          <div class="wx-n">연천<span id="ycSky">—</span></div>
+          <div class="wx-t"><b id="ycT">2</b><i>℃</i></div>
+          <div class="wx-r" id="ycRange">-1 ~ 9℃ · 체감 -2℃</div>
         </div>
       </div>
-      <div class="note" id="wxNote">08시 <b>이슬비</b> → 10~13시 <b>비 78%</b> → 18시 그침 · 일몰 17:15(연천)·17:17(파주). 우산·워셔액을 챙기고, 14:00 <b>CGV 3,430원 마감</b>과 유니클로 뽑기를 오전에 정리하세요.</div>
-      <div class="src" id="wxSrc">Apple Weather · AirKorea 05:00 관측 · 05:47 스냅샷</div>
-    </div>
+      <div class="wx-l" id="wxRain">☔ 비 올 확률 100% · 습도 77%</div>
+      <div class="wx-l" id="wxPm">🍃 미세먼지 <b>좋음</b> · PM10 30 · PM2.5 22</div>
+    </section>
 
-    <!-- 오늘 체크 -->
-    <div class="card check">
-      <div class="card-h">
-        <div class="t">📌 오늘 핵심 체크</div>
-        <div class="stamp blue">11/23(월)</div>
+    <!-- ③ 이번 달 월력표 달력 -->
+    <section class="card cal">
+      <div class="hd">
+        <span class="hd-t" id="calTitle">2026년 11월</span>
+        <span class="lg"><i class="work"></i>근무<i class="rest"></i>휴식</span>
       </div>
-      <div class="chk"><span class="tm">휴식</span><span><b>휴식 4일차(11/20~11/24)</b> — 출근 없음 · 다음 출근은 11/25(수) 08:00</span></div>
-      <div class="chk"><span class="tm">오전</span><span><b>치과(임플란트) 확인·방문</b> — 어젯밤 22:57 메모, 전화로 예약·대기 확인 뒤 보험카드 챙기기</span></div>
-      <div class="chk"><span class="tm">14:00</span><span><b>CGV 네이버페이 최대 3,430원 결제 마감</b> — 지나면 소멸, 앱에서 적용 금액 확인</span></div>
-      <div class="chk"><span class="tm">14:00</span><span><b>유니클로 브랜드뽑기 오픈</b> — 선착순, CGV 결제와 함께 13:55 앱 실행</span></div>
-      <div class="chk"><span class="tm">비</span><span>08시 이슬비 → <b>10~13시 비 78%</b> → 18시 그침 · 오늘 운동은 실내</span></div>
-      <div class="chk"><span class="tm">내일</span><span><b>11/24 19:30 원대표 AI 당근 글쓰기</b> — 링크·질문 3개 미리 준비</span></div>
-    </div>
+      <div class="dow"><span>일</span><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span></div>
+      <div class="grid" id="calGrid"></div>
+    </section>
 
-    <!-- 국내 증시 + 환율 -->
-    <div class="wx-row" style="margin-bottom:9px;">
-      <div class="card mini" style="margin-bottom:0;">
-        <div class="lbl">📈 코스피</div>
-        <div class="big">4,869.96</div>
-        <div class="chg down">▼ 5.21% (-267.93)</div>
-        <div class="sub">11/20 종가 · 오늘 09:00 개장</div>
-      </div>
-      <div class="card mini" style="margin-bottom:0;">
-        <div class="lbl">📈 코스닥</div>
-        <div class="big">645.68</div>
-        <div class="chg down">▼ 5.71% (-39.13)</div>
-        <div class="sub">11/20 종가</div>
-      </div>
-    </div>
-
-    <div class="wx-row" style="margin-bottom:9px;">
-      <div class="card mini" style="margin-bottom:0;">
-        <div class="lbl">💱 원/달러</div>
-        <div class="big">1,346.50</div>
-        <div class="chg up">▲ 0.82% (+10.95)</div>
-        <div class="sub">11/21 06:28 · 하나은행(주말 고시 유지)</div>
-      </div>
-      <div class="card mini" style="margin-bottom:0;">
-        <div class="lbl">🇺🇸 나스닥</div>
-        <div class="big">22,617.73</div>
-        <div class="chg down">▼ 5.28% (-1,261.47)</div>
-        <div class="sub">11/20 종가</div>
-      </div>
-    </div>
-
-    <!-- 미국 증시 -->
-    <div class="card">
-      <div class="card-h">
-        <div class="t">🇺🇸 미국 증시</div>
-        <div class="stamp gray">11/20 종가</div>
-      </div>
-      <div class="row"><span class="n">S&amp;P 500</span><span><span class="v">6,910.39</span><span class="r down">▼ 3.70%</span></span></div>
-      <div class="row"><span class="n">다우존스</span><span><span class="v">48,147.33</span><span class="r down">▼ 1.93%</span></span></div>
-      <div class="row"><span class="n">나스닥</span><span><span class="v">22,617.73</span><span class="r down">▼ 5.28%</span></span></div>
-      <div class="note">필라델피아 반도체 <b>-10.73%(8,408.59)</b> · 엔비디아 <b>-14.01%</b> · 마이크로소프트 -2.77%. 주말 휴장이라 다음 거래일은 <b>오늘 11/23(월)</b>, 국내장은 09:00 개장입니다.</div>
-    </div>
-
-    <!-- 비트코인 -->
-    <div class="card">
-      <div class="card-h">
-        <div class="t">🪙 비트코인 (업비트 원화)</div>
-        <div class="stamp" id="btcStamp">불러오는 중</div>
-      </div>
-      <div style="display:flex; align-items:flex-end; justify-content:space-between; gap:8px;">
-        <div>
-          <div class="big sm" id="btcBig">8,308만원</div>
-          <div class="sub" id="btcSub">83,077,000원 · 전일 대비 ▲ 0.58%</div>
-        </div>
-        <div class="chg up" id="btcChg" style="font-size:14px;">▲ 0.58%</div>
-      </div>
-      <div class="row" style="margin-top:6px;"><span class="n">오늘 고가</span><span class="v" id="btcHigh">84,500,000원</span></div>
-      <div class="row"><span class="n">오늘 저가</span><span class="v" id="btcLow">80,381,000원</span></div>
-      <div class="row"><span class="n">전일 종가</span><span class="v" id="btcPrev">82,600,000원</span></div>
-      <div class="note">오늘 변동 폭 4,119,000원 · 열 때마다 업비트에서 실시간 갱신합니다.</div>
-    </div>
-
-    <!-- 블로그 수익 흐름 -->
-    <div class="card">
-      <div class="card-h">
-        <div class="t">💰 블로그 수익 흐름 · 최근 7일</div>
-        <div class="stamp gray">11/22 21:04</div>
-      </div>
-      <div class="row"><span class="n">7일 합산(티스토리+네이버)</span><span><span class="v">5,405원</span><span class="r flat">11/20 2,745원</span></span></div>
-      <div class="row"><span class="n">티스토리 애드센스(7일)</span><span><span class="v">$0.39</span><span class="r flat">≈519원</span></span></div>
-      <div class="row"><span class="n">네이버 애드포스트(7일)</span><span><span class="v">4,886원</span><span class="r up">11/20 2,745원</span></span></div>
-      <div class="row"><span class="n">어제 → 오늘</span><span class="v">238원 → 53원</span></div>
-      <div class="note">11/21은 애드포스트 211원+애드센스 $0.02(≈27원)로 <b>238원</b>, 11/22는 애드센스 $0.04(≈53원)까지 집계됐습니다(애드포스트 11/22는 다음 집계). 티스토리는 <b>$100까지 $1.23</b>, 네이버는 12/12 <b>29,500원</b> 입금 예정.</div>
-    </div>
-
-    <!-- 최신 글 -->
-    <div class="card">
-      <div class="card-h">
-        <div class="t">✍️ 최신 발행 글 · 쇼츠</div>
-        <div class="stamp gray">누르면 이동</div>
-      </div>
-      <a class="post" href="https://feelyour15.tistory.com/198" target="_blank" rel="noopener noreferrer">
-        <div class="pt"><span class="tag t">티스토리</span>아이클라우드 용량 늘리기 전에: 2TB 1년 값이 7만~16만8천원</div>
-        <div class="pd">#198 · 소통의 공간 · 11/22 19:02</div>
-      </a>
-      <a class="post" href="https://feelyour20.tistory.com/30" target="_blank" rel="noopener noreferrer">
-        <div class="pt"><span class="tag m">만남의 광장</span>〈꿀알바〉 결말이 남긴 말, 시즌2는 나올까</div>
-        <div class="pd">#30 · 11/22 21:19</div>
-      </a>
-      <a class="post" href="https://blog.naver.com/simsangguk/224487677628" target="_blank" rel="noopener noreferrer">
-        <div class="pt"><span class="tag n">네이버</span>다이소 싱크대 물막이 2,000원, 자꾸 떨어지는 이유 셋</div>
-        <div class="pd">소통의 살림 · 11/23 01:40</div>
-      </a>
-      <a class="post" href="https://blog.naver.com/feelyour39/224487706458" target="_blank" rel="noopener noreferrer">
-        <div class="pt"><span class="tag n">알뜰한 살림</span>월세 세액공제 조건, 총급여 8,000만원 넘으면 0원</div>
-        <div class="pd">feelyour39 · 11/23 02:33</div>
-      </a>
-    </div>
-
-    <div class="w-links">
-      <a class="w-btn green" href="https://feelyour15.tistory.com" target="_blank" rel="noopener noreferrer">📝 소통의 공간</a>
-      <a class="w-btn green" href="https://feelyour20.tistory.com" target="_blank" rel="noopener noreferrer">🌿 만남의 광장</a>
-      <a class="w-btn green" href="https://blog.naver.com/simsangguk" target="_blank" rel="noopener noreferrer">🧹 소통의 살림</a>
-      <a class="w-btn green" href="https://blog.naver.com/feelyour39" target="_blank" rel="noopener noreferrer">🧾 알뜰한 살림</a>
-      <a class="w-btn green" href="https://feelyour15.tistory.com/manage" target="_blank" rel="noopener noreferrer">⚙️ 관리자</a>
-      <a class="w-btn red" href="https://www.youtube.com/@sim_0369" target="_blank" rel="noopener noreferrer">📺 유튜브</a>
-      <a class="w-btn" href="https://cshop.naver.com/sim0369" target="_blank" rel="noopener noreferrer">🛍️ 크샵</a>
-      <a class="w-btn red" href="https://www.yna.co.kr/news?site=navi_latest" target="_blank" rel="noopener noreferrer">🚨 속보</a>
-      <a class="w-btn w2" href="https://news.naver.com/" target="_blank" rel="noopener noreferrer">📰 뉴스</a>
-      <a class="w-btn w2" href="https://simsangguk-jpg.github.io/" target="_blank" rel="noopener noreferrer">🔐 포털전체</a>
-    </div>
+    <a class="all" href="https://simsangguk-jpg.github.io/"><span>🔐</span><b>포털 전체 열기</b></a>
   </div>
 
   <script>
+    /* 매일 05:45 최신화가 아래 두 블록만 교체한다(구조·마커 유지).
+       SNAP  = 그날 아침 날씨 스냅샷(실시간 조회 실패 시 표시값)
+       EVENTS= 포털 EVENTS 에서 뽑은 이번·다음 달 핵심 일정의 짧은 달력 라벨 */
+    window.SG_WIDGET_SNAP = /*SNAP_START*/ {"at":"2026-11-23 06:45","pa":{"t":2,"f":-2,"lo":0,"hi":14,"sky":"대체로 맑음","rain":100,"hum":77,"pm10":30,"pm10g":"좋음","pm25":22,"pm25g":"보통"},"yc":{"t":2,"f":-2,"lo":-1,"hi":9,"sky":"대체로 맑음","rain":100,"hum":80,"pm10":24,"pm10g":"좋음","pm25":null,"pm25g":""}} /*SNAP_END*/;
+    window.SG_WIDGET_EVENTS = /*EVENT_START*/ {"2026-11-23":[{"l":"치과","p":3}],"2026-11-24":[{"l":"AI특강","p":2}],"2026-11-25":[{"l":"크루발표","p":2}],"2026-11-26":[{"l":"지섭병원","p":3}],"2026-11-27":[{"l":"시험발표","p":2}],"2026-11-30":[{"l":"구독종료","p":2}],"2026-12-01":[{"l":"프리미엄","p":2}],"2026-12-02":[{"l":"기지확인","p":3}],"2026-12-03":[{"l":"처남생일","p":2}],"2026-12-10":[{"l":"네마녀","p":2}],"2026-12-11":[{"l":"N페이","p":2}],"2026-12-12":[{"l":"결혼식","p":3}],"2026-12-15":[{"l":"벤츠납입","p":3}],"2026-12-20":[{"l":"장인생신","p":3}],"2026-12-21":[{"l":"애드센스","p":2}],"2026-12-24":[{"l":"촬영","p":3}],"2026-12-30":[{"l":"연가보상","p":2}]} /*EVENT_END*/;
+  </script>
+
+  <script>
   (function () {
-    /* 이 위젯은 개인 실명·주소·연락처·계정 잔액을 담지 않습니다(수익은 방향과 최근 7일 흐름만).
-       화면의 수치는 2026-11-23 05:47 스냅샷(11/20 종가 기준)이고, 날씨와 비트코인은 열 때마다 공개 API로 갱신합니다. */
     var $ = function (id) { return document.getElementById(id); };
     var DAYS = ['일', '월', '화', '수', '목', '금', '토'];
 
-    /* ---- 시계 ---- */
-    function tickClock() {
-      var n = new Date();
-      $('wDate').textContent =
-        (n.getMonth() + 1) + '.' + n.getDate() + '(' + DAYS[n.getDay()] + ') ' +
-        String(n.getHours()).padStart(2, '0') + ':' + String(n.getMinutes()).padStart(2, '0');
-    }
-    tickClock();
-    setInterval(tickClock, 30000);
+    function pad(n) { return (n < 10 ? '0' : '') + n; }
+    function dkey(d) { return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); }
+    function md(d) { return (d.getMonth() + 1) + '/' + d.getDate(); }
 
-    /* ---- 인사말 ---- */
-    (function greet() {
-      var h = new Date().getHours();
-      var txt;
-      if (h < 5) txt = '늦은 시간까지 수고 많으세요. 아래 수치는 실시간으로 갱신되고 있어요.';
-      else if (h < 11) txt = '<b>휴식 4일차</b> 월요일 아침이에요. 연천 -1℃·파주 1℃에 <b>비 96%</b>라 우산이 먼저입니다. 오전 <b>치과 확인</b>과 14:00 <b>CGV 3,430원 마감·유니클로 뽑기</b>를 챙기세요.';
-      else if (h < 17) txt = '점심 잘 보내고 계신가요? 날씨·증시·환율·비트코인 수치를 이 화면에서 바로 보세요.';
-      else if (h < 22) txt = '오늘 하루도 수고하셨어요. 저녁 수치와 새 글이 아래에 바로 떠 있어요.';
-      else txt = '편안한 저녁 보내세요. 내일 날씨와 수치는 열 때마다 새로 갱신돼요.';
-      $('wGreet').innerHTML = txt;
-    })();
+    /* ── 교대근무: 포털 getShiftState 와 같은 규칙 (28일=4주 주기, 기준 2026-11-16) ── */
+    var SHIFT_ANCHOR = new Date(2026, 10, 16);
+    var OV_KEY = 'sg_shift_overrides_v1';
 
-    /* ---- 공통 fetch (6초 타임아웃, 실패하면 스냅샷 유지) ---- */
-    function getJSON(url) {
-      return new Promise(function (resolve, reject) {
-        var ctl = window.AbortController ? new AbortController() : null;
-        var timer = setTimeout(function () { if (ctl) ctl.abort(); reject(new Error('timeout')); }, 6000);
-        fetch(url, ctl ? { signal: ctl.signal, cache: 'no-store' } : { cache: 'no-store' })
-          .then(function (r) { clearTimeout(timer); if (!r.ok) throw new Error('http ' + r.status); return r.json(); })
-          .then(resolve)
-          .catch(function (e) { clearTimeout(timer); reject(e); });
-      });
+    function baseState(dateObj) {
+      var d = new Date(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate());
+      var diff = Math.round((d - SHIFT_ANCHOR) / 86400000);
+      var idx = ((diff % 28) + 28) % 28;
+      if (idx < 4) return { isWork: true, label: '근무', dayInBlock: idx + 1, blockLen: 4 };
+      if (idx < 9) return { isWork: false, label: '휴식', dayInBlock: idx - 3, blockLen: 5 };
+      if (idx < 14) return { isWork: true, label: '근무', dayInBlock: idx - 8, blockLen: 5 };
+      if (idx < 18) return { isWork: false, label: '휴식', dayInBlock: idx - 13, blockLen: 4 };
+      if (idx < 23) return { isWork: true, label: '근무', dayInBlock: idx - 17, blockLen: 5 };
+      return { isWork: false, label: '휴식', dayInBlock: idx - 22, blockLen: 5 };
     }
+    function overrideOf(dateObj) {
+      try {
+        var o = JSON.parse(localStorage.getItem(OV_KEY) || '{}');
+        var v = o && o[dkey(dateObj)];
+        if (!v) return null;
+        var t = (typeof v === 'string') ? v : v.type;
+        return (t === 'work' || t === 'rest' || t === 'vacation') ? t : null;
+      } catch (e) { return null; }
+    }
+    function shiftState(dateObj) {
+      var base = baseState(dateObj), ov = overrideOf(dateObj);
+      if (!ov) return base;
+      if (ov === 'work') return { isWork: true, label: '근무', dayInBlock: base.isWork ? base.dayInBlock : 1, blockLen: base.isWork ? base.blockLen : 0, override: 'work' };
+      if (ov === 'rest') return { isWork: false, label: '휴식', dayInBlock: base.isWork ? 1 : base.dayInBlock, blockLen: base.isWork ? 0 : base.blockLen, override: 'rest' };
+      return { isWork: false, label: '휴가', dayInBlock: 1, blockLen: 0, override: 'vacation' };
+    }
+    /* 출근 시각: 월·화 08:30, 수·목·금 08:00 (합수리검문소 기준) */
+    function goTime(d) {
+      var w = d.getDay();
+      if (w === 1 || w === 2) return '08:30';
+      if (w >= 3 && w <= 5) return '08:00';
+      return '';
+    }
+    function nextWorkLabel(from) {
+      for (var i = 1; i <= 40; i++) {
+        var d = new Date(from.getFullYear(), from.getMonth(), from.getDate() + i);
+        var st = shiftState(d);
+        if (st.isWork) return md(d) + '(' + DAYS[d.getDay()] + ')' + (goTime(d) ? ' ' + goTime(d) : '');
+      }
+      return '—';
+    }
+    function restDaysLeft(from, st) {
+      if (st.isWork) return st.blockLen ? (st.blockLen - st.dayInBlock) : 0;
+      return 0;
+    }
+
+    function renderShift() {
+      var now = new Date();
+      var st = shiftState(now);
+      var box = $('wShift'), main = $('shMain'), pips = $('shPips'), next = $('shNext'), note = $('shNote');
+
+      box.className = 'sh ' + (st.isWork ? 'work' : (st.override === 'vacation' ? '' : 'rest'));
+
+      if (st.override === 'vacation') {
+        main.innerHTML = '휴가';
+      } else {
+        main.innerHTML = st.label + ' <b>' + st.dayInBlock + '/' + (st.blockLen || 5) + '</b>일차';
+      }
+
+      var n = st.blockLen || 0, html = '';
+      for (var i = 1; i <= n; i++) html += '<i class="' + (i <= st.dayInBlock ? 'on' : '') + '"></i>';
+      pips.innerHTML = html;
+
+      if (st.isWork) {
+        var t = goTime(now);
+        next.textContent = '오늘 ' + (t ? t + ' 출근' : '출근') + ' · 휴식까지 ' + Math.max(1, n - st.dayInBlock + 1) + '일';
+        note.textContent = '근무 ' + st.dayInBlock + '일차';
+      } else {
+        next.textContent = '다음 출근 ' + nextWorkLabel(now);
+        note.textContent = '';
+      }
+
+      /* 오늘 일정이 있으면 오른쪽에 짧게 */
+      var ev = (window.SG_WIDGET_EVENTS || {})[dkey(now)];
+      if (ev && ev.length) note.textContent = '📌 ' + ev[0].l + (ev.length > 1 ? ' +' + (ev.length - 1) : '');
+    }
+
+    /* ── 월력표 달력 ─────────────────────────────────── */
+    function renderCalendar() {
+      var now = new Date();
+      var y = now.getFullYear(), m = now.getMonth();
+      $('calTitle').textContent = y + '년 ' + (m + 1) + '월';
+
+      var first = new Date(y, m, 1);
+      var startPad = first.getDay();
+      var lastDate = new Date(y, m + 1, 0).getDate();
+      var cells = startPad + lastDate;
+      var rows = Math.ceil(cells / 7);
+
+      var evmap = window.SG_WIDGET_EVENTS || {};
+      var html = '';
+
+      /* 앞 달 빈칸 */
+      for (var i = 0; i < startPad; i++) html += '<div class="cc dim"></div>';
+
+      for (var d = 1; d <= lastDate; d++) {
+        var date = new Date(y, m, d);
+        var st = shiftState(date);
+        var k = dkey(date);
+        var cls = 'cc';
+        if (st.override === 'vacation') cls += '';
+        else if (st.isWork) cls += ' work';
+        else cls += ' rest';
+        var wd = date.getDay();
+        if (wd === 0) cls += ' sun';
+        if (wd === 6) cls += ' sat';
+        var isToday = (d === now.getDate());
+        if (isToday) cls += ' today';
+
+        var label = '';
+        var ev = evmap[k];
+        if (ev && ev.length) {
+          var best = ev[0];
+          for (var j = 1; j < ev.length; j++) if ((ev[j].p || 0) > (best.p || 0)) best = ev[j];
+          label = '<span class="cc-l">' + best.l + '</span>';
+        }
+
+        var badge = '';
+        if (isToday && (st.blockLen || 0) > 0) badge = '<span class="cc-b">' + st.dayInBlock + '/' + st.blockLen + '</span>';
+
+        html += '<div class="' + cls + '" data-d="' + k + '"><span class="cc-d">' + d + '</span>' + badge + label + '</div>';
+      }
+
+      /* 뒷 달 빈칸 */
+      var tail = rows * 7 - cells;
+      for (var t = 0; t < tail; t++) html += '<div class="cc dim"></div>';
+
+      $('calGrid').innerHTML = html;
+    }
+
+    /* ── 날씨 (실시간 Open-Meteo · 실패 시 아침 스냅샷 유지) ── */
+    var WX = [
+      { key: 'pa', lat: 37.7599, lon: 126.7801 },
+      { key: 'yc', lat: 38.0966, lon: 127.0749 }
+    ];
+    var SNAP = window.SG_WIDGET_SNAP || { at: '', pa: {}, yc: {} };
 
     function sky(code) {
       if (code === 0) return '맑음';
-      if (code === 1 || code === 2) return '대체로 맑음';
+      if (code === 1) return '대체로 맑음';
+      if (code === 2) return '구름조금';
       if (code === 3) return '흐림';
       if (code === 45 || code === 48) return '안개';
       if (code >= 51 && code <= 57) return '이슬비';
@@ -351,73 +386,136 @@
       if (code >= 95) return '뇌우';
       return '';
     }
+    function pmGrade(kind, v) {
+      if (v === null || v === undefined) return '';
+      if (kind === 'pm10') {
+        if (v <= 30) return '좋음'; if (v <= 80) return '보통'; if (v <= 150) return '나쁨'; return '매우나쁨';
+      }
+      if (v <= 15) return '좋음'; if (v <= 35) return '보통'; if (v <= 75) return '나쁨'; return '매우나쁨';
+    }
 
-    var WX = [
-      { key: 'pa', lat: 37.7599, lon: 126.7801 },
-      { key: 'yc', lat: 38.0966, lon: 127.0749 }
-    ];
+    function paintSnap() {
+      WX.forEach(function (w) {
+        var s = SNAP[w.key] || {};
+        if (s.t !== undefined) $(w.key + 'T').textContent = s.t;
+        if (s.sky) $(w.key + 'Sky').textContent = s.sky;
+        if (s.lo !== undefined && s.hi !== undefined) {
+          $(w.key + 'Range').textContent = s.lo + ' ~ ' + s.hi + '℃' + (s.f !== undefined ? ' · 체감 ' + s.f + '℃' : '');
+        }
+      });
+      var pa = SNAP.pa || {}, yc = SNAP.yc || {};
+      var rain = Math.max(pa.rain || 0, yc.rain || 0);
+      var snow = (pa.sky && (pa.sky.indexOf('눈') >= 0 || pa.sky.indexOf('이슬비') >= 0));
+      $('wxRain').innerHTML = (snow ? '❄️ 눈·비 ' : '☔ 비 올 확률 ') + '<b>' + rain + '%</b>' +
+        ' · 습도 ' + (pa.hum || '-') + '%';
+      var worst = pa.pm25g || pa.pm10g || '';
+      var txt = '🍃 미세먼지 <b>' + (worst || '—') + '</b>';
+      if (pa.pm10 !== undefined) txt += ' · PM10 ' + pa.pm10;
+      if (pa.pm25 !== undefined && pa.pm25 !== null) txt += ' · PM2.5 ' + pa.pm25;
+      $('wxPm').innerHTML = txt;
+      $('wxStamp').textContent = SNAP.at ? SNAP.at.slice(11, 16) + ' 기준' : '아침 기준';
+    }
 
-    function refreshWeather() {
-      var url = 'https://api.open-meteo.com/v1/forecast?latitude=' +
-        WX.map(function (w) { return w.lat; }).join(',') + '&longitude=' +
-        WX.map(function (w) { return w.lon; }).join(',') +
-        '&current=temperature_2m,apparent_temperature,weather_code' +
-        '&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max' +
-        '&timezone=Asia%2FSeoul&forecast_days=1';
-      getJSON(url).then(function (res) {
-        var list = Array.isArray(res) ? res : [res];
-        var okAt = '';
-        list.forEach(function (d, i) {
-          var w = WX[i]; if (!w || !d || !d.current) return;
-          var c = d.current, day = d.daily || {};
-          var t = Math.round(c.temperature_2m);
-          var f = Math.round(c.apparent_temperature);
-          var lo = day.temperature_2m_min ? Math.round(day.temperature_2m_min[0]) : null;
-          var hi = day.temperature_2m_max ? Math.round(day.temperature_2m_max[0]) : null;
-          var rain = (day.precipitation_probability_max || [])[0];
-          $(w.key + 'T').textContent = t;
-          $(w.key + 'F').textContent = f + '℃';
-          if (lo !== null && hi !== null) $(w.key + 'Range').textContent = lo + ' ~ ' + hi + '℃';
-          if (rain !== undefined && rain !== null) $(w.key + 'Rain').textContent = rain + '%';
-          var s = sky(c.weather_code); if (s) $(w.key + 'Sky').textContent = s;
-          if (c.time && !okAt) okAt = c.time.slice(11, 16);
-        });
-        $('wxStamp').textContent = okAt ? okAt + ' 실시간' : '실시간';
-        $('wxSrc').textContent = 'Open-Meteo 실시간' + (okAt ? ' ' + okAt : '') + ' · 미세먼지는 AirKorea 05:00 관측';
-      }).catch(function () {
-        $('wxStamp').textContent = '05:47 기준';
+    function getJSON(url) {
+      return new Promise(function (resolve, reject) {
+        var ctl = window.AbortController ? new AbortController() : null;
+        var timer = setTimeout(function () { if (ctl) ctl.abort(); reject(new Error('timeout')); }, 6000);
+        fetch(url, ctl ? { signal: ctl.signal, cache: 'no-store' } : { cache: 'no-store' })
+          .then(function (r) { clearTimeout(timer); if (!r.ok) throw new Error('http ' + r.status); return r.json(); })
+          .then(resolve).catch(function (e) { clearTimeout(timer); reject(e); });
       });
     }
 
-    /* ---- 비트코인 (업비트 공개 API) ---- */
-    function won(n) { return Math.round(n).toLocaleString('ko-KR'); }
+    var LIVE = { pa: {}, yc: {} };
 
-    function refreshBtc() {
-      getJSON('https://api.upbit.com/v1/ticker?markets=KRW-BTC').then(function (d) {
-        var t = d && d[0]; if (!t) return;
-        var p = t.trade_price, prev = t.prev_closing_price;
-        var rate = (t.signed_change_rate || 0) * 100;
-        var up = rate > 0, down = rate < 0;
-        var man = Math.round(p / 10000);
-        $('btcBig').textContent = man.toLocaleString('ko-KR') + '만원';
-        $('btcSub').textContent = won(p) + '원 · 전일 대비 ' + (up ? '▲ ' : down ? '▼ ' : '') + Math.abs(rate).toFixed(2) + '%';
-        var chg = $('btcChg');
-        chg.textContent = (up ? '▲ ' : down ? '▼ ' : '– ') + Math.abs(rate).toFixed(2) + '%';
-        chg.className = 'chg ' + (up ? 'up' : down ? 'down' : 'flat');
-        $('btcHigh').textContent = won(t.high_price) + '원';
-        $('btcLow').textContent = won(t.low_price) + '원';
-        $('btcPrev').textContent = won(prev) + '원';
-        var n = new Date();
-        $('btcStamp').textContent = String(n.getHours()).padStart(2, '0') + ':' + String(n.getMinutes()).padStart(2, '0') + ' 실시간';
-      }).catch(function () { $('btcStamp').textContent = '05:58 기준'; });
+    function refreshWeather() {
+      var lat = WX.map(function (w) { return w.lat; }).join(',');
+      var lon = WX.map(function (w) { return w.lon; }).join(',');
+      getJSON('https://api.open-meteo.com/v1/forecast?latitude=' + lat + '&longitude=' + lon +
+        '&current=temperature_2m,apparent_temperature,weather_code,relative_humidity_2m' +
+        '&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max' +
+        '&timezone=Asia%2FSeoul&forecast_days=1')
+        .then(function (res) {
+          var list = Array.isArray(res) ? res : [res];
+          var at = '';
+          list.forEach(function (d, i) {
+            var w = WX[i]; if (!w || !d || !d.current) return;
+            var c = d.current, day = d.daily || {};
+            var t = Math.round(c.temperature_2m), f = Math.round(c.apparent_temperature);
+            var lo = day.temperature_2m_min ? Math.round(day.temperature_2m_min[0]) : null;
+            var hi = day.temperature_2m_max ? Math.round(day.temperature_2m_max[0]) : null;
+            var rain = (day.precipitation_probability_max || [])[0];
+            var hum = c.relative_humidity_2m;
+            LIVE[w.key] = { t: t, f: f, lo: lo, hi: hi, rain: rain, hum: hum };
+            $(w.key + 'T').textContent = t;
+            var s = sky(c.weather_code); if (s) $(w.key + 'Sky').textContent = s;
+            if (lo !== null && hi !== null) $(w.key + 'Range').textContent = lo + ' ~ ' + hi + '℃ · 체감 ' + f + '℃';
+            if (!at && c.time) at = c.time.slice(11, 16);
+          });
+          if (at) $('wxStamp').textContent = at + ' 실시간';
+          paintLiveRain();
+        })
+        .catch(function () { /* 스냅샷 유지 */ });
     }
 
+    function paintLiveRain() {
+      var pa = LIVE.pa, yc = LIVE.yc;
+      if (pa.t === undefined && yc.t === undefined) return;
+      var rain = Math.max(pa.rain || 0, yc.rain || 0);
+      var code = pa.rain !== undefined ? pa.rain : null;
+      var line = '☔ 비 올 확률 <b>' + rain + '%</b>';
+      if (pa.t !== undefined && yc.t !== undefined && pa.rain !== yc.rain) {
+        line = '☔ 비 <b>' + pa.rain + '%·' + yc.rain + '%</b> (파주·연천)';
+      }
+      if (pa.hum !== undefined) line += ' · 습도 ' + pa.hum + '%';
+      $('wxRain').innerHTML = line;
+      void code;
+    }
+
+    function refreshAir() {
+      var lat = WX.map(function (w) { return w.lat; }).join(',');
+      var lon = WX.map(function (w) { return w.lon; }).join(',');
+      getJSON('https://air-quality-api.open-meteo.com/v1/air-quality?latitude=' + lat + '&longitude=' + lon +
+        '&current=pm10,pm2_5&timezone=Asia%2FSeoul')
+        .then(function (res) {
+          var list = Array.isArray(res) ? res : [res];
+          var rows = [];
+          list.forEach(function (d, i) {
+            var w = WX[i]; if (!w || !d || !d.current) return;
+            rows.push({ k: w.key, name: (i === 0 ? '파주' : '연천'), pm10: d.current.pm10, pm25: d.current.pm2_5 });
+          });
+          if (!rows.length) return;
+          /* 더 나쁜 쪽을 대표로 */
+          rows.sort(function (a, b) { return (b.pm10 || 0) - (a.pm10 || 0); });
+          var m = rows[0];
+          var g = pmGrade('pm25', m.pm25) || pmGrade('pm10', m.pm10);
+          var txt = '🍃 미세먼지 <b>' + (g || '—') + '</b>';
+          txt += ' · PM10 ' + Math.round(m.pm10);
+          if (m.pm25 !== null && m.pm25 !== undefined) txt += ' · PM2.5 ' + Math.round(m.pm25);
+          txt += ' <span style="color:#8C96A8">(' + m.name + ')</span>';
+          $('wxPm').innerHTML = txt;
+        })
+        .catch(function () { /* 스냅샷 유지 */ });
+    }
+
+    /* ── 시계·초기화 ─────────────────────────────────── */
+    function tickClock() {
+      var n = new Date();
+      $('wDate').textContent = (n.getMonth() + 1) + '/' + n.getDate() + '(' + DAYS[n.getDay()] + ')';
+    }
+
+    tickClock();
+    renderShift();
+    renderCalendar();
+    paintSnap();
     refreshWeather();
-    refreshBtc();
-    setInterval(refreshBtc, 5 * 60 * 1000);
-    setInterval(refreshWeather, 15 * 60 * 1000);
+    refreshAir();
+
+    setInterval(tickClock, 30000);
+    setInterval(function () { renderShift(); }, 5 * 60 * 1000);
+    setInterval(function () { refreshWeather(); refreshAir(); }, 15 * 60 * 1000);
     document.addEventListener('visibilitychange', function () {
-      if (!document.hidden) { refreshWeather(); refreshBtc(); }
+      if (!document.hidden) { tickClock(); renderShift(); renderCalendar(); refreshWeather(); refreshAir(); }
     });
   })();
   </script>
