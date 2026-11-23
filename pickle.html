@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>피클(Pickle) — 무료 AI 비서 시작하기</title>
+<meta name="robots" content="noindex, nofollow, noarchive">
+<meta name="description" content="일정·할 일·뉴스까지 한곳에서 챙겨 주는 무료 AI 비서 피클. 초대 링크로 시작하면 리필 쿠폰이 함께 옵니다.">
+<meta name="theme-color" content="#101720">
+<style>
+  :root{
+    --bg:#101720; --card:#151d27; --card2:#1b2430; --line:rgba(255,255,255,.09);
+    --ink:#F3F5F7; --sub:#B9C4CE; --muted:#8C9AA6;
+    --gold:#D4AF37; --gold-soft:rgba(212,175,55,.14);
+    --green:#22A06B; --green-soft:rgba(34,160,107,.16); --lime:#8FE3B4;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    background:radial-gradient(900px 600px at 50% -10%, #17352a 0%, transparent 60%), var(--bg);
+    color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Pretendard","Noto Sans KR",Roboto,sans-serif;
+    line-height:1.6; padding:0 0 48px;
+  }
+  .wrap{max-width:760px;margin:0 auto;padding:0 20px}
+  header{padding:26px 0 10px;display:flex;align-items:center;gap:10px}
+  .logo{width:38px;height:38px;border-radius:12px;background:linear-gradient(140deg,#2FBF83,#137B51);
+        display:flex;align-items:center;justify-content:center;font-weight:800;color:#06251a;font-size:17px}
+  .brand{font-size:17px;font-weight:800;letter-spacing:-.2px}
+  .brand small{display:block;font-size:11.5px;color:var(--muted);font-weight:600;letter-spacing:.4px}
+  .pill{display:inline-block;font-size:11.5px;font-weight:700;color:var(--lime);
+        background:var(--green-soft);border:1px solid rgba(34,160,107,.35);padding:3px 11px;border-radius:99px;margin-left:auto}
+  h1{font-size:32px;line-height:1.32;font-weight:800;letter-spacing:-1px;margin:22px 0 10px}
+  h1 em{font-style:normal;color:var(--lime)}
+  .lead{color:var(--sub);font-size:15px;margin-bottom:22px}
+  .cta{display:flex;flex-direction:column;gap:10px;margin:22px 0 8px}
+  .btn{display:block;text-align:center;text-decoration:none;font-weight:800;font-size:16px;
+       padding:16px 18px;border-radius:14px;background:linear-gradient(135deg,#2FBF83,#137B51);
+       color:#04170f;box-shadow:0 10px 24px rgba(34,160,107,.22)}
+  .btn.sub{background:transparent;color:var(--gold);border:1px solid rgba(212,175,55,.45);
+           box-shadow:none;font-size:14.5px;padding:13px 18px}
+  .code{display:flex;align-items:center;justify-content:space-between;gap:10px;
+        background:var(--card2);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-top:6px}
+  .code b{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:15px;letter-spacing:1px;color:var(--lime)}
+  .code span{font-size:11.5px;color:var(--muted)}
+  section{margin-top:34px}
+  h2{font-size:13px;font-weight:800;color:var(--gold);letter-spacing:.6px;text-transform:uppercase;margin-bottom:12px}
+  .steps{display:grid;gap:10px}
+  .step{display:flex;gap:14px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px 16px}
+  .num{flex:0 0 30px;height:30px;border-radius:10px;background:var(--green-soft);color:var(--lime);
+       font-weight:800;font-size:14px;display:flex;align-items:center;justify-content:center}
+  .step h3{font-size:15px;font-weight:800;margin-bottom:3px}
+  .step p{font-size:13.5px;color:var(--sub)}
+  .facts{display:grid;gap:10px}
+  .fact{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:15px 16px;display:flex;gap:12px;align-items:flex-start}
+  .dot{flex:0 0 8px;height:8px;border-radius:99px;background:var(--green);margin-top:8px}
+  .fact b{font-weight:800;font-size:14.5px}
+  .fact p{font-size:13.5px;color:var(--sub)}
+  .links{display:grid;gap:10px;margin-top:12px}
+  .links a{display:flex;justify-content:space-between;align-items:center;gap:10px;text-decoration:none;
+           background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px;
+           color:var(--ink);font-size:14px;font-weight:700}
+  .links a span{color:var(--muted);font-size:12.5px;font-weight:600}
+  footer{margin-top:38px;padding-top:18px;border-top:1px solid var(--line);color:var(--muted);font-size:12px;line-height:1.7}
+  footer a{color:var(--gold);text-decoration:none}
+  @media (max-width:420px){h1{font-size:27px}.brand small{font-size:11px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="logo">P</div>
+    <div class="brand">피클 Pickle<small>무료 AI 비서</small></div>
+    <span class="pill">초대 링크</span>
+  </header>
+
+  <h1>일정·할 일·뉴스까지<br><em>알아서 챙겨 주는</em> 무료 AI 비서</h1>
+  <p class="lead">하고 싶은 일을 문장으로 말하면 정리하고, 겹치는 약속은 먼저 알려 줍니다. 결제 없이 무료로 시작합니다.</p>
+
+  <div class="cta">
+    <a class="btn" href="https://pickle.com/i/3LM9JBHXPCNX" target="_blank" rel="noopener">피클 무료로 시작하기</a>
+    <div class="code">
+      <b>3LM9JBHXPCNX</b>
+      <span>초대 코드 · 링크를 누르면 자동 입력</span>
+    </div>
+  </div>
+
+  <section>
+    <h2>처음 쓰는 순서</h2>
+    <div class="steps">
+      <div class="step">
+        <div class="num">1</div>
+        <div><h3>초대 링크로 시작</h3><p>링크를 누르고 계정을 만들면 바로 쓸 수 있습니다.</p></div>
+      </div>
+      <div class="step">
+        <div class="num">2</div>
+        <div><h3>하고 싶은 일을 말로</h3><p>“내일 3시 병원, 캘린더에 넣어줘”처럼 한 문장이면 됩니다.</p></div>
+      </div>
+      <div class="step">
+        <div class="num">3</div>
+        <div><h3>정리와 알림은 알아서</h3><p>겹치는 일정은 먼저 알려 주고, 매일 확인하던 일은 맡겨 둘 수 있습니다.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>비용과 리필 쿠폰</h2>
+    <div class="facts">
+      <div class="fact"><div class="dot"></div><div><b>결제 없이 무료</b><p>월 구독료가 따로 없습니다.</p></div></div>
+      <div class="fact"><div class="dot"></div><div><b>사용량은 매일 새벽 4시에 다시 채워집니다</b><p>쓴 만큼만 차감되고, 남으면 그대로 남습니다.</p></div></div>
+      <div class="fact"><div class="dot"></div><div><b>초대 링크로 가입하면 리필 쿠폰</b><p>한도 초기화 티켓이 함께 오고, 초대한 사람에게도 들어갑니다.</p></div></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>더 보기</h2>
+    <div class="links">
+      <a href="https://blog.naver.com/simsangguk/224487640231" target="_blank" rel="noopener">사용 후기와 순서 정리 <span>블로그</span></a>
+      <a href="https://youtube.com/shorts/Izd4Hjl4XJY" target="_blank" rel="noopener">53초로 보는 피클 <span>쇼츠</span></a>
+    </div>
+  </section>
+
+  <footer>
+    이 페이지는 피클 초대 링크를 소개하는 안내 페이지입니다. 초대 링크로 가입을 마치면 초대한 사람과 가입한 사람 모두에게 리필 쿠폰(한도 초기화 티켓)이 지급됩니다.
+  </footer>
+</div>
+</body>
+</html>
