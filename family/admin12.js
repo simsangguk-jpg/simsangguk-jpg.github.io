@@ -234,7 +234,7 @@
       '<div id="admPwOut"></div>' +
       '<div class="adm-sep"></div>' +
       (mine
-        ? '<div class="famadm-warn">내 계정은 퇴장·삭제하거나 역할을 바꿀 수 없어요. 다른 아빠 계정으로 관리해 주세요.</div>'
+        ? '<div class="famadm-warn">내 계정은 퇴장·삭제하거나 역할을 바꿀 수 없어요. 이름·이모지·생년월일과 비밀번호는 바꿀 수 있어요.</div>'
         : (off
           ? '<button type="button" class="btn" id="admRestore">♻️ 다시 들여보내기</button>' +
             '<button type="button" class="btn ghost" id="admDelete" style="color:#D9534F">🗑️ 계정 완전 삭제</button>'
@@ -348,6 +348,7 @@
     }
     touch(rec);
     saveNow();
+    try { F.closeSheet(); } catch (e) { }
     render();
     F.toast(on ? (rec.name + ' 님을 퇴장시켰어요') : (rec.name + ' 님을 다시 들여보냈어요'));
   }
@@ -366,8 +367,9 @@
     rec.hash = '';
     touch(rec);
     saveNow();
+    try { F.closeSheet(); } catch (e) { }
     render();
-    F.toast((rec.name || '회원') + ' 님 계정을 삭제했어요');
+    F.toast((rec.name || '회원') + ' 계정을 삭제했어요');
   }
 
   /* ---------------- 실행 ---------------- */

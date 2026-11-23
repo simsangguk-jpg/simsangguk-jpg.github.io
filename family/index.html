@@ -1439,7 +1439,13 @@ async function doLogin() {
     if (!db) { errEl.textContent = '가족 저장소를 불러오지 못했어요. 잠시 후 다시 시도해 주세요.'; return; }
     DOC = mergeDoc(emptyDB(), db);
     var m = DOC.members[id];
-    if (!m || m.d) { errEl.textContent = '등록된 아이디가 없어요. 회원가입을 먼저 해 주세요.'; return; }
+    if (!m) { errEl.textContent = '등록된 아이디가 없어요. 회원가입을 먼저 해 주세요.'; return; }
+    if (m.d) {
+      errEl.textContent = m.kicked && !m.gone
+        ? '아빠가 회원 관리에서 퇴장 처리한 계정이에요. 다시 들어오려면 아빠에게 이야기해 주세요.'
+        : '이 계정은 삭제되었어요. 아빠에게 이야기해 주세요.';
+      return;
+    }
     var h = await hashPassword(pw, m.salt, m.iter || 120000);
     if (h !== m.hash) { errEl.textContent = '비밀번호가 맞지 않아요.'; return; }
     ME = { id: id, name: m.name, role: roleOf(m) };
@@ -1522,6 +1528,7 @@ function kickedOut(msg) {
   ME = null;
   showAuth();
   if (lastId && $('loginId')) $('loginId').value = lastId;
+  if ($('loginPw')) $('loginPw').value = '';
   if ($('loginErr')) $('loginErr').textContent = msg;
   try { toast(msg); } catch (e) {}
 }
