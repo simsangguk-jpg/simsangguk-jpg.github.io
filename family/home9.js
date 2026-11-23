@@ -862,6 +862,20 @@
       if (sub.textContent !== t) sub.textContent = t;
     }
   }
+  /* 홈 꾸미기 순서(layout.order)에 이 카드가 아직 없으면 디데이 바로 아래에 둔다.
+     가족이 홈 꾸미기에서 순서를 정해 두면 그 순서를 그대로 존중한다(저장소에 쓰지 않음). */
+  function placeFortune() {
+    var home = $('view-home'), fz = $('v9FortuneCard'), dd = $('v9DdayCard');
+    if (!home || !fz) return;
+    var v = V9();
+    var ord = (v && v.layout && v.layout.order) || [];
+    if (ord.length && ord.indexOf('v9FortuneCard') >= 0) return;
+    if (dd && dd.parentNode === home) {
+      if (fz.previousSibling !== dd) home.insertBefore(fz, dd.nextSibling);
+    } else if (home.lastChild !== fz) {
+      home.appendChild(fz);
+    }
+  }
   function renderFortunes() { paintFortunes(); }
   function wireFortunes() {
     document.addEventListener('click', function (e) {
@@ -2294,6 +2308,7 @@
     if (!ON || !F || !F.doc() || !F.me()) return;
     ensureHomeCards();
     applyLayout();
+    placeFortune();
     stampDates();
     renderMood();
     renderQuote();
