@@ -1091,7 +1091,8 @@ input[type="date"].field,input[type="time"].field,input[type="datetime-local"].f
 .v17-frow .field{margin-bottom:0;min-width:0}
 .v17-frow > .field{flex:1}
 .v17-lb{flex:0 0 auto;font-size:10.5px;font-weight:750;color:#6E8CA0}
-.v17-seg{flex:1.5;margin-bottom:0}
+.v17-seg{flex:1 1 150px;margin-bottom:0}
+.v17-frow #v17Date{flex:0 0 124px;min-width:0;padding-left:8px;padding-right:4px}
 .v17-seg button{padding:8px 0;font-size:11.5px;border-radius:10px}
 .v17-save{width:auto;flex:0 0 auto;padding:0 15px;min-height:38px;font-size:12.5px;border-radius:12px}
 .v17-month{margin:2px 0 8px}
