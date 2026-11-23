@@ -64,7 +64,7 @@
       id: 'sched', label: '일정', items: [
         { id: 'cal', label: '📅 달력', view: 'sched', pane: 'cal' },
         { id: 'shift', label: '🗓️ 근무·등교', view: 'sched', pane: 'shift' },
-        { id: 'dday', label: '🎂 디데이·목표', view: 'sched', pane: 'dday' },
+        { id: 'dday', label: '🎯 목표', view: 'sched', pane: 'dday' },   /* 디데이는 홈 카드로 이동(V15) */
         { id: 'money', label: '💰 용돈', view: 'sched', pane: 'money' },
         { id: 'sb', label: '🏅 상벌점', view: 'sched', pane: 'sb' },
         { id: 'plan', label: '📌 약속', view: 'sched', pane: 'plan' }
@@ -101,7 +101,7 @@
     /* 일정 */
     famCalBanner: 'pane-sched-cal',
     v9ShiftCard: 'pane-sched-shift', v9SchoolCard: 'pane-sched-shift',
-    v9DdayCard: 'pane-sched-dday', v9GoalsCard: 'pane-sched-dday',
+    v9GoalsCard: 'pane-sched-dday',   /* V15: 디데이는 홈에 매일 보이도록 옮기지 않는다(PANE_OF 제외) */
     v9Money: 'pane-sched-money',
     v9SbCard: 'pane-sched-sb',
     v10PlanCard: 'pane-sched-plan', v10PlanForm: 'pane-sched-plan',
@@ -111,7 +111,7 @@
     houseHero: 'pane-house-family', v4Visit: 'pane-house-family', v9SleepCard: 'pane-house-family',
     v4Geo: 'pane-house-family',
     v9Wish: 'pane-house-mind', v4Worry: 'pane-house-mind',
-    v9NewsCard: 'pane-house-news', v9WkCard: 'pane-house-news', v4Tube: 'pane-house-news',
+    v9NewsCard: 'pane-house-news', v9LocalCard: 'pane-house-news', v9WkCard: 'pane-house-news', v4Tube: 'pane-house-news',
     v4Food: 'pane-house-tools', v9LogCard: 'pane-house-tools', v4Notif: 'pane-house-tools',
     v4Mem: 'pane-house-tools',
     /* 소통 > 응원 */
@@ -357,6 +357,25 @@
     Object.keys(PANE_OF).forEach(function (id) {
       if (id === 'cheerCardTop' || id === 'v9QuoteCard') return;
       place(id, PANE_OF[id]);
+    });
+    orderPanes();
+  }
+  /* V15: 카드가 만들어지는 시점과 상관없이 PANE_OF 에 적은 순서대로 패널 안을 정리한다.
+     (교육·나들이 피드 카드가 뒤늦게 생겨 유튜브 카드 아래로 밀리는 것을 막는다) */
+  function orderPanes() {
+    var byPane = {};
+    Object.keys(PANE_OF).forEach(function (id) {
+      if (id === 'cheerCardTop' || id === 'v9QuoteCard') return;
+      var p = PANE_OF[id];
+      (byPane[p] = byPane[p] || []).push(id);
+    });
+    Object.keys(byPane).forEach(function (p) {
+      var pane = $(p);
+      if (!pane) return;
+      byPane[p].forEach(function (id) {
+        var el = $(id);
+        if (el && el.parentNode === pane) pane.appendChild(el);
+      });
     });
   }
 

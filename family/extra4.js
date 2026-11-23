@@ -200,7 +200,8 @@
     {
       t: '즐길거리·교육', c: '#F59E0B', items: [
         { e: '📺', n: '유튜브·도서', v: 'house', item: 'news', s: 'v4Tube' },
-        { e: '📚', n: '교육·학습 사이트', v: 'house', item: 'news', s: 'v9NewsCard' },
+        { e: '📚', n: '학교·교육 소식', v: 'house', item: 'news', s: 'v9NewsCard' },
+        { e: '🏞️', n: '파주 나들이·행사', v: 'house', item: 'news', s: 'v9LocalCard' },
         { e: '🍽️', n: '음식 칼로리', v: 'house', item: 'tools', s: 'v4Food' },
         { e: '🗺️', n: '추억 지도', v: 'house', item: 'family', s: 'v4Mem' }
       ]

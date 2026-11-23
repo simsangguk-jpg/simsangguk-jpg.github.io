@@ -3,9 +3,9 @@
    ① 📖 오늘의 명언 & 가족끼리 주고받으면 좋은 말 (날짜 시드 · DB 오버라이드 · 원클릭 전송)
    ② 📷 1일 1장 대표사진 (선택·업로드 · AI 베스트컷 추천 · 확대 모달 · Blob 저장)
    ③ 🗓️ 통합 근무표·등교표 배너 (근무표는 가족 저장소 설정 · 출근일·등교일)
-   ④ 🎂 가족 디데이 (저장소에 적어 둔 생일·기념일 · D+ / 생일 카운트다운 · 추가 가능)
-   ⑤ 📰 교육·학습 사이트 9곳 (중복·빈 페이지 정리판)
-   ⑥ 🎡 이번 주말 추천 + 주변 장소 검색 (네이버·카카오맵 연결)
+   ④ 🎂 가족 공용 디데이 (생일·기념일·출생일·여행·기타 · D-N/D-DAY/+N일 · 누구나 추가·삭제)
+   ⑤ 📰 학교·교육 소식 (family_feed.json 비동기 피드 + 공식 사이트 바로가기)
+   ⑥ 🏞️ 파주 주변 나들이·행사 (같은 피드의 local) · 🎡 이번 주말 추천
    ⑦ 🎯 개인별 목표 배너 (이번 주 · 이번 달 · 장래희망 + 응원)
    ⑧ 😴 수면시간·피로도·에너지 (원터치 취침/기상 + 자동 추정 → 다마고치 컨디션 연동)
    ⑨ 🎒 등교·귀가 안심 기록 (원터치 + 위치 자동 판정)
@@ -468,10 +468,20 @@
   function box_sig_reset_shift() { var b = $('v9ShiftStrip'); if (b) b.__sig = null; }
 
   /* ============================================================
-     ④ 가족 디데이
+     ④ 가족 공용 디데이 (생일·기념일·출생일·여행·기타)
+     · 저장은 가족 저장소(v.ddays)에 아주 작은 객체 하나씩만 넣는다:
+       { t:제목, d:기준일(YYYY-MM-DD), c:분류, rep:1|0(매년 반복), by:등록자, at:등록일시, del:1 }
+     · 상국·수향·지섭·지율 누구나 추가하고 삭제할 수 있다(등록자·등록일이 함께 남는다).
+     · 코드에 날짜를 적지 않는다 — 구성원 생일(m.birth)도 저장소에서만 읽는다.
      ============================================================ */
-  /* 생일·기념일은 코드에 적지 않는다 — 가족 저장소(v.ddays)에 저장된 것과,
-     구성원 정보에 생일(m.birth)이 들어 있는 경우 그 값만 보여 준다. */
+  var DD_CAT = {
+    birth: { n: '생일', e: '🎂', rep: 1 },
+    anniv: { n: '기념일', e: '🎉', rep: 1 },
+    born: { n: '출생일', e: '👶', rep: 0 },
+    trip: { n: '여행', e: '✈️', rep: 0 },
+    etc: { n: '기타', e: '📌', rep: 0 }
+  };
+  function ddCat(c) { return DD_CAT[c] || DD_CAT.etc; }
   function ddays() {
     var v = V9(), D = d();
     if (!v || !D) return [];
@@ -479,40 +489,74 @@
     Object.keys(D.members || {}).forEach(function (k) {
       var m = D.members[k];
       if (!m || m.d || !m.birth) return;
-      out.push({ id: k, t: m.name || '가족', d: String(m.birth).slice(0, 10), member: 1 });
+      out.push({ id: k, t: (m.name || '가족') + ' 생일', d: String(m.birth).slice(0, 10), c: 'birth', rep: 1, member: 1, by: k });
     });
     Object.keys(v.ddays).forEach(function (k) {
       var it = v.ddays[k];
-      if (it && !it.del) out.push({ id: k, t: it.t, d: it.d, custom: 1 });
+      if (!it || it.del || !it.d) return;
+      out.push({ id: k, t: it.t || '이름 없음', d: String(it.d).slice(0, 10), c: it.c || 'etc', rep: it.rep ? 1 : 0, by: it.by || '', at: it.at });
     });
     return out;
   }
   function dParts(ds) {
-    var p = ds.split('-');
+    var p = String(ds).split('-');
     return new Date(Number(p[0]), Number(p[1]) - 1, Number(p[2]));
+  }
+  /* 다가오는 일은 D-N / D-DAY, 지난 일은 +N일. 매년 반복(생일·기념일)은 다음 생일까지로 센다. */
+  function dState(x) {
+    var today = new Date(); today.setHours(0, 0, 0, 0);
+    var base = dParts(x.d);
+    if (isNaN(base.getTime())) return { txt: '-', sort: 9e15 };
+    if (x.rep) {
+      var next = new Date(today.getFullYear(), base.getMonth(), base.getDate());
+      if (next < today) next = new Date(today.getFullYear() + 1, base.getMonth(), base.getDate());
+      var to = Math.round((next - today) / 86400000);
+      return { txt: to === 0 ? 'D-DAY' : 'D-' + to, today: to === 0, sort: to, nth: next.getFullYear() - base.getFullYear() };
+    }
+    var gap = Math.round((today - base) / 86400000);
+    if (gap > 0) return { txt: '+' + gap + '일', past: 1, sort: 1e12 + gap };
+    if (gap === 0) return { txt: 'D-DAY', today: 1, sort: 0 };
+    return { txt: 'D-' + (-gap), sort: -gap };
+  }
+  function dFmt(ds) {
+    var p = String(ds).split('-');
+    return p.length === 3 ? (p[0] + '.' + p[1] + '.' + p[2]) : String(ds || '');
+  }
+  function dShort(ts) {
+    if (!ts) return '';
+    var x = new Date(Number(ts));
+    return (x.getMonth() + 1) + '.' + x.getDate();
   }
   function renderDday() {
     var v = V9(), box = $('v9DdayBody');
     if (!v || !box) return;
-    var today = new Date(); today.setHours(0, 0, 0, 0);
-    var html = ddays().map(function (x) {
-      var bd = dParts(x.d);
-      var days = Math.round((today - bd) / 86400000);
-      var next = new Date(today.getFullYear(), bd.getMonth(), bd.getDate());
-      if (next < today) next = new Date(today.getFullYear() + 1, bd.getMonth(), bd.getDate());
-      var toB = Math.round((next - today) / 86400000);
-      return '<div class="dd9' + (x.custom ? ' custom' : '') + '"><b>🎂 ' + esc(x.t) + '</b>' +
-        '<span>D+' + days.toLocaleString('ko-KR') + '째</span>' +
-        '<span class="bb">' + (toB === 0 ? (x.custom ? '🎉 오늘!' : '🎉 오늘 생일!') : ((x.custom ? '' : '생일 ') + 'D-' + toB)) + '</span>' +
-        (x.custom ? '<button type="button" class="dd9-del" data-v9ddel="' + esc(x.id) + '">✕</button>' : '') +
+    var list = ddays().map(function (x) { x.st = dState(x); return x; })
+      .sort(function (a, b) { return a.st.sort - b.st.sort; });
+    var html = list.map(function (x) {
+      var cat = ddCat(x.c);
+      var meta = dFmt(x.d) + (x.rep ? ' · 매년' : '') +
+        (x.member ? ' · 가족 정보' : ((x.by ? ' · ' + memEmoji(x.by) + ' ' + memName(x.by) + ' 등록' : '') + (x.at ? ' ' + dShort(x.at) : '')));
+      return '<div class="dd9x' + (x.member ? ' mem' : '') + (x.st.today ? ' today' : '') + '">' +
+        '<div class="dd9x-b"><span class="dd9x-e">' + cat.e + '</span>' +
+        '<div class="dd9x-t"><b>' + esc(x.t) + '</b><small>' + esc(cat.n) + ' · ' + esc(meta) + '</small></div></div>' +
+        '<span class="dd9x-d">' + esc(x.st.txt) + '</span>' +
+        (x.member ? '' : '<button type="button" class="dd9x-x" data-v9ddel="' + esc(x.id) + '" aria-label="삭제">✕</button>') +
         '</div>';
     }).join('');
     if (!html) {
-      html = '<div class="v4-empty">🎂 가족 생일을 등록하면 D+와 생일까지 남은 날이 자동으로 보여요.</div>';
+      html = '<div class="v4-empty">🎂 생일·기념일·여행일을 등록하면 여기서 매일 D-day를 볼 수 있어요.</div>';
     }
-    /* 생일이 이미 등록돼 있어도 나머지 가족 생일을 넣을 수 있게 항상 둔다 */
-    html += '<button type="button" class="btn soft" id="v9BirthSet" style="margin-top:8px;padding:10px;font-size:12.5px">🎂 가족 생일 등록·수정</button>';
+    html += '<div style="display:flex;gap:6px;margin-top:8px">' +
+      '<button type="button" class="btn soft" id="v9DdayAdd" style="flex:1;padding:10px;font-size:12.5px">＋ 디데이 추가</button>' +
+      '<button type="button" class="btn soft" id="v9BirthSet" style="flex:1;padding:10px;font-size:12.5px">🎂 가족 생일</button></div>';
     if (box.__sig !== html) { box.__sig = html; box.innerHTML = html; }
+    /* 카드 머리말에는 가장 가까운 다가오는 일정 한 줄만 */
+    var sub = $('v9DdaySub');
+    if (sub) {
+      var nx = list.filter(function (x) { return !x.st.past; })[0];
+      var t = nx ? (ddCat(nx.c).e + ' ' + nx.t + ' ' + nx.st.txt) : '등록된 디데이 없음';
+      if (sub.textContent !== t) sub.textContent = t;
+    }
   }
   function wireDday() {
     document.addEventListener('click', function (e) {
@@ -520,17 +564,30 @@
       if (!v) return;
       var add = e.target.closest('#v9DdayAdd');
       if (add) {
-        F.openSheet('<h3>🎂 디데이 추가</h3>' +
-          '<div class="form-row"><label>이름</label><input class="field" id="v9DdT" maxlength="16" placeholder="예: 입대일, 졸업식"></div>' +
-          '<div class="form-row"><label>기준 날짜</label><input class="field" id="v9DdD" type="date"></div>' +
-          '<div style="display:flex;gap:8px;margin-top:6px"><button type="button" class="btn ghost" data-sheet-close>취소</button><button type="button" class="btn" id="v9DdSave">추가</button></div>');
+        var opts = Object.keys(DD_CAT).map(function (k) {
+          return '<option value="' + k + '">' + DD_CAT[k].e + ' ' + DD_CAT[k].n + '</option>';
+        }).join('');
+        F.openSheet('<h3>＋ 디데이 추가</h3>' +
+          '<div class="sdesc">가족 누구나 넣고 지울 수 있어요. 등록한 사람과 날짜가 함께 남습니다.</div>' +
+          '<div class="form-row"><label>분류</label><select class="field" id="v9DdCat">' + opts + '</select></div>' +
+          '<div class="form-row"><label>제목</label><input class="field" id="v9DdT" maxlength="20" placeholder="예: 지율 생일, 창설기념일, 제주 여행"></div>' +
+          '<div class="form-row"><label>기준 날짜</label><input class="field" id="v9DdD" type="date" value="' + todayYmd() + '"></div>' +
+          '<label style="display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:700;margin-top:4px">' +
+          '<input type="checkbox" id="v9DdRep" style="width:18px;height:18px"> 매년 반복 (생일·기념일)</label>' +
+          '<div style="display:flex;gap:8px;margin-top:10px"><button type="button" class="btn ghost" data-sheet-close>취소</button>' +
+          '<button type="button" class="btn" id="v9DdSave">추가</button></div>');
+        var cs = $('v9DdCat'), rp = $('v9DdRep');
+        var syncRep = function () { rp.checked = !!ddCat(cs.value).rep; };
+        cs.onchange = syncRep; syncRep();
         $('v9DdSave').onclick = function () {
           var t = ($('v9DdT').value || '').trim(), dd = $('v9DdD').value;
-          if (!t || !dd) { toast('이름·날짜를 적어 주세요'); return; }
+          if (!t) { toast('제목을 적어 주세요'); return; }
+          if (!dd) { toast('날짜를 골라 주세요'); return; }
           var v2 = V9();
-          var id = 'd' + now().toString(36);
-          v2.ddays[id] = { t: t, d: dd, by: mid(), at: now() };
+          var id = 'd' + now().toString(36) + Math.random().toString(36).slice(2, 4);
+          v2.ddays[id] = { t: t.slice(0, 20), d: dd, c: cs.value, rep: rp.checked ? 1 : 0, by: mid(), at: now() };
           save();
+          logEdit('디데이 추가', t.slice(0, 20) + ' · ' + dd);
           F.closeSheet();
           $('v9DdayBody').__sig = null;
           renderDday();
@@ -542,7 +599,7 @@
       if (bs) {
         var mems = F.members();
         F.openSheet('<h3>🎂 가족 생일 등록</h3>' +
-          '<div class="sdesc">가족 저장소에 한 번만 넣어 두면 D+와 생일까지 남은 날이 자동으로 계산돼요.</div>' +
+          '<div class="sdesc">가족 저장소에 한 번만 넣어 두면 D-day와 생일까지 남은 날이 자동으로 계산돼요.</div>' +
           mems.map(function (m) {
             var cur = '';
             try { cur = (F.doc().members[m.id] || {}).birth || ''; } catch (err) { cur = ''; }
@@ -559,55 +616,157 @@
             var val = (inp.value || '').trim();
             if (!D.members[id]) return;
             if (val) { D.members[id].birth = val; D.members[id].at = now(); n++; }
-            else if (D.members[id].birth) { delete D.members[id].birth; D.members[id].at = now(); }
+            else if (D.members[id].birth) { delete D.members[id].birth; D.members[id].at = now(); n++; }
           });
           if (!n) { toast('생일을 한 명 이상 넣어 주세요'); return; }
           save();
+          logEdit('가족 생일 수정', n + '명');
           F.closeSheet();
           if ($('v9DdayBody')) $('v9DdayBody').__sig = null;
           renderDday();
-          toast('🎂 가족 생일 ' + n + '명을 저장했어요');
+          toast('🎂 가족 생일을 저장했어요');
         };
         return;
       }
       var del = e.target.closest('[data-v9ddel]');
       if (del) {
-        var id = del.getAttribute('data-v9ddel');
-        var v2 = V9();
-        if (v2.ddays[id]) { v2.ddays[id].del = 1; v2.ddays[id].at = now(); save(); $('v9DdayBody').__sig = null; renderDday(); }
+        var did = del.getAttribute('data-v9ddel');
+        var it = v.ddays[did];
+        if (!it) return;
+        F.openSheet('<h3>디데이 삭제</h3>' +
+          '<div class="sdesc">' + esc(it.t || '') + ' · ' + esc(dFmt(it.d || '')) + '<br>가족 모두에게서 지워져요.</div>' +
+          (it.by ? '<div class="sdesc">등록: ' + memEmoji(it.by) + ' ' + esc(memName(it.by)) + (it.at ? ' · ' + dShort(it.at) : '') + '</div>' : '') +
+          '<div style="display:flex;gap:8px;margin-top:10px"><button type="button" class="btn ghost" data-sheet-close>취소</button>' +
+          '<button type="button" class="btn" id="v9DdDel" style="background:#D9534F">삭제</button></div>');
+        $('v9DdDel').onclick = function () {
+          var v2 = V9();
+          if (v2.ddays[did]) {
+            v2.ddays[did].del = 1; v2.ddays[did].dat = now(); v2.ddays[did].dby = mid();
+            save();
+            logEdit('디데이 삭제', (v2.ddays[did].t || '') + ' · ' + (v2.ddays[did].d || ''));
+          }
+          F.closeSheet();
+          $('v9DdayBody').__sig = null;
+          renderDday();
+          toast('디데이를 삭제했어요');
+        };
+        return;
       }
     });
   }
 
   /* ============================================================
-     ⑤ 교육·학습 사이트 — "같은 사이트/빈 페이지" 정리판
-     · 예전에는 5개 주제가 모두 교육부(moe.go.kr) 한 곳을 가리키거나
-       죽은 링크(game.or.kr)라서 눌러도 같은·빈 페이지가 떴다.
-     · 지금은 서로 다른 공식 사이트만 한 번씩만 둔다(중복 0).
+     ⑤ 학교·교육 소식 / ⑥ 파주 주변 나들이·행사 — 데이터 분리형 경량 피드
+     · 기사·행사 내용은 코드에 넣지 않는다. family/family_feed.json 하나에만 둔다.
+     · 갱신은 그 파일만 바꿔 끼우면 되고(포털 HTML/JS 재배포 불필요), 포털은
+       fetch('./family_feed.json', {cache:'no-store'}) 로 읽어 마지막 성공본을
+       localStorage 에 남겨 두었다가 연결이 없을 때 그걸 그린다.
+     · 예전의 '교육·학습 사이트 9곳' 긴 목록은 아래 짧은 바로가기 칩으로 접었다.
    ============================================================ */
+  var FEED_URL = './family_feed.json';
+  var FEED_LS = 'sgf9_feed_v1';
+  var FEED_TTL = 10 * 60 * 1000;   /* 탭을 다시 열 때 10분 안이면 그대로 쓴다 */
+  var feedCache = null, feedBusy = false;
   var EDU_SITES = [
-    { e: '📺', n: 'EBS 초·중·고 학습', d: '강의·문제·교재', u: 'https://www.ebs.co.kr/', tag: '학습' },
-    { e: '📐', n: 'EBSMath', d: '수학 개념·문제 풀이', u: 'https://www.ebsmath.co.kr/', tag: '수학' },
-    { e: '🧭', n: '국가교육과정정보센터', d: '교육과정·편제 안내', u: 'https://ncic.re.kr/', tag: '교육과정' },
-    { e: '🎓', n: '커리어넷', d: '진로·직업 정보', u: 'https://www.career.go.kr/', tag: '진로' },
-    { e: '📚', n: '국립어린이청소년도서관', d: '독서·책 추천', u: 'https://www.nlcy.go.kr/', tag: '독서' },
-    { e: '🏛️', n: '국립중앙도서관', d: '자료 검색·독서', u: 'https://www.nl.go.kr/', tag: '도서관' },
-    { e: '📖', n: '두산백과', d: '궁금한 것 찾아보기', u: 'https://www.doopedia.co.kr/', tag: '백과' },
-    { e: '📝', n: '수능 정보', d: '일정·제도(교육과정평가원)', u: 'https://www.suneung.re.kr/main.do?s=suneung', tag: '수능' },
-    { e: '🎮', n: '게임물관리위원회', d: '게임 등급·이용 안내', u: 'https://www.grac.or.kr/', tag: '게임' }
+    { e: '📺', n: 'EBS 학습', u: 'https://www.ebs.co.kr/' },
+    { e: '📐', n: 'EBSMath', u: 'https://www.ebsmath.co.kr/' },
+    { e: '🧭', n: '교육과정', u: 'https://ncic.re.kr/' },
+    { e: '🎓', n: '커리어넷', u: 'https://www.career.go.kr/' },
+    { e: '📚', n: '어린이청소년도서관', u: 'https://www.nlcy.go.kr/' },
+    { e: '🏛️', n: '국립중앙도서관', u: 'https://www.nl.go.kr/' },
+    { e: '📖', n: '두산백과', u: 'https://www.doopedia.co.kr/' },
+    { e: '📝', n: '수능정보', u: 'https://www.suneung.re.kr/main.do?s=suneung' },
+    { e: '🎮', n: '게임물관리위', u: 'https://www.grac.or.kr/' }
   ];
-  function renderNews() {
-    var box = $('v9NewsBody');
-    if (!box) return;
-    var html = EDU_SITES.map(function (s) {
-      return '<a href="' + esc(s.u) + '" target="_blank" rel="noopener" style="display:flex;gap:10px;align-items:center;padding:9px 2px;border-bottom:1px dashed #EDF1F4;text-decoration:none;color:inherit">' +
-        '<span style="width:30px;text-align:center;font-size:17px;flex:none">' + s.e + '</span>' +
-        '<span style="flex:1;min-width:0"><b style="display:block;font-size:13px;font-weight:800;letter-spacing:-.2px">' + esc(s.n) + '</b>' +
-        '<small style="display:block;font-size:11px;color:#79838F;line-height:1.35">' + esc(s.d) + '</small></span>' +
-        '<span style="flex:none;font-size:10px;font-weight:800;color:#0A7D56;background:#E7F8F1;border-radius:20px;padding:3px 8px">' + esc(s.tag) + '</span></a>';
-    }).join('') +
-      '<div class="hint" style="margin-top:8px">공식 사이트 9곳을 주제별로 하나씩만 모았어요. 같은 사이트가 두 번 나오지 않아요.</div>';
-    if (box.__sig !== html) { box.__sig = html; box.innerHTML = html; }
+  function fShort(ds) {
+    var p = String(ds || '').split('-');
+    return p.length === 3 ? (p[1] + '.' + p[2]) : String(ds || '');
+  }
+  function feedRow(x, isLocal) {
+    var meta = isLocal ? ((x.p ? '📍 ' + x.p : '') + (x.w ? ' · ' + x.w : '')) : '';
+    var src = [];
+    if (x.s) src.push(x.s);
+    if (x.d) src.push(x.d === '상시' ? '상시' : fShort(x.d));
+    return '<a class="fd9" href="' + esc(x.u) + '" target="_blank" rel="noopener">' +
+      (x.c ? '<span class="fd9-tag">' + esc(x.c) + '</span>' : '') +
+      '<b>' + esc(x.t || '') + '</b>' +
+      (meta ? '<span class="fd9-meta">' + esc(meta) + '</span>' : '') +
+      (x.m ? '<small>' + esc(x.m) + '</small>' : '') +
+      (src.length ? '<em>' + esc(src.join(' · ')) + '</em>' : '') + '</a>';
+  }
+  function feedBusyHtml(what) {
+    return '<div class="fd9-skel"><span>⏳</span> ' + esc(what) + ' 불러오는 중…</div>';
+  }
+  function paintFeed() {
+    var d = feedCache && feedCache.data;
+    var eBox = $('v9NewsBody'), lBox = $('v9LocalBody');
+    var subE = $('v9NewsSub'), subL = $('v9LocalSub');
+    if (!d) {
+      if (eBox) { eBox.__sig = null; eBox.innerHTML = feedBusyHtml('교육 소식'); }
+      if (lBox) { lBox.__sig = null; lBox.innerHTML = feedBusyHtml('나들이·행사'); }
+      return;
+    }
+    var stale = feedCache.fromCache ? '<div class="hint">📴 저장해 둔 소식이에요. 연결되면 새 소식으로 바뀌어요.</div>' : '';
+    if (eBox) {
+      var eh = (d.edu || []).map(function (x) { return feedRow(x, false); }).join('') +
+        '<div class="fd9-chips">' + EDU_SITES.map(function (s) {
+          return '<a class="fd9-chip" href="' + esc(s.u) + '" target="_blank" rel="noopener">' + s.e + ' ' + esc(s.n) + '</a>';
+        }).join('') + '<button type="button" class="fd9-chip fd9-re" id="v9FeedRefresh">↻ 새로고침</button></div>' + stale;
+      if (eBox.__sig !== eh) { eBox.__sig = eh; eBox.innerHTML = eh; }
+    }
+    if (lBox) {
+      var lh = (d.local || []).map(function (x) { return feedRow(x, true); }).join('') +
+        ((d.spots || []).length ? '<div class="fd9-spots"><b>🏞️ 가까운 나들이</b>' + d.spots.map(function (s) {
+          return '<a href="' + esc(s.u) + '" target="_blank" rel="noopener"><i>' + esc(s.n) + '</i><small>' + esc(s.d || '') + '</small></a>';
+        }).join('') + '</div>' : '') + stale;
+      if (lBox.__sig !== lh) { lBox.__sig = lh; lBox.innerHTML = lh; }
+    }
+    if (subE) { var t1 = '업데이트 ' + fShort(d.upd || ''); if (subE.textContent !== t1) subE.textContent = t1; }
+    if (subL) { var t2 = '파주·고양 ' + ((d.local || []).length) + '건'; if (subL.textContent !== t2) subL.textContent = t2; }
+  }
+  function feedLoad(force) {
+    if (feedBusy) return;
+    if (!force && feedCache && (now() - feedCache.at) < FEED_TTL) { paintFeed(); return; }
+    feedBusy = true;
+    var settled = false;
+    var done = function (data, fromCache) {
+      if (settled && !force) { /* 첫 응답만 반영 */ }
+      settled = true;
+      feedBusy = false;
+      feedCache = { data: data, at: now(), fromCache: !!fromCache };
+      paintFeed();
+    };
+    var fromStore = function () {
+      var ls = null;
+      try { ls = JSON.parse(localStorage.getItem(FEED_LS) || 'null'); } catch (err) { ls = null; }
+      if (ls && ls.data) done(ls.data, true);
+      else { feedBusy = false; done(null, false); }
+    };
+    var p;
+    try { p = fetch(FEED_URL, { cache: 'no-store' }); }
+    catch (err) { fromStore(); return; }
+    setTimeout(function () { if (!feedCache) fromStore(); }, 7000);   /* 느린 연결 대비 */
+    p.then(function (r) {
+      if (!r || !r.ok) throw new Error('HTTP ' + (r && r.status));
+      return r.json();
+    }).then(function (j) {
+      if (!j || (!j.edu && !j.local)) throw new Error('빈 피드');
+      try { localStorage.setItem(FEED_LS, JSON.stringify({ data: j, at: now() })); } catch (err) {}
+      done(j, false);
+    }).catch(function () { if (!feedCache) fromStore(); });
+  }
+  function renderFeed() {
+    if (feedCache) paintFeed();
+    else feedLoad(false);
+  }
+  function wireFeed() {
+    document.addEventListener('click', function (e) {
+      var b = e.target.closest('#v9FeedRefresh');
+      if (!b) return;
+      e.preventDefault();
+      feedLoad(true);
+      setTimeout(function () { if (feedCache) toast('↻ 새 소식을 받았어요'); }, 1200);
+    });
   }
 
   /* ============================================================
@@ -1989,11 +2148,12 @@
         '<div class="hint" id="v9ShiftNote">–</div>';
       insHome(home, sh, (brief && brief.parentNode === home) ? brief.nextSibling : null);
     }
-    mk('v9DdayCard', 'card', '<div class="card-head"><h2>🎂 우리 가족 디데이</h2><button type="button" class="v4-tag" id="v9DdayAdd" style="border:none">＋ 디데이 추가</button></div><div id="v9DdayBody"></div>');
+    mk('v9DdayCard', 'card', '<div class="card-head"><h2>🎂 우리 가족 디데이</h2><span class="sub" id="v9DdaySub">–</span></div><div id="v9DdayBody"></div>');
     mk('v9GoalsCard', 'card', '<div class="card-head"><h2>🎯 우리 가족 목표 배너</h2><span class="sub">이번 주 · 이번 달 · 장래희망</span></div><div id="v9GoalsBody"></div>');
     mk('v9SleepCard', 'card', '<div class="card-head"><h2>😴 수면·피로도·에너지</h2><span class="sub">원터치 기록 · 자동 추정</span></div><div id="v9SleepBody"></div>');
     mk('v9SchoolCard', 'card', '<div class="card-head"><h2>🎒 등교·귀가 안심 기록</h2><span class="sub" id="v9SchoolSum">–</span></div><div id="v9SchoolBody"></div>');
-    mk('v9NewsCard', 'card', '<div class="card-head"><h2>📰 교육·학습 사이트</h2><span class="sub">공식 사이트 9곳</span></div><div id="v9NewsBody"></div>');
+    mk('v9NewsCard', 'card', '<div class="card-head"><h2>📰 학교·교육 소식</h2><span class="sub" id="v9NewsSub">–</span></div><div id="v9NewsBody"></div>');
+    mk('v9LocalCard', 'card', '<div class="card-head"><h2>🏞️ 파주 주변 나들이·행사</h2><span class="sub" id="v9LocalSub">–</span></div><div id="v9LocalBody"></div>');
     mk('v9WkCard', 'card', '<div class="card-head"><h2>🎡 이번 주말 뭐할까 · 뭐먹을까</h2><span class="sub">네이버·카카오맵 바로 연결</span></div><div id="v9WkBody"></div>');
     mk('v9SbCard', 'card', '<div class="card-head"><h2>🏅 우리 가족 상벌점</h2><span class="sub" id="v9SbSum">–</span></div><div id="v9SbBody"></div>');
     mk('v9LogCard', 'card', '<div class="card-head"><h2>🕘 홈 꾸미기 기록</h2><span class="sub">누가 · 언제 · 무엇을</span></div><div id="v9LogBody"></div>');
@@ -2021,7 +2181,7 @@
     renderGoals();
     renderSleep();
     renderSchool();
-    renderNews();
+    renderFeed();
     renderWeekend();
     renderSb();
     renderLog();
@@ -2036,7 +2196,7 @@
   function mount(FAM) {
     if (ON) return;
     F = FAM; ON = true;
-    wireQuote(); wirePod(); wireShift(); wireDday(); wireGoals(); wireSleep(); wireSchool(); wireSb(); wireMood();
+    wireQuote(); wirePod(); wireShift(); wireDday(); wireFeed(); wireGoals(); wireSleep(); wireSchool(); wireSb(); wireMood();
     render();
   }
   setInterval(function () {
@@ -2099,6 +2259,31 @@
       '.dd9 span{font-weight:900;color:#0A7D56}',
       '.dd9 .bb{color:#C96A1E;font-weight:700;margin-left:auto;font-size:11.5px}',
       '.dd9-del{color:#B8C1CA;font-size:13px;padding:2px 5px}',
+      '.dd9x{display:flex;align-items:center;gap:8px;padding:9px 2px;border-bottom:1px dashed #EDF1F4}',
+      '.dd9x.today{background:#FFFBF0;border-radius:12px;padding:9px 8px}',
+      '.dd9x-b{display:flex;align-items:center;gap:8px;flex:1;min-width:0}',
+      '.dd9x-e{font-size:17px;flex:none;line-height:1}',
+      '.dd9x-t{min-width:0}',
+      '.dd9x-t b{display:block;font-size:13px;font-weight:800;letter-spacing:-.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}',
+      '.dd9x-t small{display:block;font-size:10.5px;color:#8792A0;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}',
+      '.dd9x-d{flex:none;font-size:12px;font-weight:900;color:#0A7D56;background:#E7F8F1;border-radius:20px;padding:4px 9px;letter-spacing:-.2px}',
+      '.dd9x.today .dd9x-d{background:#0A7D56;color:#fff}',
+      '.dd9x-x{flex:none;border:0;background:none;color:#C3CAD2;font-size:13px;padding:4px 2px}',
+      '.fd9{display:block;padding:10px 2px;border-bottom:1px dashed #EDF1F4;text-decoration:none;color:inherit}',
+      '.fd9:active{opacity:.6}',
+      '.fd9-tag{display:inline-block;font-size:10px;font-weight:800;color:#0A7D56;background:#E7F8F1;border-radius:20px;padding:2px 8px;margin-bottom:4px}',
+      '.fd9 b{display:block;font-size:13px;font-weight:800;line-height:1.4;letter-spacing:-.2px}',
+      '.fd9-meta{display:block;font-size:11px;font-weight:700;color:#0A7D56;margin-top:3px}',
+      '.fd9 small{display:block;font-size:11.5px;color:#5C6673;line-height:1.5;margin-top:3px}',
+      '.fd9 em{display:block;font-size:10.5px;color:#9AA4AF;font-style:normal;margin-top:4px}',
+      '.fd9-skel{padding:16px 4px;font-size:12px;color:#8792A0;text-align:center}',
+      '.fd9-chips{display:flex;gap:6px;overflow-x:auto;padding:9px 0 2px;-webkit-overflow-scrolling:touch}',
+      '.fd9-chip{flex:none;font-size:11px;font-weight:700;color:#3C4450;background:#F1F4F5;border:0;border-radius:20px;padding:7px 10px;text-decoration:none}',
+      '.fd9-re{color:#0A7D56;background:#EAF7F1}',
+      '.fd9-spots{margin-top:10px;padding-top:9px;border-top:1px dashed #EDF1F4;display:flex;flex-direction:column;gap:6px}',
+      '.fd9-spots>b{font-size:11.5px;font-weight:800;color:#3C4450}',
+      '.fd9-spots a{display:flex;align-items:baseline;gap:7px;text-decoration:none;color:inherit;font-size:12px;font-weight:800}',
+      '.fd9-spots a small{font-size:10.5px;font-weight:600;color:#8792A0}',
       '.nw9{border:1.5px solid #EDF1F4;border-radius:14px;padding:9px 10px;margin-bottom:8px;background:#FBFDFC}',
       '.nw9-h{font-size:12px;font-weight:900;color:#3C4450;margin-bottom:5px}',
       '.nw9-item{display:flex;align-items:center;gap:7px;padding:5px 2px;font-size:12px;color:#14181D;text-decoration:none;border-top:1px dashed #EDF1F4}',
