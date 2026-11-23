@@ -11,6 +11,7 @@
    ⑨ 🎒 등교·귀가 안심 기록 (원터치 + 위치 자동 판정)
    ⑩ 🪄 홈 공동 꾸미기 + 수정 이력 영구 기록
    ⑪ 💚 미쁠 AI 도우미 (초록 ㅅ 캐릭터 · Gemini · 우측 하단 플로팅)
+   ⑫ 🐲 오늘 우리 가족 띠 운세 (구성원 생일 연도로 띠 계산 · 문구는 family_feed.json fortunes 에서 매일 교체)
    ============================================================ */
 (function (global) {
   'use strict';
@@ -45,6 +46,17 @@
     return val ? String(val) : '';
   }
   function birthOf(id) { return memField(id, 'birth').slice(0, 10); }
+  /* 12지신 — 띠는 생일 연도로만 계산한다 ((연도 - 4) % 12 → 쥐0 … 돼지11) */
+  var ZZ = [
+    { n: '쥐', e: '🐭' }, { n: '소', e: '🐮' }, { n: '호랑이', e: '🐯' }, { n: '토끼', e: '🐰' },
+    { n: '용', e: '🐲' }, { n: '뱀', e: '🐍' }, { n: '말', e: '🐴' }, { n: '양', e: '🐑' },
+    { n: '원숭이', e: '🐵' }, { n: '닭', e: '🐔' }, { n: '개', e: '🐶' }, { n: '돼지', e: '🐷' }
+  ];
+  function zzOf(birth) {
+    var y = Number(String(birth || '').slice(0, 4));
+    if (!(y > 1900)) return null;
+    return ZZ[(((y - 4) % 12) + 12) % 12];
+  }
   function gradeOf(id) { return memField(id, 'grade'); }
   function clamp(v, a, b) { return v < a ? a : (v > b ? b : v); }
 
@@ -698,6 +710,7 @@
     return '<div class="fd9-skel"><span>⏳</span> ' + esc(what) + ' 불러오는 중…</div>';
   }
   function paintFeed() {
+    paintFortunes();   /* 같은 피드 파일(family_feed.json)의 fortunes 를 함께 그린다 — 추가 다운로드 없음 */
     var d = feedCache && feedCache.data;
     var eBox = $('v9NewsBody'), lBox = $('v9LocalBody');
     var subE = $('v9NewsSub'), subL = $('v9LocalSub');
@@ -766,6 +779,104 @@
       e.preventDefault();
       feedLoad(true);
       setTimeout(function () { if (feedCache) toast('↻ 새 소식을 받았어요'); }, 1200);
+    });
+  }
+
+  /* ============================================================
+     ⑫ 🐲 오늘 우리 가족 띠 운세
+     · 띠는 코드가 아니라 구성원 생일(저장소 m.birth)의 연도로 계산한다.
+     · 운세 문구는 family_feed.json 의 fortunes 한 곳에만 둔다(포털 코드 재배포 없이 매일 교체):
+       { date: "YYYY-MM-DD", zodiacs: { "쥐": {summary, luck, color, hex, num}, … 12띠 } }
+     · 위 ⑤ 피드와 같은 파일·같은 fetch 를 쓰므로 데이터 소모가 늘지 않는다.
+     · 아침 6시 스케줄이 fortunes 만 갈아 끼우면 다음 날 화면에 새 운세가 뜬다.
+   ============================================================ */
+  var fzAll = false;
+  function zzFam() {
+    return memList().filter(function (m) { return m && m.id && birthOf(m.id); })
+      .map(function (m) {
+        var z = zzOf(birthOf(m.id));
+        return z ? { id: m.id, name: m.name || '가족', emoji: m.emoji || '🧑', z: z } : null;
+      }).filter(function (x) { return !!x; });
+  }
+  function fzStars(n) {
+    var k = Math.max(0, Math.min(5, Number(n) || 0));
+    var s = '';
+    for (var i = 0; i < 5; i++) s += i < k ? '★' : '☆';
+    return s;
+  }
+  function fzFeed() {
+    var f = feedCache && feedCache.data && feedCache.data.fortunes;
+    return (f && f.zodiacs) ? f : null;
+  }
+  function paintFortunes() {
+    var body = $('v9FortuneBody'), sub = $('v9FortuneDate');
+    if (!body) return;
+    var f = fzFeed(), yk = todayYmd();
+    if (!f) {
+      var busy = '<div class="fd9-skel"><span>⏳</span> 오늘의 띠 운세 불러오는 중…</div>';
+      if (body.__sig !== busy) { body.__sig = busy; body.innerHTML = busy; }
+      if (sub && sub.textContent !== '불러오는 중') sub.textContent = '불러오는 중';
+      return;
+    }
+    var zs = f.zodiacs, fam = zzFam();
+    var dayTxt = fShort(f.date || yk);
+    var html = '';
+    if (fam.length) {
+      html = fam.map(function (x) {
+        var o = zs[x.z.n];
+        return '<div class="fo9-row">' +
+          '<span class="fo9-badge">' + x.z.e + '</span>' +
+          '<div class="fo9-t"><b>' + esc(x.emoji) + ' ' + esc(x.name) + '<i>' + esc(x.z.n) + '띠</i></b>' +
+          (o
+            ? '<small>' + esc(o.summary || '') + '</small>' +
+              '<span class="fo9-chips">' +
+              '<span class="fo9-chip">' + esc(fzStars(o.luck)) + '</span>' +
+              (o.color ? '<span class="fo9-chip"><i class="fo9-dot" style="background:' + esc(o.hex || '#CBD5E1') + '"></i>' + esc(o.color) + '</span>' : '') +
+              (o.num ? '<span class="fo9-chip">🔢 ' + esc(o.num) + '</span>' : '') +
+              '</span>'
+            : '<small>이 띠의 오늘 운세는 아직 없어요 — 아침 6시에 새로 올라와요.</small>') +
+          '</div></div>';
+      }).join('');
+    } else {
+      html = '<div class="v4-empty">🎂 가족 생일을 등록하면 각자의 띠와 오늘 운세가 여기 나와요.' +
+        '<div style="margin-top:8px;display:flex;justify-content:center"><button type="button" class="btn soft" data-v9fbirth="1" style="width:auto;min-height:0;height:auto;padding:8px 14px;font-size:12px;border-radius:11px">🎂 가족 생일 등록</button></div></div>';
+    }
+    html += '<div class="fo9-foot"><button type="button" class="btn soft" id="v9FzAll" style="padding:9px 12px;font-size:12.5px">' +
+      (fzAll ? '전체 12띠 접기' : '전체 12띠 보기') + '</button></div>';
+    if (fzAll) {
+      html += '<div class="fo9-all">' + ZZ.map(function (z) {
+        var o = zs[z.n] || {};
+        var mine = fam.some(function (x) { return x.z.n === z.n; });
+        return '<div class="fo9-line' + (mine ? ' mine' : '') + '">' +
+          '<span class="zz">' + z.e + '</span><b>' + esc(z.n) + '</b>' +
+          '<small>' + esc(o.summary || '–') + '</small>' +
+          '<span class="st">' + (o.luck ? esc(fzStars(o.luck)) : '') + '</span></div>';
+      }).join('') + '</div>';
+    }
+    if (String(f.date || '') !== yk) {
+      html += '<div class="hint">📴 ' + esc(dayTxt) + ' 운세예요. 새 운세는 매일 아침 6시에 올라와요.</div>';
+    }
+    if (body.__sig !== html) { body.__sig = html; body.innerHTML = html; }
+    if (sub) {
+      var t = dayTxt + ' · 12띠';
+      if (sub.textContent !== t) sub.textContent = t;
+    }
+  }
+  function renderFortunes() { paintFortunes(); }
+  function wireFortunes() {
+    document.addEventListener('click', function (e) {
+      if (e.target.closest('#v9FzAll')) {
+        fzAll = !fzAll;
+        var b = $('v9FortuneBody');
+        if (b) b.__sig = null;
+        paintFortunes();
+        return;
+      }
+      if (e.target.closest('[data-v9fbirth]')) {
+        var bset = $('v9BirthSet');
+        if (bset) bset.click();
+        return;
+      }
     });
   }
 
@@ -1063,6 +1174,7 @@
     { id: 'famCalBanner', n: '📅 우리가족 달력' },
     { id: 'v9ShiftCard', n: '🗓️ 근무표·등교표' },
     { id: 'v9DdayCard', n: '🎂 가족 디데이' },
+    { id: 'v9FortuneCard', n: '🐲 오늘 우리 가족 띠 운세' },
     { id: 'briefCard', n: '☀️ 날씨·옷차림' },
     { id: 'v9GoalsCard', n: '🎯 가족 목표' },
     { id: 'v9SleepCard', n: '😴 수면·피로도·에너지' },
@@ -2149,6 +2261,16 @@
       insHome(home, sh, (brief && brief.parentNode === home) ? brief.nextSibling : null);
     }
     mk('v9DdayCard', 'card', '<div class="card-head"><h2>🎂 우리 가족 디데이</h2><span class="sub" id="v9DdaySub">–</span></div><div id="v9DdayBody"></div>');
+    /* 띠 운세는 생일·디데이 바로 아래 — 생일을 등록하면 그 자리에서 띠가 정해진다 */
+    if (!$('v9FortuneCard')) {
+      var fz = document.createElement('div');
+      fz.id = 'v9FortuneCard';
+      fz.className = 'card';
+      fz.style.cssText = 'border:1.5px solid #E3DCF7;background:linear-gradient(180deg,#F8F4FF,#FFFFFF)';
+      fz.innerHTML = '<div class="card-head"><h2>🐲 오늘 우리 가족 띠 운세</h2><span class="sub" id="v9FortuneDate">–</span></div><div id="v9FortuneBody"></div>';
+      var ddC = $('v9DdayCard');
+      insHome(home, fz, (ddC && ddC.parentNode === home) ? ddC.nextSibling : null);
+    }
     mk('v9GoalsCard', 'card', '<div class="card-head"><h2>🎯 우리 가족 목표 배너</h2><span class="sub">이번 주 · 이번 달 · 장래희망</span></div><div id="v9GoalsBody"></div>');
     mk('v9SleepCard', 'card', '<div class="card-head"><h2>😴 수면·피로도·에너지</h2><span class="sub">원터치 기록 · 자동 추정</span></div><div id="v9SleepBody"></div>');
     mk('v9SchoolCard', 'card', '<div class="card-head"><h2>🎒 등교·귀가 안심 기록</h2><span class="sub" id="v9SchoolSum">–</span></div><div id="v9SchoolBody"></div>');
@@ -2178,6 +2300,7 @@
     renderPod();
     renderShift();
     renderDday();
+    renderFortunes();
     renderGoals();
     renderSleep();
     renderSchool();
@@ -2196,7 +2319,7 @@
   function mount(FAM) {
     if (ON) return;
     F = FAM; ON = true;
-    wireQuote(); wirePod(); wireShift(); wireDday(); wireFeed(); wireGoals(); wireSleep(); wireSchool(); wireSb(); wireMood();
+    wireQuote(); wirePod(); wireShift(); wireDday(); wireFeed(); wireFortunes(); wireGoals(); wireSleep(); wireSchool(); wireSb(); wireMood();
     render();
   }
   setInterval(function () {
@@ -2268,6 +2391,27 @@
       '.dd9x-t small{display:block;font-size:10.5px;color:#8792A0;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}',
       '.dd9x-d{flex:none;font-size:12px;font-weight:900;color:#0A7D56;background:#E7F8F1;border-radius:20px;padding:4px 9px;letter-spacing:-.2px}',
       '.dd9x.today .dd9x-d{background:#0A7D56;color:#fff}',
+      '.fo9-row{display:flex;gap:9px;padding:9px 2px;border-bottom:1px dashed #EDF1F4;align-items:flex-start}',
+      '.fo9-row:last-of-type{border-bottom:none}',
+      '.fo9-badge{flex:none;width:36px;height:36px;border-radius:12px;background:#F3EEFF;display:flex;align-items:center;justify-content:center;font-size:20px;line-height:1}',
+      '.fo9-t{flex:1;min-width:0}',
+      '.fo9-t b{font-size:12.5px;font-weight:800;display:block;letter-spacing:-.2px;line-height:1.35}',
+      '.fo9-t b i{font-style:normal;font-size:10.5px;font-weight:800;color:#7C4DD9;background:#F3EEFF;border-radius:20px;padding:1.5px 7px;margin-left:4px;vertical-align:1px}',
+      '.fo9-t small{display:block;font-size:11.5px;color:#5C6673;line-height:1.5;margin-top:3px;word-break:keep-all}',
+      '.fo9-chips{display:flex;gap:5px;flex-wrap:wrap;margin-top:5px}',
+      '.fo9-chip{display:inline-flex;align-items:center;gap:4px;font-size:10.5px;font-weight:800;color:#3C4450;background:#F7F5FB;border-radius:20px;padding:2.5px 8px;letter-spacing:-.2px}',
+      '.fo9-dot{width:9px;height:9px;border-radius:50%;display:inline-block;border:1px solid rgba(0,0,0,.08)}',
+      '.fo9-foot{display:flex;justify-content:flex-end;margin-top:8px}',
+      '.fo9-foot .btn{width:auto;min-height:0;height:auto;padding:9px 14px;font-size:12.5px;border-radius:11px}',
+      '.fo9-all{margin-top:8px;border-top:1px dashed #EDF1F4;padding-top:5px}',
+      '.fo9-line{display:flex;align-items:center;gap:7px;padding:5px 3px;font-size:11.5px;border-bottom:1px dashed #F4F6F8}',
+      '.fo9-line:last-child{border-bottom:none}',
+      '.fo9-line .zz{flex:none;width:18px;text-align:center;font-size:15px;line-height:1}',
+      '.fo9-line b{flex:none;width:48px;font-size:11.5px;font-weight:800;letter-spacing:-.3px}',
+      '.fo9-line small{flex:1;min-width:0;color:#79838F;font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}',
+      '.fo9-line .st{flex:none;color:#E2A93B;font-size:10px;letter-spacing:-1px}',
+      '.fo9-line.mine{background:#FBF9FF;border-radius:10px}',
+      '.fo9-line.mine b{color:#7C4DD9}',
       '.dd9x-x{flex:none;border:0;background:none;color:#C3CAD2;font-size:13px;padding:4px 2px}',
       '.fd9{display:block;padding:10px 2px;border-bottom:1px dashed #EDF1F4;text-decoration:none;color:inherit}',
       '.fd9:active{opacity:.6}',
