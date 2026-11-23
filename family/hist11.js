@@ -149,8 +149,10 @@
       if (!m || m.d) return;
       var day = m.date || (m.at ? ymdOf(m.at) : '');
       if (day !== yk) return;
+      /* V17: 받은 돈(수입·지급된 용돈)과 쓴 돈(지출)을 정확히 가른다 */
+      var gotM = (m.kind === 'income') || ((m.kind === 'allow' || m.kind === 'got') && m.status !== 'unpaid');
       out.money.push({
-        who: m.owner || m.by, k: (m.kind === 'allow' || m.kind === 'got') ? 'got' : 'spent',
+        who: m.owner || m.by, k: gotM ? 'got' : 'spent',
         amt: Number(m.amount) || 0, t: m.memo || '', at: m.at || 0, legacy: 1
       });
     });
@@ -258,8 +260,8 @@
     var workCls = sh.label === '근무' ? 'work' : (sh.label === '휴식' ? 'rest' : (sh.label === '휴가' ? 'vac' : ''));
     html += '<div class="hst-shift">' +
       '<span class="sg ' + workCls + '">' + esc(sh.label) + '</span>' +
-      '<span class="lb">상국 근무표' + (sh.ov ? ' (직접 변경)' : '') + '</span>' +
-      (c.commute ? '<span class="tag">수향 출근</span>' : '') +
+      '<span class="lb">근무표' + (sh.ov ? ' (직접 변경)' : '') + '</span>' +
+      (c.commute ? '<span class="tag">출근</span>' : '') +
       ((c.vacation ? false : Object.keys(c.school).length) ? '<span class="tag blue">아이들 등교</span>' : '') +
       (c.vacation ? '<span class="tag gray">방학</span>' : '') +
       '</div>';

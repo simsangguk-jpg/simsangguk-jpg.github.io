@@ -15,7 +15,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="우리가족포털">
 <meta name="format-detection" content="telephone=no">
-<link rel="stylesheet" href="./v10.css?v=19">
+<link rel="stylesheet" href="./v10.css?v=20">
 <style>
 :root{
   --bg:#F5F7F8;
@@ -1007,9 +1007,10 @@ body::after{
 <script src="./extra8.js?v=19a"></script>
 <script src="./home8.js?v=19a"></script>
 <script src="./life9.js?v=19a"></script>
-<script src="./home9.js?v=20b"></script>
-<script src="./hist11.js?v=1"></script>
-<script src="./v10.js?v=19a"></script>
+<script src="./home9.js?v=20c"></script>
+<script src="./hist11.js?v=2"></script>
+<script src="./v10.js?v=20"></script>
+<script src="./v17.js?v=4"></script>
 <script>
 (function () {
 'use strict';
@@ -1193,7 +1194,9 @@ function emptyDB() {
     v: 1, g: Date.now(), members: {}, status: {}, cheer: {}, photos: {}, reco: { spot: {}, trip: {} },
     plans: {}, live: {}, feedback: {},
     /* V2 추가 노드 — 기존 노드는 그대로 두고 새 기능만 덧붙인다 */
-    chat: {}, letters: {}, letterRead: {}, notices: {}, noticeAck: {}, diary: {}, dyc: {}, money: {}
+    chat: {}, letters: {}, letterRead: {}, notices: {}, noticeAck: {}, diary: {}, dyc: {}, money: {},
+    /* V17 추가 노드 — 용돈 요청·맡긴 돈·저 잘했어요 */
+    mnReq: {}, mnKeep: {}, mnCfg: {}, praise: {}, praiseCm: {}
   };
 }
 function fetchDB() {
@@ -1900,6 +1903,12 @@ function mediaTargets() {
   });
   var ph = DOC.photos || {};
   Object.keys(ph).forEach(function (k) { var p = ph[k]; if (p && p.thumb) out.push({ at: p.at || 0, get: function () { return p; } }); });
+  /* V17 저 잘했어요 사진 미리보기도 같은 정리 대상에 넣는다 */
+  var pr = DOC.praise || {};
+  Object.keys(pr).forEach(function (k) {
+    var it = pr[k];
+    if (it && it.media && it.media.thumb) out.push({ at: it.at || 0, get: function () { return it.media; } });
+  });
   out.sort(function (a, b2) { return a.at - b2.at; });
   return out;
 }
@@ -2902,6 +2911,8 @@ function paintLife() {
   }
 }
 function openLife(tab) {
+  /* V17: 용돈기입장은 '기록' 탭으로 옮겼다 — 생활 메뉴에서 눌러도 그 자리로 데려간다 */
+  if (tab === 'money' && window.FAMNAV && window.FAMNAV.go) { window.FAMNAV.go('record', 'money'); return; }
   lifeTab = tab || 'letters';
   switchView('life');
   paintLife();
@@ -3882,6 +3893,11 @@ window.FAM = {
   curView: function () { return currentView; },
   render: function () { renderAll(); },
   saveMedia: saveMedia,
+  putMedia: function (dataUrl, at) {
+    var id = newId('p');
+    return putText(CFG.ph + id, encryptText({ v: 1, by: ME && ME.id, at: at || Date.now(), img: dataUrl }))
+      .then(function () { return id; });
+  },
   mediaUrl: mediaUrl,
   pickImages: pickImages,
   compressImage: compressImage,

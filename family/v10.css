@@ -1080,3 +1080,129 @@ input[type="date"].field,input[type="time"].field,input[type="datetime-local"].f
 #briefCard.brief-collapsible{padding-bottom:12px}
 /* 사진첩 날짜 표기 */
 .photo-cell .cap .d{opacity:.82;font-weight:700}
+
+/* ============================================================================
+ * V17 · 용돈기입장 고도화 · 🌟 저 잘했어요! · 홈 인기순 정렬
+ * ========================================================================== */
+.v17-card{border:1px solid #E6EEF5}
+.v17-form{background:linear-gradient(180deg,#F8FCFF,#FFFFFF);border:1px solid #E7F1F9;border-radius:16px;padding:10px;margin:9px 0 11px}
+.v17-frow{display:flex;gap:6px;align-items:center;margin-bottom:6px}
+.v17-frow:last-child{margin-bottom:0}
+.v17-frow .field{margin-bottom:0;min-width:0}
+.v17-frow > .field{flex:1}
+.v17-lb{flex:0 0 auto;font-size:10.5px;font-weight:750;color:#6E8CA0}
+.v17-seg{flex:1 1 150px;margin-bottom:0}
+.v17-frow #v17Date{flex:0 0 124px;min-width:0;padding-left:8px;padding-right:4px}
+.v17-seg button{padding:8px 0;font-size:11.5px;border-radius:10px}
+.v17-save{width:auto;flex:0 0 auto;padding:0 15px;min-height:38px;font-size:12.5px;border-radius:12px}
+.v17-month{margin:2px 0 8px}
+.v17-sum{grid-template-columns:repeat(3,1fr)}
+.v17-sum .mn-tile{padding:9px 10px}
+.v17-sum .mn-tile .v{font-size:14.5px;letter-spacing:-.03em}
+.v17-sum .mn-tile .l{font-size:9.5px}
+.v17-day{border:1px solid #EBF2F8;border-radius:14px;background:#fff;margin-top:8px;overflow:hidden}
+.v17-dh{display:flex;align-items:center;gap:6px;padding:8px 10px;background:#F4FAFF;border-bottom:1px solid #EAF3FA}
+.v17-dh b{font-size:11.5px;font-weight:800;color:#2E6B94}
+.v17-dh span{font-size:11px;font-weight:750;color:#7C8FA0;margin-left:auto}
+.v17-dh i{font-style:normal;font-size:10.5px;font-weight:800;color:#0A7D56;background:#EAF9F2;border-radius:20px;padding:2px 8px}
+.v17-item{display:flex;align-items:center;gap:8px;padding:8px 10px;border-bottom:1px dashed #EFF4F8}
+.v17-item:last-child{border-bottom:none}
+.v17-item .e{font-size:16px;flex:0 0 auto}
+.v17-item .tx{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
+.v17-item .tx b{font-size:12px;font-weight:750;color:#243038;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.v17-item .tx small{font-size:10px;color:#8A9AA7}
+.v17-item .amt{font-size:12.5px;font-weight:800;letter-spacing:-.02em;flex:0 0 auto}
+.v17-item .amt.in{color:#0A7D56}
+.v17-item .amt.out{color:#B45A3C}
+.v17-del{flex:0 0 auto;color:#C3CDD6;font-size:13px;padding:2px 4px;line-height:1}
+.v17-big{width:100%;padding:12px;font-size:13px;border-radius:14px;margin-top:8px}
+.v17-dayline{display:flex;align-items:center;gap:7px;background:#FFFAF0;border:1px solid #F6E6C8;border-radius:14px;padding:9px 11px;margin-bottom:8px}
+.v17-dl-ico{font-size:15px}
+.v17-dl-tx{flex:1;font-size:11.5px;color:#6B5B3C;line-height:1.4}
+.v17-dl-tx b{color:#8A6A00;font-weight:800}
+.v17-mini{font-size:10.5px;font-weight:750;color:#0A7D56;background:#EAF9F2;border:1px solid #CDEDDF;border-radius:20px;padding:4px 9px;white-space:nowrap}
+.v17-nudge{background:#FFF3F1;border:1px solid #FBD9D2;color:#A9523B;border-radius:12px;padding:8px 10px;font-size:11.5px;line-height:1.45;margin-bottom:8px}
+.v17-nudge.wait{background:#FFF9EC;border-color:#F5E3BE;color:#8A6A00}
+.v17-req,.v17-keep{border:1px solid #EBF2F8;border-radius:14px;background:#fff;padding:9px 11px;margin-top:7px}
+.v17-req.done,.v17-keep.done{background:#F7FBF9;border-color:#E1EFE8}
+.v17-req-top{display:flex;align-items:center;gap:6px}
+.v17-req-who{font-size:12px;font-weight:800;color:#243038;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.v17-badge{font-size:9.5px;font-weight:800;border-radius:20px;padding:2px 8px;white-space:nowrap}
+.v17-badge.wait{background:#FDF3E2;color:#96690E}
+.v17-badge.ok{background:#E7F8F1;color:#0A7D56}
+.v17-req-amt{font-size:13px;font-weight:800;color:#243038;letter-spacing:-.03em}
+.v17-req-why{font-size:11px;color:#75858F;margin-top:4px;line-height:1.4}
+.v17-req-foot{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-top:6px;font-size:10px;color:#9AA8B2}
+.v17-pay{margin-left:auto;font-size:11px;font-weight:800;color:#fff;background:linear-gradient(180deg,#18AE7C,#0E8C63);border-radius:20px;padding:5px 12px}
+.v17-cancel{margin-left:auto;font-size:10.5px;font-weight:750;color:#8A9AA7;background:#F1F4F6;border-radius:20px;padding:5px 10px}
+.v17-ok{margin-left:auto;font-size:10.5px;font-weight:750;color:#0A7D56}
+.v17-keep-sum{margin:2px 0 4px}
+.v17-ksum{display:flex;align-items:baseline;gap:7px;background:linear-gradient(135deg,#0B5340,#12A076);color:#fff;border-radius:16px;padding:13px 15px}
+.v17-ksum .l{font-size:11px;font-weight:750;opacity:.9}
+.v17-ksum b{font-size:22px;font-weight:800;letter-spacing:-.04em;margin-left:auto}
+.v17-ksum small{font-size:10.5px;opacity:.85}
+/* 저 잘했어요 */
+.v17-praise-home{border:1.5px solid #F7DDAF;background:linear-gradient(180deg,#FFFCF4,#FFFFFF)}
+.v17-banner{display:flex;align-items:center;gap:10px;width:100%;text-align:left;border-radius:16px;padding:12px 13px;
+  background:linear-gradient(135deg,#FFE9B8,#FFD98C);border:1px solid #F5CE7E;margin-bottom:8px}
+.v17-bn-ic{font-size:26px;flex:0 0 auto}
+.v17-bn-tx{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.v17-bn-tx b{font-size:12.5px;font-weight:800;color:#6B4A0C}
+.v17-bn-tx small{font-size:10.5px;color:#8A6A2A;line-height:1.35}
+.v17-bn-go{flex:0 0 auto;font-size:11px;font-weight:800;color:#6B4A0C;background:rgba(255,255,255,.72);border-radius:20px;padding:6px 11px}
+.v17-post{border:1px solid #F1E6D2;border-radius:16px;background:#fff;padding:10px 11px;margin-top:8px}
+.v17-post.mini{background:#FFFDF7}
+.v17-post-top{display:flex;align-items:center;gap:6px}
+.v17-post-who{font-size:11.5px;font-weight:800;color:#4A3A1A;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.v17-post-date{font-size:10px;color:#A79880}
+.v17-post-title{font-size:13px;font-weight:800;color:#243038;margin-top:6px;letter-spacing:-.02em}
+.v17-post-text{font-size:11.5px;color:#4C5A63;line-height:1.5;margin-top:5px;word-break:keep-all}
+.v17-photo{margin-top:7px;border-radius:12px;overflow:hidden;background:#F5F7F9}
+.v17-photo img{width:100%;max-height:260px;object-fit:cover;display:block}
+.v17-reacts{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px}
+.v17-r{font-size:10.5px;font-weight:750;color:#5E6E78;background:#F4F7F9;border:1px solid #E7EFF4;border-radius:20px;padding:5px 9px}
+.v17-r.on{background:#FFF1DC;border-color:#F5DCAF;color:#8A5A00}
+.v17-r b{font-weight:800}
+.v17-post-foot{display:flex;align-items:center;gap:10px;margin-top:7px;font-size:10.5px;color:#95A4AE}
+.v17-more{margin-left:auto;font-size:10.5px;font-weight:800;color:#C08A2E}
+.v17-allbtn{width:100%;padding:10px;font-size:12px;border-radius:13px;margin-top:8px}
+.v17-cms{margin-top:8px;border-top:1px dashed #F0E6D6;padding-top:7px;display:flex;flex-direction:column;gap:5px}
+.v17-cm{display:flex;align-items:baseline;gap:5px;font-size:11px;line-height:1.4}
+.v17-cm b{font-weight:800;color:#4A3A1A;flex:0 0 auto}
+.v17-cm span{flex:1;color:#3C4A53;word-break:keep-all}
+.v17-cm i{font-style:normal;font-size:9.5px;color:#B0A794;flex:0 0 auto}
+.v17-cm.empty{color:#B0A794}
+.v17-cmin{display:flex;gap:6px;margin-top:7px}
+.v17-cmin .field{margin-bottom:0;flex:1;min-height:36px;font-size:12px}
+.v17-cmbtn{width:auto;flex:0 0 auto;padding:0 13px;min-height:36px;font-size:11.5px;border-radius:11px}
+.v17-pick{display:flex;gap:6px}
+.v17-pick .btn{flex:1;padding:9px;font-size:11.5px;border-radius:12px}
+.v17-prev{margin-top:7px}
+.v17-prev img{width:100%;max-height:180px;object-fit:cover;border-radius:12px;display:block}
+.v17-prev .v17-del{position:relative;float:right;margin-top:-178px;margin-right:6px;background:rgba(255,255,255,.9);border-radius:20px;padding:3px 8px;color:#B45A3C}
+.v17-file{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
+.v17-full img{width:100%;border-radius:14px;display:block}
+.v17-loading{font-size:12px;color:#8A9AA7;text-align:center;padding:24px 0}
+.v17-quick{display:flex;gap:6px;margin-top:8px}
+.v17-quick button{flex:1;font-size:11px;font-weight:800;color:#2E6B94;background:#EFF8FF;border:1px solid #DCEBF7;border-radius:12px;padding:9px 2px;white-space:nowrap}
+.v17-legacy-hide{display:none !important}
+.v17-legacy-note{margin-top:8px}
+@media (max-width:400px){
+  .v17-frow{flex-wrap:nowrap}
+  .v17-seg button{font-size:10.5px;padding:8px 0}
+  .v17-quick button{font-size:10px}
+}
+/* 홈 카드용 축약형 — 홈 스크롤을 가볍게 */
+.v17-post.mini .v17-photo img{max-height:150px}
+.v17-post.mini .v17-post-text{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.v17-post.mini .v17-reacts{margin-top:6px}
+.v17-post.mini .v17-r{padding:4px 8px;font-size:10px}
+/* 홈 꾸미기 시트 — 인기순 자동정렬 스위치 */
+.v17-sortrow{display:flex;align-items:center;gap:10px;background:linear-gradient(135deg,#FFF6E6,#FFFDF7);border:1px solid #F4DFB9;border-radius:14px;padding:11px 12px;margin-bottom:12px}
+.v17-sr-tx{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.v17-sr-tx b{font-size:12.5px;font-weight:800;color:#6B4A0C}
+.v17-sr-tx small{font-size:10.5px;color:#8A7A5A;line-height:1.35}
+.v17-sw{flex:0 0 auto;width:46px;height:26px;border-radius:20px;background:#DFE5EA;position:relative;transition:.15s}
+.v17-sw i{position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.2);transition:.15s}
+.v17-sw.on{background:linear-gradient(135deg,#18AE7C,#0E8C63)}
+.v17-sw.on i{left:23px}

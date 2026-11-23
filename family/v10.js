@@ -57,6 +57,7 @@
         { id: 'diary', label: '📔 일기', view: 'life', panel: 'diary' },
         { id: 'notices', label: '📢 공지', view: 'life', panel: 'notices' },
         { id: 'cheer', label: '💬 응원', view: 'life', panel: 'cheer' },
+        { id: 'praise', label: '🌟 저 잘했어요', view: 'life', panel: 'praise' },
         { id: 'fb', label: '💡 의견', view: 'life', panel: 'feedback' }
       ]
     },
@@ -65,7 +66,7 @@
         { id: 'cal', label: '📅 달력', view: 'sched', pane: 'cal' },
         { id: 'shift', label: '🗓️ 근무·등교', view: 'sched', pane: 'shift' },
         { id: 'dday', label: '🎯 목표', view: 'sched', pane: 'dday' },   /* 디데이는 홈 카드로 이동(V15) */
-        { id: 'money', label: '💰 용돈', view: 'sched', pane: 'money' },
+        /* V17: 용돈기입장 전체는 '기록' 탭으로 옮겼다(일정은 달력·근무표·목표 중심) */
         { id: 'sb', label: '🏅 상벌점', view: 'sched', pane: 'sb' },
         { id: 'plan', label: '📌 약속', view: 'sched', pane: 'plan' }
       ]
@@ -73,6 +74,7 @@
     {
       id: 'record', label: '기록', items: [
         { id: 'day', label: '🗂️ 날짜별 기록', view: 'record', pane: 'day' },
+        { id: 'money', label: '💰 용돈기입장', view: 'record', pane: 'money' },
         { id: 'album', label: '📷 사진첩', view: 'photos' },
         { id: 'place', label: '📍 위치', view: 'map' },
         { id: 'backup', label: '⬇️ 백업', view: 'record', pane: 'backup' }
@@ -102,7 +104,7 @@
     famCalBanner: 'pane-sched-cal',
     v9ShiftCard: 'pane-sched-shift', v9SchoolCard: 'pane-sched-shift',
     v9GoalsCard: 'pane-sched-dday',   /* V15: 디데이는 홈에 매일 보이도록 옮기지 않는다(PANE_OF 제외) */
-    v9Money: 'pane-sched-money',
+    v9Money: 'pane-record-money',
     v9SbCard: 'pane-sched-sb',
     v10PlanCard: 'pane-sched-plan', v10PlanForm: 'pane-sched-plan',
     /* 기록 */
@@ -119,8 +121,8 @@
   };
 
   var PANE_ORDER = {
-    'view-sched': ['pane-sched-cal', 'pane-sched-shift', 'pane-sched-dday', 'pane-sched-money', 'pane-sched-sb', 'pane-sched-plan'],
-    'view-record': ['pane-record-day', 'pane-record-backup'],
+    'view-sched': ['pane-sched-cal', 'pane-sched-shift', 'pane-sched-dday', 'pane-sched-sb', 'pane-sched-plan'],
+    'view-record': ['pane-record-day', 'pane-record-money', 'pane-record-backup'],
     'view-house': ['pane-house-family', 'pane-house-mind', 'pane-house-news', 'pane-house-tools']
   };
 
@@ -238,10 +240,14 @@
       if (v === 'photos') { mark('record', pending || 'album'); return; }
       if (v === 'map') { mark('record', pending || 'place'); return; }
       if (v === 'life') {
+        /* 지금 보이는 패널(life-*)을 기준으로 탭·칩을 맞춘다 —
+           소통>저 잘했어요·기록>용돈처럼 lifeNav 에 없는 패널도 정확히 표시된다 */
         var on = q('#lifeNav button.on');
         var t = on ? on.getAttribute('data-life') : 'letters';
-        var mapL = { letters: 'letters', notices: 'notices', diary: 'diary', feedback: 'fb', cheer: 'cheer', reco: 'reco', money: 'money' };
-        if (t === 'money') { mark('sched', 'money'); return; }
+        var shown = q('#view-life > div[id^="life-"]:not(.hidden)');
+        if (shown) t = String(shown.id).replace('life-', '');
+        var mapL = { letters: 'letters', notices: 'notices', diary: 'diary', feedback: 'fb', cheer: 'cheer', reco: 'reco', money: 'money', praise: 'praise' };
+        if (t === 'money') { mark('record', 'money'); return; }
         if (t === 'reco') { mark('house', 'reco'); return; }
         mark('share', pending || mapL[t] || 'letters');
         return;
@@ -292,15 +298,19 @@
     }, 30000);
   }
 
+  /* 홈 순서: 인사 히어로는 항상 맨 위에 고정하고, 나머지 카드의 순서는
+     V17 정렬기(v17.js · 누적 사용 많은 순)에 맡긴다.
+     (예전에는 기분·대표사진·날씨를 매 틱마다 강제로 맨 아래로 밀어
+      홈 꾸미기·인기순 정렬을 덮어썼다) */
   function orderHome() {
     var home = $('view-home');
     if (!home) return;
-    ['v10Hero', 'v9MoodCard', 'v9PodCard', 'briefCard', 'v10LocCard', 'v10EtaCard'].forEach(function (id) {
-      var el = $(id);
-      if (!el) return;
-      if (el.parentNode !== home) home.appendChild(el);
-      else if (home.lastElementChild !== el) home.appendChild(el);
-    });
+    var hero = $('v10Hero');
+    if (hero && hero.parentNode === home && home.firstElementChild !== hero) {
+      home.insertBefore(hero, home.firstElementChild);
+    }
+    var sorter = global.FAM12 && global.FAM12.orderHome;
+    if (sorter) { try { sorter(); } catch (e) { } }
   }
 
   /* ---------------------------------------------------------------- 6. 카드 옮기기 */
@@ -323,13 +333,14 @@
     if (!el || !pane) return;
     if (el.parentNode !== pane) pane.appendChild(el);
   }
-  /* 용돈: #life-money 안의 카드(원래 카드 + v9Money)를 통째로 옮긴다 */
+  /* 용돈: #life-money 안의 카드(원래 카드 + v9Money + v17 카드)를 통째로 옮긴다.
+     V17부터는 '기록' 탭 아래 pane-record-money 로 모은다. */
   function moveMoney() {
     var host = $('life-money');
-    var pane = $('pane-sched-money');
+    var pane = $('pane-record-money');
     if (!host || !pane) return;
     Array.prototype.slice.call(host.children).forEach(function (ch) {
-      if (ch.nodeType === 1 && ch.classList && ch.classList.contains('card')) placeEl(ch, 'pane-sched-money');
+      if (ch.nodeType === 1 && ch.classList && ch.classList.contains('card')) placeEl(ch, 'pane-record-money');
     });
     if (pane.children.length > 1) {
       /* 원래 카드를 위로 */

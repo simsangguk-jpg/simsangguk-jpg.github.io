@@ -1,10 +1,10 @@
-/* 우리가족포털 Service Worker · V16 (2026-11-23 · 경량 피드 + 가족 공용 디데이 + 가족 띠 운세)
+/* 우리가족포털 Service Worker · V17 (2026-11-23 · 용돈기입장 고도화 + 저 잘했어요 + 홈 인기순 정렬)
    - /family/ 범위만 담당한다(상국포털 본체 캐시와 섞이지 않게 별도 캐시 이름 사용)
    - install 단계에서 확장 모듈 + v10.css/v10.js 까지 모두 프리캐시한다
    - 화면(HTML)은 네트워크 우선: 새로 배포한 내용이 앱에서도 바로 뜨도록
    - 그 밖의 정적 파일은 네트워크 우선, 실패 시 캐시
 */
-const SW_VERSION = 'family-portal-v16-2026-11-23';
+const SW_VERSION = 'family-portal-v17-2026-11-23';
 const OFFLINE_HTML = new URL('index.html', self.registration.scope).href;
 const PRECACHE = [
   './',
@@ -18,6 +18,7 @@ const PRECACHE = [
   './home9.js',
   './hist11.js',
   './v10.js',
+  './v17.js',
   './v10.css',
   './family_feed.json',
   './manifest.webmanifest',
