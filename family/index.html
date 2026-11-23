@@ -1009,8 +1009,9 @@ body::after{
 <script src="./life9.js?v=19a"></script>
 <script src="./home9.js?v=20c"></script>
 <script src="./hist11.js?v=2"></script>
-<script src="./v10.js?v=20"></script>
+<script src="./v10.js?v=21"></script>
 <script src="./v17.js?v=4"></script>
+<script src="./admin12.js?v=1"></script>
 <script>
 (function () {
 'use strict';
@@ -1354,6 +1355,7 @@ function pull(force) {
     var merged = mergeDoc(DOC, remote);
     var after = JSON.stringify(merged);
     DOC = merged;
+    if (sessionGuard()) { pollBusy = false; return false; }
     lastSync = Date.now();
     setSync('ok', '');
     updateSyncLabel();
@@ -1474,6 +1476,10 @@ async function doJoin() {
     if (DOC.members[id] && !DOC.members[id].d) { errEl.textContent = '이미 사용 중인 아이디예요. 다른 아이디로 해 주세요.'; return; }
     var sameName = Object.keys(DOC.members).filter(function (k) { return !DOC.members[k].d && DOC.members[k].name === name; });
     if (sameName.length) { errEl.textContent = '같은 호칭이 이미 있어요. 구분되게 적어 주세요.'; return; }
+    if (role === '아빠') {
+      var dads = Object.keys(DOC.members).filter(function (k) { return !DOC.members[k].d && !DOC.members[k].gone && DOC.members[k].role === '아빠'; });
+      if (dads.length) { errEl.textContent = '아빠 역할은 이미 등록되어 있어요. 다른 역할을 골라 주세요.'; return; }
+    }
     var saltBytes = crypto.getRandomValues(new Uint8Array(16));
     var salt = bytesToB64(saltBytes);
     var hash = await hashPassword(pw, salt, 120000);
@@ -1486,6 +1492,38 @@ async function doJoin() {
   } catch (e) {
     errEl.textContent = '가입에 실패했어요. 잠시 후 다시 시도해 주세요.';
   } finally { done(); }
+}
+
+/* ---------------- 퇴장·삭제된 계정 즉시 내보내기 ----------------
+   아빠가 회원 관리에서 퇴장(또는 삭제)하면 15초 동기화에서 이 기기의 기록도 d:1 로 바뀐다.
+   그 순간 로그아웃시키고 안내 문구를 남긴다. */
+var LS_KICK = 'sgf_kick_msg';
+function sessionGuard() {
+  if (!ME || !DOC || !DOC.members) return false;
+  var m = DOC.members[ME.id];
+  if (m && !m.d) {
+    /* 아빠가 이름·역할을 바꿨으면 지금 화면에도 바로 반영 */
+    if (ME.name !== m.name || ME.role !== roleOf(m)) {
+      ME.name = m.name; ME.role = roleOf(m);
+      try { renderHeader(); } catch (e) {}
+    }
+    return false;
+  }
+  kickedOut(m && m.kicked && !m.gone
+    ? '아빠가 회원 관리에서 이 계정을 퇴장 처리했어요. 다시 들어오려면 아빠에게 이야기해 주세요.'
+    : '이 계정은 삭제되었어요. 다시 들어오려면 아빠에게 이야기해 주세요.');
+  return true;
+}
+function kickedOut(msg) {
+  var lastId = ME && ME.id;
+  try { localStorage.removeItem(LS_SESS); localStorage.setItem(LS_KICK, msg); } catch (e) {}
+  if (pollTimer) { clearInterval(pollTimer); pollTimer = null; }
+  syncStarted = false;
+  ME = null;
+  showAuth();
+  if (lastId && $('loginId')) $('loginId').value = lastId;
+  if ($('loginErr')) $('loginErr').textContent = msg;
+  try { toast(msg); } catch (e) {}
 }
 
 function logOut() {
@@ -3033,9 +3071,15 @@ function settingsSheet() {
     '<button type="button" class="sheet-item" id="shSync"><span class="ico">🔄</span>지금 동기화<span class="val" id="shSyncVal">' + (lastSync ? ago(lastSync) : '대기') + '</span></button>' +
     '<button type="button" class="sheet-item" id="shCode"><span class="ico">🔑</span>가족 초대코드 바꾸기</button>' +
     '<button type="button" class="sheet-item" id="shInstall"><span class="ico">📲</span>홈 화면에 앱으로 설치</button>' +
+    (window.FAMADMIN && window.FAMADMIN.isAdmin() ? '<button type="button" class="sheet-item" id="shAdmin"><span class="ico">👑</span>가족 회원 관리<span class="val">아빠 전용</span></button>' : '') +
     '<button type="button" class="sheet-item" id="shOut" style="color:#D9534F"><span class="ico">🚪</span>로그아웃</button>' +
     '<div class="hint" style="margin-top:12px">사진·위치·귀가 정보는 암호화되어 가족 저장소에만 보관됩니다. 이 앱은 가족 외에는 열리지 않아요.</div>'
   );
+  if ($('shAdmin')) $('shAdmin').onclick = function () {
+    closeSheet();
+    if (window.FAMNAV && window.FAMNAV.go) window.FAMNAV.go('house', 'admin');
+    else switchView('house');
+  };
   $('shSync').onclick = function () {
     $('shSyncVal').textContent = '확인 중…';
     pull(true).then(function () { push(); $('shSyncVal').textContent = '방금'; toast('가족과 맞췄어요'); });
@@ -3952,6 +3996,10 @@ async function boot() {
   DOC = DOC || emptyDB();
   showAuth();
   if (sess && sess.id) $('loginId').value = sess.id;
+  try {
+    var km = localStorage.getItem(LS_KICK);
+    if (km) { localStorage.removeItem(LS_KICK); if ($('loginErr')) $('loginErr').textContent = km; }
+  } catch (e) {}
 }
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -3959,6 +4007,7 @@ document.addEventListener('DOMContentLoaded', function () {
   boot();
   setInterval(function () {
     if (!DOC || !ME) return;
+    if (sessionGuard()) return;
     if (Date.now() - wxAt > 1000 * 60 * 30) loadWeather();
     if ($('sheet').classList.contains('hidden') === false) return;
     renderEta(); renderFeedback(); renderLive(); renderPlans(); updateSyncLabel(); rotateCheer();

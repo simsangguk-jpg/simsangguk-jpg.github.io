@@ -86,16 +86,26 @@
         { id: 'mind', label: '💗 마음·선물', view: 'house', pane: 'mind' },
         { id: 'news', label: '📰 소식', view: 'house', pane: 'news' },
         { id: 'reco', label: '🍽️ 추천', view: 'life', panel: 'reco' },
-        { id: 'tools', label: '🧰 생활도구', view: 'house', pane: 'tools' }
+        { id: 'tools', label: '🧰 생활도구', view: 'house', pane: 'tools' },
+        { id: 'admin', label: '👑 회원관리', view: 'house', pane: 'admin', adminOnly: true }
       ]
     }
   ];
 
   function tabOf(id) { return TABS.filter(function (t) { return t.id === id; })[0] || null; }
+  /* 아빠 전용(adminOnly) 항목은 관리자에게만 보인다 — 다른 가족에겐 칩도 패널도 없다 */
+  function visItems(tab) {
+    var items = (tab && tab.items) || [];
+    return items.filter(function (i) {
+      if (!i.adminOnly) return true;
+      return !!(global.FAMADMIN && global.FAMADMIN.isAdmin && global.FAMADMIN.isAdmin());
+    });
+  }
   function itemOf(tabId, itemId) {
     var t = tabOf(tabId);
     if (!t) return null;
-    return t.items.filter(function (i) { return i.id === itemId; })[0] || t.items[0];
+    var vis = visItems(t);
+    return vis.filter(function (i) { return i.id === itemId; })[0] || vis[0];
   }
 
   /* ---------------------------------------------------------------- 2. 카드 → 패널 배치도 */
@@ -116,6 +126,7 @@
     v9NewsCard: 'pane-house-news', v9LocalCard: 'pane-house-news', v9WkCard: 'pane-house-news', v4Tube: 'pane-house-news',
     v4Food: 'pane-house-tools', v9LogCard: 'pane-house-tools', v4Notif: 'pane-house-tools',
     v4Mem: 'pane-house-tools',
+    famAdminCard: 'pane-house-admin',
     /* 소통 > 응원 */
     cheerCardTop: 'pane-share-cheer', v9QuoteCard: 'pane-share-cheer'
   };
@@ -123,7 +134,7 @@
   var PANE_ORDER = {
     'view-sched': ['pane-sched-cal', 'pane-sched-shift', 'pane-sched-dday', 'pane-sched-sb', 'pane-sched-plan'],
     'view-record': ['pane-record-day', 'pane-record-money', 'pane-record-backup'],
-    'view-house': ['pane-house-family', 'pane-house-mind', 'pane-house-news', 'pane-house-tools']
+    'view-house': ['pane-house-family', 'pane-house-mind', 'pane-house-news', 'pane-house-tools', 'pane-house-admin']
   };
 
   function ensurePane(id) {
@@ -167,7 +178,7 @@
     var host = $('v10Sub');
     if (!host) return;
     var tab = tabOf(tabId);
-    var items = (tab && tab.items) || [];
+    var items = visItems(tab);
     if (items.length <= 1) { host.innerHTML = ''; host.classList.add('is-empty'); return; }
     host.classList.remove('is-empty');
     var html = items.map(function (it) {
