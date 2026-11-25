@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" class="sg-booting">
 <head>
   <meta charset="UTF-8">
   <meta name="color-scheme" content="dark">
-  <style id="sgBootCSS">/* 2026-11-26 · 첫 페인트부터 사이버캡 다크 (흰 배경 깜박임 방지) */html{background:#0A0B0E;color-scheme:dark;}body{background:#0A0B0E;}</style>
+  <style id="sgBootCSS">/* 2026-11-26 · 첫 페인트부터 사이버캡 다크 (흰 배경 깜박임 방지). 앱이 뜨면 sg-booting 을 떼어 원래 테마로 돌아간다 */html.sg-booting{background:#0A0B0E;color-scheme:dark;}html.sg-booting body{background:#0A0B0E;}</style>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>스마트 홈 포털</title>
   <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' https:; img-src 'self' data: blob: https:; media-src 'self' data: blob: https:; font-src 'self' https: data:;">
@@ -238,6 +238,7 @@
 
     function renderUnlocked(data) {
       try { document.documentElement.style.background = '#0A0B0E'; } catch (e) {}
+      try { setTimeout(function(){ document.documentElement.classList.remove('sg-booting'); }, 60); } catch (e) {}
       document.getElementById('loginGate').style.display = 'none';
       const app = document.getElementById('portalApp');
       app.innerHTML = data.body;
