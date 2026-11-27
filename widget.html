@@ -113,27 +113,38 @@
     .grid{ display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); grid-auto-rows:minmax(0,1fr); gap:3px; flex:1 1 auto; min-height:0; }
     .cc{
       position:relative; min-height:0; min-width:0; overflow:hidden;
-      display:flex; flex-direction:column; align-items:center; justify-content:center;
+      display:flex; flex-direction:column; align-items:stretch; justify-content:flex-start;
       border-radius:7px; border:1px solid transparent; background:transparent;
-      padding:1px 1px 2px; line-height:1.1;
+      padding:2px 2px 2px; line-height:1.1; gap:1px;
     }
     .cc.work{ background:var(--work-bg); border-color:var(--work-ln); }
     .cc.rest{ background:var(--rest-bg); border-color:var(--rest-ln); }
-    .cc .cc-d{ font-size:11px; font-weight:600; color:var(--ink2); font-variant-numeric:tabular-nums; }
-    .cc.work .cc-d{ color:var(--work-tx); }
-    .cc.rest .cc-d{ color:var(--rest-tx); }
+    .cc.vac{ background:rgba(167,139,250,.12); border-color:rgba(167,139,250,.32); }
+    .cc .cc-d{ font-size:11.5px; font-weight:800; color:var(--ink); font-variant-numeric:tabular-nums; line-height:1; }
+    .cc.work .cc-d{ color:#FFE4E6; }
+    .cc.rest .cc-d{ color:#D1FAE5; }
+    .cc.vac .cc-d{ color:#EDE9FE; }
     .cc.dim .cc-d{ color:rgba(140,150,168,.45); }
-    .cc.sun:not(.work):not(.rest) .cc-d{ color:#E0A0A0; }
-    .cc.sat:not(.work):not(.rest) .cc-d{ color:#9AB8DE; }
-    .cc .cc-l{ font-size:9px; font-weight:600; color:var(--ink2); max-width:100%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-top:1px; letter-spacing:-.03em; }
+    .cc.sun:not(.work):not(.rest):not(.vac) .cc-d{ color:#E0A0A0; }
+    .cc.sat:not(.work):not(.rest):not(.vac) .cc-d{ color:#9AB8DE; }
+    .cc-st{
+      font-size:8.5px; font-weight:800; line-height:1.15; padding:1px 3px; border-radius:4px;
+      letter-spacing:-.04em; white-space:nowrap; flex:0 0 auto;
+    }
+    .cc-st.w{ background:rgba(248,113,113,.24); color:#FCA5A5; border:1px solid rgba(248,113,113,.45); }
+    .cc-st.r{ background:rgba(52,211,153,.20); color:#6EE7B7; border:1px solid rgba(52,211,153,.42); }
+    .cc-st.v{ background:rgba(167,139,250,.26); color:#DDD6FE; border:1px solid rgba(167,139,250,.48); }
+    .cc-mid{ display:flex; align-items:center; justify-content:space-between; gap:2px; min-height:10px; }
+    .cc-wx{ font-size:9.5px; line-height:1; flex:0 0 auto; }
+    .cc .cc-l{ font-size:8.5px; font-weight:700; color:var(--ink2); max-width:100%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; letter-spacing:-.04em; text-align:left; }
     .cc.today{
-      background:rgba(212,175,55,.14); border:1.5px solid var(--gold);
-      box-shadow:0 0 0 1px rgba(212,175,55,.14) inset;
+      background:rgba(212,175,55,.16); border:1.5px solid var(--gold);
+      box-shadow:0 0 0 1px rgba(212,175,55,.18) inset;
     }
     .cc.today .cc-d{ color:var(--gold2); font-weight:800; }
-    .cc-top{ display:flex; align-items:center; justify-content:center; gap:2px; width:100%; min-width:0; }
+    .cc-top{ display:flex; align-items:center; justify-content:space-between; gap:1px; width:100%; min-width:0; }
     .cc .cc-b{
-      flex:0 0 auto; font-size:8px; font-weight:800; line-height:1.25; color:#0A0B0E;
+      flex:0 0 auto; font-size:7.5px; font-weight:800; line-height:1.2; color:#0A0B0E;
       background:var(--gold); border-radius:999px; padding:0 3px;
       font-variant-numeric:tabular-nums; letter-spacing:-.04em;
     }
@@ -161,7 +172,9 @@
       .w{ padding:38px 9px 7px; gap:5px; }
       .sh-main{ font-size:20px; }
       .wx-c{ padding:4px 7px 5px; }
-      .cc .cc-l{ font-size:8.5px; }
+      .cc .cc-d{ font-size:10.5px; }
+      .cc-st{ font-size:8px; padding:0.5px 2.5px; }
+      .cc .cc-l{ font-size:8px; }
     }
     @media (max-height:470px){
       .w{ padding-top:30px; gap:4px; }
@@ -230,7 +243,7 @@
        SNAP  = 그날 아침 날씨 스냅샷(실시간 조회 실패 시 표시값)
        EVENTS= 포털 EVENTS 에서 뽑은 이번·다음 달 핵심 일정의 짧은 달력 라벨 */
     window.SG_WIDGET_SNAP = /*SNAP_START*/ {"at":"2026-11-27 05:55","pa":{"t":8,"f":5,"lo":7,"hi":16,"sky":"흐림","rain":39,"hum":92,"pm10":31,"pm10g":"보통","pm25":10,"pm25g":"좋음"},"yc":{"t":8,"f":6,"lo":7,"hi":15,"sky":"구름많음","rain":49,"hum":91,"pm10":26,"pm10g":"좋음","pm25":null,"pm25g":"통신장애"}} /*SNAP_END*/;
-    window.SG_WIDGET_EVENTS = /*EVENT_START*/ {"2026-11-17":[{"l":"컬리","p":3},{"l":"소매판매","p":2},{"l":"도착","p":1}],"2026-11-18":[{"l":"엔비디아","p":2},{"l":"FOMC","p":2},{"l":"회의","p":1}],"2026-11-19":[{"l":"마감","p":3},{"l":"수능","p":2},{"l":"지연개장","p":2}],"2026-11-20":[{"l":"뮤지컬","p":1},{"l":"발표","p":1}],"2026-11-21":[{"l":"모임","p":2}],"2026-11-22":[{"l":"생신","p":6},{"l":"레이스","p":3},{"l":"마감","p":3}],"2026-11-23":[{"l":"치과","p":6},{"l":"CGV","p":3},{"l":"뽑기","p":2}],"2026-11-24":[{"l":"마감","p":3},{"l":"AI특강","p":2}],"2026-11-25":[{"l":"CGV","p":3},{"l":"크루발표","p":2},{"l":"뽑기","p":2}],"2026-11-26":[{"l":"지섭병원","p":3},{"l":"금통위","p":1}],"2026-11-27":[{"l":"시험발표","p":2}],"2026-11-30":[{"l":"구독종료","p":2},{"l":"구독갱신","p":2}],"2026-12-01":[{"l":"프리미엄","p":2}],"2026-12-02":[{"l":"기지확인","p":3}],"2026-12-03":[{"l":"처남생일","p":2},{"l":"소비자의","p":1}],"2026-12-04":[{"l":"교육","p":1}],"2026-12-05":[{"l":"무역의날","p":1}],"2026-12-07":[{"l":"교육","p":1},{"l":"대설","p":1}],"2026-12-10":[{"l":"네마녀","p":2}],"2026-12-11":[{"l":"N페이","p":2}],"2026-12-12":[{"l":"결혼식","p":3},{"l":"입금","p":2}],"2026-12-15":[{"l":"벤츠납입","p":3},{"l":"도착","p":1}],"2026-12-20":[{"l":"장인생신","p":3}],"2026-12-21":[{"l":"애드센스","p":2},{"l":"밈스교육","p":2}],"2026-12-22":[{"l":"동지","p":1}],"2026-12-24":[{"l":"촬영","p":3},{"l":"기념일","p":3}],"2026-12-25":[{"l":"크리스마","p":1}],"2026-12-27":[{"l":"원자력안","p":1}],"2026-12-30":[{"l":"연가보상","p":2}]} /*EVENT_END*/;
+    window.SG_WIDGET_EVENTS = /*EVENT_START*/ {"2026-11-17":[{"l":"컬리","p":3},{"l":"소매판매","p":2},{"l":"도착","p":1}],"2026-11-18":[{"l":"엔비디아","p":3},{"l":"FOMC","p":2},{"l":"회의","p":1}],"2026-11-19":[{"l":"마감","p":3},{"l":"수능","p":2},{"l":"수능","p":2}],"2026-11-20":[{"l":"뮤지컬","p":1},{"l":"발표","p":1}],"2026-11-21":[{"l":"모임","p":2}],"2026-11-22":[{"l":"생신","p":6},{"l":"마감","p":3},{"l":"레이스","p":3}],"2026-11-23":[{"l":"치과","p":6},{"l":"CGV","p":3},{"l":"뽑기","p":2}],"2026-11-24":[{"l":"마감","p":3},{"l":"AI특강","p":2},{"l":"원대표","p":2}],"2026-11-25":[{"l":"CGV","p":3},{"l":"크루발표","p":2},{"l":"뽑기","p":2}],"2026-11-26":[{"l":"지섭병원","p":3},{"l":"병원","p":3},{"l":"금통위","p":2}],"2026-11-27":[{"l":"삼성전자","p":3},{"l":"시험발표","p":2},{"l":"워치페이","p":2}],"2026-11-30":[{"l":"정보대대","p":3},{"l":"구독종료","p":3},{"l":"구독갱신","p":3}],"2026-12-01":[{"l":"프리미엄","p":3}],"2026-12-02":[{"l":"기지확인","p":3}],"2026-12-03":[{"l":"처남생일","p":3},{"l":"소비자의","p":1}],"2026-12-04":[{"l":"교육","p":3},{"l":"미국","p":2}],"2026-12-05":[{"l":"무역의날","p":1}],"2026-12-07":[{"l":"교육","p":3},{"l":"대설","p":1}],"2026-12-09":[{"l":"확인","p":3}],"2026-12-10":[{"l":"미국","p":3},{"l":"미국","p":3},{"l":"네마녀","p":2}],"2026-12-11":[{"l":"지원금","p":3},{"l":"N페이","p":2}],"2026-12-12":[{"l":"결혼식","p":3},{"l":"결혼식","p":3},{"l":"입금","p":3}],"2026-12-15":[{"l":"벤츠납입","p":3},{"l":"미국","p":2},{"l":"도착","p":2}],"2026-12-20":[{"l":"장인생신","p":3}],"2026-12-21":[{"l":"애드센스","p":3},{"l":"교육","p":2},{"l":"밈스교육","p":2}],"2026-12-22":[{"l":"치과","p":2},{"l":"동지","p":1}],"2026-12-23":[{"l":"수향이","p":3},{"l":"미국","p":2}],"2026-12-24":[{"l":"촬영","p":3},{"l":"기념일","p":3}],"2026-12-25":[{"l":"크리스마","p":1}],"2026-12-27":[{"l":"원자력안","p":1}],"2026-12-30":[{"l":"마감","p":3},{"l":"연가보상","p":3}],"2026-12-31":[{"l":"미국","p":2}]} /*EVENT_END*/;
   </script>
 
   <script>
@@ -301,9 +314,9 @@
       box.className = 'sh ' + (st.isWork ? 'work' : (st.override === 'vacation' ? '' : 'rest'));
 
       if (st.override === 'vacation') {
-        main.innerHTML = '휴가';
+        main.innerHTML = '오늘 <b>휴가</b>';
       } else {
-        main.innerHTML = st.label + ' <b>' + st.dayInBlock + '/' + (st.blockLen || 5) + '</b>일차';
+        main.innerHTML = '오늘 <b>' + st.label + '</b> · ' + st.dayInBlock + '/' + (st.blockLen || 5) + '일차';
       }
 
       var n = st.blockLen || 0, html = '';
@@ -348,7 +361,7 @@
         var st = shiftState(date);
         var k = dkey(date);
         var cls = 'cc';
-        if (st.override === 'vacation') cls += '';
+        if (st.override === 'vacation') cls += ' vac';
         else if (st.isWork) cls += ' work';
         else cls += ' rest';
         var wd = date.getDay();
@@ -356,6 +369,9 @@
         if (wd === 6) cls += ' sat';
         var isToday = (d === now.getDate());
         if (isToday) cls += ' today';
+
+        var stCls = st.override === 'vacation' ? 'v' : (st.isWork ? 'w' : 'r');
+        var stBadge = '<span class="cc-st ' + stCls + '">' + st.label + '</span>';
 
         var label = '';
         var ev = evmap[k];
@@ -365,11 +381,14 @@
           label = '<span class="cc-l">' + best.l + '</span>';
         }
 
+        var wxIco = (WX_CAL[k] || '');
+        var wxSpan = wxIco ? '<span class="cc-wx">' + wxIco + '</span>' : '';
         var badge = '';
         if (isToday && (st.blockLen || 0) > 0) badge = '<span class="cc-b">' + st.dayInBlock + '/' + st.blockLen + '</span>';
 
         html += '<div class="' + cls + '" data-d="' + k + '">' +
-                  '<div class="cc-top"><span class="cc-d">' + d + '</span>' + badge + '</div>' +
+                  '<div class="cc-top"><span class="cc-d">' + d + '</span>' + stBadge + '</div>' +
+                  ((wxSpan || badge) ? '<div class="cc-mid">' + wxSpan + badge + '</div>' : '') +
                   label + '</div>';
       }
 
@@ -443,14 +462,28 @@
     }
 
     var LIVE = { pa: {}, yc: {} };
+    var WX_CAL = {};
+    function wxEmoji(c) {
+      c = Number(c);
+      if (c === 0) return '☀️';
+      if (c === 1) return '🌤️';
+      if (c === 2) return '⛅';
+      if (c === 3) return '☁️';
+      if (c === 45 || c === 48) return '🌫️';
+      if (c >= 51 && c <= 57) return '🌦️';
+      if ((c >= 61 && c <= 67) || (c >= 80 && c <= 82)) return '🌧️';
+      if ((c >= 71 && c <= 77) || c === 85 || c === 86) return '❄️';
+      if (c >= 95) return '⛈️';
+      return '⛅';
+    }
 
     function refreshWeather() {
       var lat = WX.map(function (w) { return w.lat; }).join(',');
       var lon = WX.map(function (w) { return w.lon; }).join(',');
       getJSON('https://api.open-meteo.com/v1/forecast?latitude=' + lat + '&longitude=' + lon +
         '&current=temperature_2m,apparent_temperature,weather_code,relative_humidity_2m' +
-        '&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max' +
-        '&timezone=Asia%2FSeoul&forecast_days=1')
+        '&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max' +
+        '&timezone=Asia%2FSeoul&forecast_days=14')
         .then(function (res) {
           var list = Array.isArray(res) ? res : [res];
           var at = '';
@@ -467,6 +500,10 @@
             var s = sky(c.weather_code); if (s) $(w.key + 'Sky').textContent = s;
             if (lo !== null && hi !== null) $(w.key + 'Range').textContent = lo + ' ~ ' + hi + '℃ · 체감 ' + f + '℃';
             if (!at && c.time) at = c.time.slice(11, 16);
+            if (i === 0 && day.time && day.weather_code) {
+              for (var j = 0; j < day.time.length; j++) WX_CAL[day.time[j]] = wxEmoji(day.weather_code[j]);
+              renderCalendar();
+            }
           });
           if (at) $('wxStamp').textContent = at + ' 실시간';
           paintLiveRain();
