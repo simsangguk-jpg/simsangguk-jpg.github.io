@@ -1206,3 +1206,49 @@ input[type="date"].field,input[type="time"].field,input[type="datetime-local"].f
 .v17-sw i{position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.2);transition:.15s}
 .v17-sw.on{background:linear-gradient(135deg,#18AE7C,#0E8C63)}
 .v17-sw.on i{left:23px}
+/* 2026-11-27 · V19 가족 띠·별자리·맞춤 참고자료 & 매거진 */
+.fo9-tabs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin-bottom:10px}
+.fo9-tab{display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding:8px 10px;border-radius:12px;border:1.5px solid #E5DEFA;background:#FFFFFF;text-align:left;transition:.15s}
+.fo9-tab span{font-size:12.5px;font-weight:800;color:#27243A}
+.fo9-tab small{font-size:10.5px;font-weight:700;color:#6E6591}
+.fo9-tab.on{background:linear-gradient(135deg,#6D5AE6,#8B7CF6);border-color:#6D5AE6;box-shadow:0 4px 12px rgba(109,90,230,.22)}
+.fo9-tab.on span,.fo9-tab.on small{color:#FFFFFF}
+.fo9-spotlight{background:#FFFFFF;border:1.5px solid #E5DEFA;border-radius:14px;padding:12px;margin-bottom:10px}
+.fo9-sp-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:6px;margin-bottom:8px}
+.fo9-sp-badges{display:flex;flex-wrap:wrap;gap:5px}
+.fo9-pill{font-size:11px;font-weight:800;padding:3px 9px;border-radius:20px}
+.fo9-pill.z{background:#FFF4E5;color:#B45309}
+.fo9-pill.s{background:#EEF2FF;color:#4338CA}
+.fo9-pill.e{background:#ECFDF5;color:#047857}
+.fo9-sp-birth{font-size:11px;font-weight:700;color:#79838F}
+.fo9-combo{font-size:12.5px;font-weight:700;color:#2E2A4A;line-height:1.55;background:#F7F4FF;border-radius:10px;padding:8px 10px}
+.fo9-duo{display:grid;grid-template-columns:1fr;gap:8px;margin-top:8px}
+@media(min-width:640px){.fo9-duo{grid-template-columns:1fr 1fr}}
+.fo9-box{background:#FAFBFD;border:1px solid #E6EAF0;border-radius:12px;padding:10px}
+.fo9-box.star{background:#F6F8FF;border-color:#DCE4FF}
+.fo9-box b{display:block;font-size:12px;font-weight:800;color:#1F2937;margin-bottom:4px}
+.fo9-box p{margin:0 0 6px;font-size:12px;color:#374151;line-height:1.5}
+.fo9-refs{margin-top:10px;border-top:1px dashed #E5DEFA;padding-top:9px}
+.fo9-refs-h{font-size:12px;font-weight:800;color:#4C3BA6;margin-bottom:6px}
+.fo9-ref{background:#F9FAFB;border:1px solid #EAEEF2;border-radius:10px;padding:8px 10px;margin-bottom:6px}
+.fo9-ref:last-child{margin-bottom:0}
+.fo9-ref b{display:block;font-size:12px;font-weight:800;color:#14181D;margin-bottom:2px}
+.fo9-ref small{display:block;font-size:11.5px;color:#4B5563;line-height:1.5}
+.fo9-mini-list{display:flex;flex-direction:column;gap:5px;margin-bottom:10px}
+.fo9-mini{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:10px;background:#FAF8FF;border:1px solid #ECE7FA;font-size:11.5px;text-align:left;width:100%}
+.fo9-mini.on{border-color:#7C6BF2;background:#F1ECFF}
+.fo9-mini span{font-weight:800;color:#1F2937}
+.fo9-mini em{font-style:normal;color:#6B7280;font-weight:700;margin-left:auto}
+.fo9-mini b{color:#D97706;font-size:11px}
+.mag9-cats{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px}
+.mag9-cat{padding:5px 11px;border-radius:20px;font-size:11.5px;font-weight:800;background:#EDF4FC;color:#3B6699;border:1px solid #D5E6FA}
+.mag9-cat.on{background:#2563EB;color:#FFFFFF;border-color:#2563EB}
+.mag9-card{background:#FFFFFF;border:1px solid #DCEBFA;border-radius:13px;padding:11px 12px;margin-bottom:8px}
+.mag9-card:last-child{margin-bottom:0}
+.mag9-card b{display:block;font-size:13px;font-weight:800;color:#14181D;margin:4px 0}
+.mag9-card p{margin:0;font-size:12px;color:#3C4450;line-height:1.55}
+.mag9-quiz{margin-top:8px;display:flex;flex-direction:column;gap:6px}
+.mag9-qi{background:#F5F9FF;border:1px solid #DCE9FA;border-radius:10px;padding:8px 10px}
+.mag9-q{font-size:12px;font-weight:800;color:#1E3A5F;margin-bottom:5px}
+.mag9-qbtn{padding:4px 10px;border-radius:8px;font-size:11px;font-weight:800;background:#E0EEFF;color:#1D4ED8}
+.mag9-a{margin-top:6px;font-size:11.5px;font-weight:700;color:#065F46;background:#ECFDF5;border-radius:8px;padding:6px 8px}

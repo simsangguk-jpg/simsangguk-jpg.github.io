@@ -86,6 +86,30 @@
     y = zzYear(birth, y);
     return ZZ[(((y - 4) % 12) + 12) % 12];
   }
+  /* 2026-11-27 · 서양 12별자리 계산 */
+  var STARS = [
+    { n: '염소자리', e: '♑', from: '12-22', to: '01-19' },
+    { n: '물병자리', e: '♒', from: '01-20', to: '02-18' },
+    { n: '물고기자리', e: '♓', from: '02-19', to: '03-20' },
+    { n: '양자리', e: '♈', from: '03-21', to: '04-19' },
+    { n: '황소자리', e: '♉', from: '04-20', to: '05-20' },
+    { n: '쌍둥이자리', e: '♊', from: '05-21', to: '06-21' },
+    { n: '게자리', e: '♋', from: '06-22', to: '07-22' },
+    { n: '사자자리', e: '♌', from: '07-23', to: '08-22' },
+    { n: '처녀자리', e: '♍', from: '08-23', to: '09-22' },
+    { n: '천칭자리', e: '♎', from: '09-23', to: '10-22' },
+    { n: '전갈자리', e: '♏', from: '10-23', to: '11-22' },
+    { n: '사수자리', e: '♐', from: '11-23', to: '12-21' }
+  ];
+  function starSignOf(birth) {
+    var md = String(birth || '').slice(5, 10);
+    if (!/^\d\d-\d\d$/.test(md)) return null;
+    if (md >= '12-22' || md <= '01-19') return STARS[0];
+    for (var i = 1; i < STARS.length; i++) {
+      if (md >= STARS[i].from && md <= STARS[i].to) return STARS[i];
+    }
+    return null;
+  }
   function gradeOf(id) { return memField(id, 'grade'); }
   function clamp(v, a, b) { return v < a ? a : (v > b ? b : v); }
 
@@ -739,7 +763,8 @@
     return '<div class="fd9-skel"><span>⏳</span> ' + esc(what) + ' 불러오는 중…</div>';
   }
   function paintFeed() {
-    paintFortunes();   /* 같은 피드 파일(family_feed.json)의 fortunes 를 함께 그린다 — 추가 다운로드 없음 */
+    paintFortunes();   /* 같은 피드 파일(family_feed.json)의 fortunes·constellations·memberGuides·magazine 을 함께 그린다 */
+    paintMagazine();
     var d = feedCache && feedCache.data;
     var eBox = $('v9NewsBody'), lBox = $('v9LocalBody');
     var subE = $('v9NewsSub'), subL = $('v9LocalSub');
@@ -819,12 +844,14 @@
      · 위 ⑤ 피드와 같은 파일·같은 fetch 를 쓰므로 데이터 소모가 늘지 않는다.
      · 아침 6시 스케줄이 fortunes 만 갈아 끼우면 다음 날 화면에 새 운세가 뜬다.
    ============================================================ */
-  var fzAll = false;
+  var fzAll = false, starAll = false, fzSelId = null, magCat = '전체', quizOpen = {};
   function zzFam() {
     return memList().filter(function (m) { return m && m.id && birthOf(m.id); })
       .map(function (m) {
-        var z = zzOf(birthOf(m.id));
-        return z ? { id: m.id, name: m.name || '가족', emoji: m.emoji || '🧑', z: z } : null;
+        var b = birthOf(m.id);
+        var z = zzOf(b);
+        var st = starSignOf(b);
+        return z ? { id: m.id, name: m.name || '가족', role: m.role || '', emoji: m.emoji || '🧑', birth: b, z: z, star: st } : null;
       }).filter(function (x) { return !!x; });
   }
   function fzStars(n) {
@@ -837,41 +864,101 @@
     var f = feedCache && feedCache.data && feedCache.data.fortunes;
     return (f && f.zodiacs) ? f : null;
   }
+  function guideForMember(x, guides) {
+    if (!guides || !guides.length) return null;
+    for (var i = 0; i < guides.length; i++) {
+      var g = guides[i];
+      if ((x.role && g.key === x.role) || (x.birth && g.birth === x.birth) || (x.name && g.name.indexOf(x.name) >= 0)) return g;
+    }
+    return null;
+  }
   function paintFortunes() {
     var body = $('v9FortuneBody'), sub = $('v9FortuneDate');
     if (!body) return;
-    var f = fzFeed(), yk = todayYmd();
+    var f = fzFeed(), d = feedCache && feedCache.data, yk = todayYmd();
     if (!f) {
-      var busy = '<div class="fd9-skel"><span>⏳</span> 오늘의 띠 운세 불러오는 중…</div>';
+      var busy = '<div class="fd9-skel"><span>⏳</span> 우리 가족 띠·별자리 불러오는 중…</div>';
       if (body.__sig !== busy) { body.__sig = busy; body.innerHTML = busy; }
       if (sub && sub.textContent !== '불러오는 중') sub.textContent = '불러오는 중';
       return;
     }
     var zs = f.zodiacs, fam = zzFam();
+    var cs = (d && d.constellations) || {};
+    var guides = (d && d.memberGuides) || [];
     var dayTxt = fShort(f.date || yk);
     var html = '';
     if (fam.length) {
-      html = fam.map(function (x) {
+      var meObj = F && F.me && F.me();
+      if (!fzSelId || !fam.some(function (x) { return x.id === fzSelId; })) {
+        fzSelId = (meObj && fam.some(function (x) { return x.id === meObj.id; })) ? meObj.id : fam[0].id;
+      }
+      /* ① 가족 전원 띠·별자리 선택 탭 */
+      html += '<div class="fo9-tabs">' + fam.map(function (x) {
+        var active = x.id === fzSelId;
+        return '<button type="button" class="fo9-tab' + (active ? ' on' : '') + '" data-fmem="' + esc(x.id) + '">' +
+          '<span>' + esc(x.emoji) + ' ' + esc(x.name) + '</span>' +
+          '<small>' + x.z.e + x.z.n + ' · ' + (x.star ? x.star.e + x.star.n : '') + '</small>' +
+          '</button>';
+      }).join('') + '</div>';
+      /* ② 선택된 가족의 띠 + 별자리 + 조합 스토리 + 맞춤 참고 자료 */
+      var cur = fam.filter(function (x) { return x.id === fzSelId; })[0] || fam[0];
+      var zo = zs[cur.z.n];
+      var so = cur.star ? cs[cur.star.n] : null;
+      var mg = guideForMember(cur, guides);
+      html += '<div class="fo9-spotlight">' +
+        '<div class="fo9-sp-head">' +
+          '<div class="fo9-sp-badges">' +
+            '<span class="fo9-pill z">' + cur.z.e + ' ' + esc(cur.z.n) + '띠</span>' +
+            (cur.star ? '<span class="fo9-pill s">' + cur.star.e + ' ' + esc(cur.star.n) + (so && so.range ? ' (' + esc(so.range) + ')' : '') + '</span>' : '') +
+            (so && so.elem ? '<span class="fo9-pill e">✨ ' + esc(so.elem) + '의 기운</span>' : '') +
+          '</div>' +
+          '<div class="fo9-sp-birth">🎂 ' + esc(cur.birth) + '</div>' +
+        '</div>' +
+        (mg && mg.combo ? '<div class="fo9-combo">' + esc(mg.combo) + '</div>' : '') +
+        (mg && mg.strengths && mg.strengths.length ? '<div class="fo9-chips" style="margin:6px 0 8px">' + mg.strengths.map(function (st) {
+          return '<span class="fo9-chip">💫 ' + esc(st) + '</span>';
+        }).join('') + '</div>' : '') +
+        '<div class="fo9-duo">' +
+          '<div class="fo9-box">' +
+            '<b>' + cur.z.e + ' 오늘의 ' + esc(cur.z.n) + '띠 운세</b>' +
+            (zo ? '<p>' + esc(zo.summary || '') + '</p>' +
+              '<div class="fo9-chips">' +
+              '<span class="fo9-chip">' + esc(fzStars(zo.luck)) + '</span>' +
+              (zo.color ? '<span class="fo9-chip"><i class="fo9-dot" style="background:' + esc(zo.hex || '#CBD5E1') + '"></i>' + esc(zo.color) + '</span>' : '') +
+              (zo.num ? '<span class="fo9-chip">🔢 ' + esc(zo.num) + '</span>' : '') +
+              '</div>' : '<p>오늘 운세 준비 중이에요.</p>') +
+          '</div>' +
+          (cur.star && so ? '<div class="fo9-box star">' +
+            '<b>' + cur.star.e + ' ' + esc(cur.star.n) + ' 오늘 &amp; 성향</b>' +
+            '<p>' + esc(so.today || '') + '</p>' +
+            '<div class="fo9-chips">' +
+            '<span class="fo9-chip">💡 ' + esc(so.trait || '') + '</span>' +
+            (so.item ? '<span class="fo9-chip">🍀 ' + esc(so.item) + '</span>' : '') +
+            (so.match ? '<span class="fo9-chip">💞 궁합: ' + esc(so.match) + '</span>' : '') +
+            '</div></div>' : '') +
+        '</div>' +
+        (mg && mg.refs && mg.refs.length ? '<div class="fo9-refs"><div class="fo9-refs-h">📚 ' + esc(cur.name) + ' 맞춤 참고 자료</div>' +
+          mg.refs.map(function (r) {
+            return '<div class="fo9-ref"><b>' + esc(r.t) + '</b><small>' + esc(r.m) + '</small></div>';
+          }).join('') + '</div>' : '') +
+      '</div>';
+      /* ③ 나머지 가족 한줄 요약 */
+      html += '<div class="fo9-mini-list">' + fam.map(function (x) {
         var o = zs[x.z.n];
-        return '<div class="fo9-row">' +
-          '<span class="fo9-badge">' + x.z.e + '</span>' +
-          '<div class="fo9-t"><b>' + esc(x.emoji) + ' ' + esc(x.name) + '<i>' + esc(x.z.n) + '띠</i></b>' +
-          (o
-            ? '<small>' + esc(o.summary || '') + '</small>' +
-              '<span class="fo9-chips">' +
-              '<span class="fo9-chip">' + esc(fzStars(o.luck)) + '</span>' +
-              (o.color ? '<span class="fo9-chip"><i class="fo9-dot" style="background:' + esc(o.hex || '#CBD5E1') + '"></i>' + esc(o.color) + '</span>' : '') +
-              (o.num ? '<span class="fo9-chip">🔢 ' + esc(o.num) + '</span>' : '') +
-              '</span>'
-            : '<small>이 띠의 오늘 운세는 아직 없어요 — 아침 6시에 새로 올라와요.</small>') +
-          '</div></div>';
-      }).join('');
+        return '<button type="button" class="fo9-mini' + (x.id === fzSelId ? ' on' : '') + '" data-fmem="' + esc(x.id) + '">' +
+          '<span>' + esc(x.emoji) + ' ' + esc(x.name) + '</span>' +
+          '<em>' + x.z.e + x.z.n + ' · ' + (x.star ? x.star.e + x.star.n : '') + '</em>' +
+          '<b>' + (o ? esc(fzStars(o.luck)) : '') + '</b>' +
+        '</button>';
+      }).join('') + '</div>';
     } else {
-      html = '<div class="v4-empty">🎂 가족 생일을 등록하면 각자의 띠와 오늘 운세가 여기 나와요.' +
+      html = '<div class="v4-empty">🎂 가족 생일을 등록하면 각자의 띠·별자리와 맞춤 자료가 여기 나와요.' +
         '<div style="margin-top:8px;display:flex;justify-content:center"><button type="button" class="btn soft" data-v9fbirth="1" style="width:auto;min-height:0;height:auto;padding:8px 14px;font-size:12px;border-radius:11px">🎂 가족 생일 등록</button></div></div>';
     }
-    html += '<div class="fo9-foot"><button type="button" class="btn soft" id="v9FzAll" style="padding:9px 12px;font-size:12.5px">' +
-      (fzAll ? '전체 12띠 접기' : '전체 12띠 보기') + '</button></div>';
+    html += '<div class="fo9-foot" style="display:flex;gap:6px">' +
+      '<button type="button" class="btn soft" id="v9FzAll" style="flex:1;padding:9px 8px;font-size:12px">' + (fzAll ? '12띠 접기' : '🐲 전체 12띠') + '</button>' +
+      '<button type="button" class="btn soft" id="v9StarAll" style="flex:1;padding:9px 8px;font-size:12px">' + (starAll ? '12별자리 접기' : '✨ 전체 12별자리') + '</button>' +
+      '</div>';
     if (fzAll) {
       html += '<div class="fo9-all">' + ZZ.map(function (z) {
         var o = zs[z.n] || {};
@@ -882,13 +969,64 @@
           '<span class="st">' + (o.luck ? esc(fzStars(o.luck)) : '') + '</span></div>';
       }).join('') + '</div>';
     }
+    if (starAll) {
+      html += '<div class="fo9-all">' + STARS.map(function (st) {
+        var o = cs[st.n] || {};
+        var mine = fam.some(function (x) { return x.star && x.star.n === st.n; });
+        return '<div class="fo9-line' + (mine ? ' mine' : '') + '">' +
+          '<span class="zz">' + st.e + '</span><b>' + esc(st.n.replace('자리', '')) + '</b>' +
+          '<small>' + esc((o.range ? '[' + o.range + '] ' : '') + (o.today || o.trait || '–')) + '</small>' +
+          '<span class="st">' + esc(o.elem || '') + '</span></div>';
+      }).join('') + '</div>';
+    }
     if (String(f.date || '') !== yk) {
       html += '<div class="hint">📴 ' + esc(dayTxt) + ' 운세예요. 새 운세는 매일 아침 6시에 올라와요.</div>';
     }
     if (body.__sig !== html) { body.__sig = html; body.innerHTML = html; }
     if (sub) {
-      var t = dayTxt + ' · 12띠';
+      var t = dayTxt + ' · 띠·별자리';
       if (sub.textContent !== t) sub.textContent = t;
+    }
+  }
+  function paintMagazine() {
+    var body = $('v9MagBody'), sub = $('v9MagSub');
+    if (!body) return;
+    var list = (feedCache && feedCache.data && feedCache.data.magazine) || [];
+    if (!list.length) {
+      var busy = '<div class="fd9-skel"><span>⏳</span> 가족 매거진 불러오는 중…</div>';
+      if (body.__sig !== busy) { body.__sig = busy; body.innerHTML = busy; }
+      return;
+    }
+    var cats = ['전체'];
+    list.forEach(function (x) { if (x.c && cats.indexOf(x.c) < 0) cats.push(x.c); });
+    var filtered = magCat === '전체' ? list : list.filter(function (x) { return x.c === magCat; });
+    var html = '<div class="mag9-cats">' + cats.map(function (c) {
+      return '<button type="button" class="mag9-cat' + (c === magCat ? ' on' : '') + '" data-magcat="' + esc(c) + '">' + esc(c) + '</button>';
+    }).join('') + '</div>';
+    html += filtered.map(function (x, idx) {
+      var qHtml = '';
+      if (x.quiz && x.quiz.length) {
+        qHtml = '<div class="mag9-quiz">' + x.quiz.map(function (q, qi) {
+          var qid = magCat + ':' + idx + ':' + qi;
+          var open = !!quizOpen[qid];
+          return '<div class="mag9-qi">' +
+            '<div class="mag9-q">' + esc(q.q) + '</div>' +
+            '<button type="button" class="mag9-qbtn" data-quiztoggle="' + esc(qid) + '">' + (open ? '🙈 정답 가리기' : '💡 정답 보기') + '</button>' +
+            (open ? '<div class="mag9-a">' + esc(q.a) + '</div>' : '') +
+          '</div>';
+        }).join('') + '</div>';
+      }
+      return '<div class="mag9-card">' +
+        (x.c ? '<span class="fd9-tag">' + esc(x.c) + '</span>' : '') +
+        '<b>' + esc(x.t || '') + '</b>' +
+        '<p>' + esc(x.m || '') + '</p>' +
+        qHtml +
+      '</div>';
+    }).join('');
+    if (body.__sig !== html) { body.__sig = html; body.innerHTML = html; }
+    if (sub) {
+      var st = list.length + '편 · 읽을거리';
+      if (sub.textContent !== st) sub.textContent = st;
     }
   }
   /* 홈 꾸미기 순서(layout.order)에 이 카드가 아직 없으면 디데이 바로 아래에 둔다.
@@ -905,14 +1043,46 @@
       home.appendChild(fz);
     }
   }
-  function renderFortunes() { paintFortunes(); }
+  function renderFortunes() { paintFortunes(); paintMagazine(); }
   function wireFortunes() {
     document.addEventListener('click', function (e) {
-      if (e.target.closest('#v9FzAll')) {
-        fzAll = !fzAll;
+      var mb = e.target.closest('[data-fmem]');
+      if (mb) {
+        fzSelId = mb.getAttribute('data-fmem');
         var b = $('v9FortuneBody');
         if (b) b.__sig = null;
         paintFortunes();
+        return;
+      }
+      if (e.target.closest('#v9FzAll')) {
+        fzAll = !fzAll;
+        var b1 = $('v9FortuneBody');
+        if (b1) b1.__sig = null;
+        paintFortunes();
+        return;
+      }
+      if (e.target.closest('#v9StarAll')) {
+        starAll = !starAll;
+        var b2 = $('v9FortuneBody');
+        if (b2) b2.__sig = null;
+        paintFortunes();
+        return;
+      }
+      var mc = e.target.closest('[data-magcat]');
+      if (mc) {
+        magCat = mc.getAttribute('data-magcat') || '전체';
+        var mbd = $('v9MagBody');
+        if (mbd) mbd.__sig = null;
+        paintMagazine();
+        return;
+      }
+      var qt = e.target.closest('[data-quiztoggle]');
+      if (qt) {
+        var qid = qt.getAttribute('data-quiztoggle');
+        quizOpen[qid] = !quizOpen[qid];
+        var mbd2 = $('v9MagBody');
+        if (mbd2) mbd2.__sig = null;
+        paintMagazine();
         return;
       }
       if (e.target.closest('[data-v9fbirth]')) {
@@ -1217,7 +1387,8 @@
     { id: 'famCalBanner', n: '📅 우리가족 달력' },
     { id: 'v9ShiftCard', n: '🗓️ 근무표·등교표' },
     { id: 'v9DdayCard', n: '🎂 가족 디데이' },
-    { id: 'v9FortuneCard', n: '🐲 오늘 우리 가족 띠 운세' },
+    { id: 'v9FortuneCard', n: '🐲✨ 우리 가족 띠·별자리 & 맞춤 자료' },
+    { id: 'v9MagCard', n: '📰✨ 우리 가족 재미있는 정보 매거진' },
     { id: 'v17PraiseCard', n: '🌟 저 잘했어요!' },
     { id: 'v17MoneyCard', n: '💰 용돈 한눈에' },
     { id: 'briefCard', n: '☀️ 날씨·옷차림' },
@@ -2312,9 +2483,18 @@
       fz.id = 'v9FortuneCard';
       fz.className = 'card';
       fz.style.cssText = 'border:1.5px solid #E3DCF7;background:linear-gradient(180deg,#F8F4FF,#FFFFFF)';
-      fz.innerHTML = '<div class="card-head"><h2>🐲 오늘 우리 가족 띠 운세</h2><span class="sub" id="v9FortuneDate">–</span></div><div id="v9FortuneBody"></div>';
+      fz.innerHTML = '<div class="card-head"><h2>🐲✨ 우리 가족 띠·별자리 &amp; 맞춤 자료</h2><span class="sub" id="v9FortuneDate">–</span></div><div id="v9FortuneBody"></div>';
       var ddC = $('v9DdayCard');
       insHome(home, fz, (ddC && ddC.parentNode === home) ? ddC.nextSibling : null);
+    }
+    if (!$('v9MagCard')) {
+      var mg = document.createElement('div');
+      mg.id = 'v9MagCard';
+      mg.className = 'card';
+      mg.style.cssText = 'border:1.5px solid #D8EBFF;background:linear-gradient(180deg,#F3F9FF,#FFFFFF)';
+      mg.innerHTML = '<div class="card-head"><h2>📰✨ 우리 가족 재미있는 정보 매거진</h2><span class="sub" id="v9MagSub">–</span></div><div id="v9MagBody"></div>';
+      var fzC = $('v9FortuneCard');
+      insHome(home, mg, (fzC && fzC.parentNode === home) ? fzC.nextSibling : null);
     }
     mk('v9GoalsCard', 'card', '<div class="card-head"><h2>🎯 우리 가족 목표 배너</h2><span class="sub">이번 주 · 이번 달 · 장래희망</span></div><div id="v9GoalsBody"></div>');
     mk('v9SleepCard', 'card', '<div class="card-head"><h2>😴 수면·피로도·에너지</h2><span class="sub">원터치 기록 · 자동 추정</span></div><div id="v9SleepBody"></div>');

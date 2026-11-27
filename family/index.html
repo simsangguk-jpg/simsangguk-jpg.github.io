@@ -3380,24 +3380,44 @@ function autoRefreshMyLoc() {
 }
 
 /* ---------------- 날씨 ---------------- */
-/* 날씨 지역은 코드에 적지 않는다.
-   ① 가족 저장소(DOC.v9.wxPlaces)에 저장된 지역  ② 지금 위치를 공유한 구성원의 위치 */
+/* 2026-11-27 · 기본 지역(파주 집 · 연천 근무지)을 설정 없이도 항상 표시 + 사용자 저장 지역 병합 */
+var WX_DEFAULT_PLACES = [
+  { id: 'def-paju', name: '🏠 파주 집', sub: '파주 다율동', lat: 37.7219, lon: 126.7376 },
+  { id: 'def-yeoncheon', name: '🎖️ 연천 근무지', sub: '연천 중면·합수리', lat: 38.1853, lon: 127.0012 }
+];
 var wxGeoOnce = false;
+var wxLiveLoc = null;   /* { lat, lon, addr, at } */
 function wxSavedPlaces() {
-  var out = [];
+  var out = WX_DEFAULT_PLACES.map(function (d) { return Object.assign({}, d); });
   var st = DOC && DOC.v9 && DOC.v9.wxPlaces;
   if (st && typeof st === 'object') {
     Object.keys(st).forEach(function (k) {
       var p = st[k];
       if (p && !p.d && typeof p.lat === 'number' && typeof p.lon === 'number') {
-        out.push({ id: k, name: p.name || '저장한 지역', lat: p.lat, lon: p.lon });
+        var dup = out.some(function (x) {
+          return Math.abs(x.lat - p.lat) < 0.015 && Math.abs(x.lon - p.lon) < 0.015;
+        });
+        if (!dup) out.push({ id: k, name: p.name || '저장한 지역', sub: p.sub || '', lat: p.lat, lon: p.lon });
       }
     });
   }
   return out;
 }
 function symInfo(s) {
-  s = String(s || '').toLowerCase();
+  var raw = String(s === undefined || s === null ? '' : s).trim();
+  if (/^\d+$/.test(raw)) {
+    var n = Number(raw);
+    if (n === 0) return { e: '☀️', t: '맑음' };
+    if (n === 1) return { e: '🌤️', t: '대체로 맑음' };
+    if (n === 2) return { e: '⛅', t: '구름 조금' };
+    if (n === 3) return { e: '☁️', t: '흐림' };
+    if (n === 45 || n === 48) return { e: '🌫️', t: '안개' };
+    if ((n >= 51 && n <= 57)) return { e: '🌦️', t: '이슬비' };
+    if ((n >= 61 && n <= 67) || (n >= 80 && n <= 82)) return { e: '🌧️', t: '비' };
+    if ((n >= 71 && n <= 77) || n === 85 || n === 86) return { e: '❄️', t: '눈' };
+    if (n >= 95) return { e: '⛈️', t: '천둥·번개' };
+  }
+  s = raw.toLowerCase();
   if (s.indexOf('thunder') >= 0) return { e: '⛈️', t: '천둥·번개' };
   if (s.indexOf('sleet') >= 0) return { e: '🌨️', t: '진눈깨비' };
   if (s.indexOf('snow') >= 0) return { e: '❄️', t: '눈' };
@@ -3445,6 +3465,7 @@ function wxMetno(p) {
     }
     return {
       name: p.name,
+      sub: p.sub || '',
       temp: Math.round(cur.data.instant.details.air_temperature),
       code: code,
       min: temps.length ? Math.round(Math.min.apply(null, temps)) : null,
@@ -3460,6 +3481,7 @@ function wxWttr(p) {
     var d0 = j.weather[0];
     return {
       name: p.name,
+      sub: p.sub || '',
       temp: Math.round(Number(c.temp_C)),
       code: (c.weatherDesc && c.weatherDesc[0] && c.weatherDesc[0].value) || '',
       min: Math.round(Number(d0.mintempC)),
@@ -3467,13 +3489,14 @@ function wxWttr(p) {
     };
   });
 }
-/* 3순위: open-meteo */
+/* 1순위: open-meteo (빠르고 WMO 코드 정확) */
 function wxOpenMeteo(p) {
   var url = 'https://api.open-meteo.com/v1/forecast?latitude=' + p.lat + '&longitude=' + p.lon +
     '&current=temperature_2m,weather_code&daily=temperature_2m_max,temperature_2m_min&timezone=Asia%2FSeoul&forecast_days=1';
   return wxFetch(url, 8000).then(function (j) {
     return {
       name: p.name,
+      sub: p.sub || '',
       temp: Math.round(j.current.temperature_2m),
       code: String(j.current.weather_code),
       min: Math.round(j.daily.temperature_2m_min[0]),
@@ -3481,45 +3504,71 @@ function wxOpenMeteo(p) {
     };
   });
 }
+function wxRevGeo(lat, lon) {
+  var url = 'https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=' + lat + '&longitude=' + lon + '&localityLanguage=ko';
+  return wxFetch(url, 4000).then(function (j) {
+    var city = (j && (j.city || j.principalSubdivision || '')).replace(/(특별시|광역시|특별자치시|도)$/g, '').trim();
+    var loc = (j && (j.locality || '')).trim();
+    var parts = [];
+    if (city) parts.push(city);
+    if (loc && loc !== city) parts.push(loc);
+    return parts.join(' ') || '실시간 위치';
+  }).catch(function () { return '실시간 위치'; });
+}
 function placeWeather(p) {
-  return wxMetno(p).catch(function () { return wxWttr(p); })
-    .catch(function () { return wxOpenMeteo(p); })
-    .catch(function () { return { name: p.name, err: true }; });
+  return wxOpenMeteo(p).catch(function () { return wxMetno(p); })
+    .catch(function () { return wxWttr(p); })
+    .catch(function () { return { name: p.name, sub: p.sub || '', err: true }; });
 }
 function paintWeatherNone() {
   var row = $('wxRow');
   if (!row) return;
-  row.innerHTML = '<div class="wx-chip"><div class="p">날씨</div><div class="t">–</div><div class="d">위치를 공유하면 보여요</div></div>';
+  row.innerHTML = '<div class="wx-chip"><div class="p">날씨</div><div class="t">–</div><div class="d">불러오는 중</div></div>';
 }
 function paintWeather(list) {
   var row = $('wxRow');
+  if (!row) return;
   row.innerHTML = list.map(function (w) {
+    var subHtml = w.sub ? '<div style="font-size:10px;opacity:.82;font-weight:700;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + esc(w.sub) + '</div>' : '';
     if (w.err) {
-      return '<div class="wx-chip"><div class="p">' + esc(w.name) + '</div><div class="t">—</div><div class="d">날씨 확인 안 됨</div></div>';
+      return '<div class="wx-chip"><div class="p">' + esc(w.name) + '</div>' + subHtml + '<div class="t">—</div><div class="d">확인 중</div></div>';
     }
     var m = symInfo(w.code);
-    var range = (w.min !== null && w.min !== undefined && w.max !== null) ? (' <span style="opacity:.8">' + w.min + '~' + w.max + '°</span>') : '';
-    return '<div class="wx-chip"><div class="p">' + esc(w.name) + '</div>' +
+    var range = (w.min !== null && w.min !== undefined && w.max !== null) ? (' <span style="opacity:.85">' + w.min + '~' + w.max + '°</span>') : '';
+    return '<div class="wx-chip"><div class="p">' + esc(w.name) + '</div>' + subHtml +
       '<div class="t">' + m.e + ' ' + w.temp + '°</div>' +
       '<div class="d">' + m.t + range + '</div></div>';
   }).join('');
 }
 function loadWeather() {
   var places = wxSavedPlaces();
-  var mine = DOC && DOC.live && DOC.live[ME.id];
-  if (mine && mine.at && (Date.now() - mine.at) < 1000 * 3600 * 3) {
-    places.push({ id: 'here', name: '내 위치', lat: mine.lat, lon: mine.lon });
+  var mine = (DOC && DOC.live && ME && DOC.live[ME.id]) || null;
+  var liveP = (wxLiveLoc && (Date.now() - wxLiveLoc.at) < 1000 * 600)
+    ? wxLiveLoc
+    : (mine && mine.at && (Date.now() - mine.at) < 1000 * 3600 * 3 ? { lat: mine.lat, lon: mine.lon, addr: mine.place || '실시간 위치' } : null);
+  if (liveP) {
+    places.push({ id: 'here', name: '📍 현재 위치', sub: liveP.addr || '실시간 위치', lat: liveP.lat, lon: liveP.lon });
   }
-  if (!places.length) {
-    paintWeatherNone();
-    if (!wxGeoOnce) { wxGeoOnce = true; pushMyLocation(true); }   /* 위치를 한 번만 조용히 확인 */
-    return;
-  }
-  wxGeoOnce = true;
   Promise.all(places.map(placeWeather)).then(function (list) {
     wxCache = list; wxAt = Date.now();
     paintWeather(list);
   });
+  if (!wxGeoOnce && navigator.geolocation) {
+    wxGeoOnce = true;
+    navigator.geolocation.getCurrentPosition(function (pos) {
+      var lat = Math.round(pos.coords.latitude * 10000) / 10000;
+      var lon = Math.round(pos.coords.longitude * 10000) / 10000;
+      wxRevGeo(lat, lon).then(function (addr) {
+        wxLiveLoc = { lat: lat, lon: lon, addr: addr, at: Date.now() };
+        var p2 = wxSavedPlaces();
+        p2.push({ id: 'here', name: '📍 현재 위치', sub: addr + ' · 실시간', lat: lat, lon: lon });
+        Promise.all(p2.map(placeWeather)).then(function (list) {
+          wxCache = list; wxAt = Date.now();
+          paintWeather(list);
+        });
+      });
+    }, function () {}, { enableHighAccuracy: false, timeout: 4500, maximumAge: 180000 });
+  }
 }
 
 /* ---------------- 설치 ---------------- */
