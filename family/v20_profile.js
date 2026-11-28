@@ -307,6 +307,102 @@
         { q:'가족이나 주변 사람들과 대화하고 싶은 정도는?', opts:[{ l:'수다 떨고 장난치고 싶어!', s:20 },{ l:'다정하게 안부 나누고 싶어', s:16 },{ l:'필요한 말만 짧게 하고 싶어', s:10 },{ l:'잠깐 혼자만의 시간이 필요해', s:5 }] },
         { q:'오늘 나 자신에게 점수를 준다면?', opts:[{ l:'오늘 나 정말 멋지다! 최고!', s:20 },{ l:'열심히 잘 해내고 있어', s:16 },{ l:'조금 아쉽지만 괜찮아', s:11 },{ l:'토닥토닥 위로가 필요해', s:6 }] }
       ]
+    },
+    talk: {
+      title: '💬 대화 · 소통 스타일 테스트 (6문항)',
+      sub: '내가 가족과 대화할 때 가장 편안한 말투와 방식은?',
+      qs: [
+        { q:'가족에게 중요한 이야기를 꺼낼 때 나는?', opts:[
+          { l:'핵심 결론부터 딱! 명확하게 말한다', k:'direct' },
+          { l:'상대 기분 살피면서 부드럽게 말한다', k:'warm' },
+          { l:'농담 섞어 웃기면서 자연스럽게 말한다', k:'humor' },
+          { l:'머릿속으로 정리한 뒤 차분하게 말한다', k:'calm' }
+        ]},
+        { q:'가족이 고민을 말할 때 나의 반응은?', opts:[
+          { l:'"이건 이렇게 해결하면 돼!" 답을 준다', k:'direct' },
+          { l:'"그랬구나, 많이 힘들었겠다" 고개를 끄덕인다', k:'warm' },
+          { l:'"에이 그건 별거 아니지~" 분위기 띄워준다', k:'humor' },
+          { l:'끝까지 조용히 듣고 핵심을 짚어준다', k:'calm' }
+        ]},
+        { q:'가족 단체 톡방에서 내 스타일은?', opts:[
+          { l:'필요한 일정·공지 딱 보내고 끝!', k:'direct' },
+          { l:'하트·응원 이모티콘 자주 보낸다', k:'warm' },
+          { l:'웃긴 사진이나 짤·드립을 날린다', k:'humor' },
+          { l:'읽고 필요할 때만 깔끔하게 답한다', k:'calm' }
+        ]},
+        { q:'서운한 일이 생겼을 때 나는?', opts:[
+          { l:'바로 말해서 풀어야 속이 후련하다', k:'direct' },
+          { l:'상대가 상처받을까 봐 조심스레 말한다', k:'warm' },
+          { l:'장난스럽게 툭 던지며 넘기는 편', k:'humor' },
+          { l:'시간을 두고 생각을 정리한 뒤 얘기한다', k:'calm' }
+        ]},
+        { q:'가족에게 가장 듣고 싶은 말은?', opts:[
+          { l:'"역시 정확하고 믿음직해!"', k:'direct' },
+          { l:'"네가 있어서 마음이 참 따뜻해"', k:'warm' },
+          { l:'"너랑 얘기하면 시간 가는 줄 몰라ㅋㅋ"', k:'humor' },
+          { l:'"너는 참 사려 깊고 든든해"', k:'calm' }
+        ]},
+        { q:'대화할 때 내가 가장 중요하게 여기는 건?', opts:[
+          { l:'시간 낭비 없이 빠르고 정확한 소통', k:'direct' },
+          { l:'서로의 마음을 다치지 않게 하는 배려', k:'warm' },
+          { l:'웃음과 유쾌한 에너지', k:'humor' },
+          { l:'진중하고 깊이 있는 이해', k:'calm' }
+        ]}
+      ],
+      res: {
+        direct: { badge:'💬 직진 해결형', d:'군더더기 없이 핵심을 딱 짚어주는 시원시원한 소통가! 결론부터 말하면 가장 잘 통합니다.' },
+        warm:   { badge:'💛 다정 경청형', d:'상대의 마음과 감정을 먼저 어루만져 주는 따뜻한 소통가! 진심 어린 공감이 큰 힘이 됩니다.' },
+        humor:  { badge:'😄 유쾌 드립형', d:'어떤 상황에서도 웃음을 만들어 내는 분위기 메이커! 가벼운 농담으로 긴장을 잘 풀어줘요.' },
+        calm:   { badge:'🧘 신중 관찰형', d:'먼저 끝까지 듣고 깊이 생각해 꼭 필요한 한마디를 건네는 믿음직한 소통가입니다.' }
+      }
+    },
+    talent: {
+      title: '🎯 나만의 강점 · 재능 TOP 테스트 (6문항)',
+      sub: '내가 가장 잘하고 빛나는 핵심 강점은 무엇일까?',
+      qs: [
+        { q:'새로운 도전을 시작할 때 내 가장 큰 무기는?', opts:[
+          { l:'망설이지 않는 빠른 실행력', k:'drive' },
+          { l:'주변 사람을 내 편으로 만드는 친화력', k:'empathy' },
+          { l:'남들이 못 보는 기발한 아이디어', k:'creative' },
+          { l:'실수 없이 챙기는 꼼꼼한 분석력', k:'detail' }
+        ]},
+        { q:'친구들이나 가족이 나에게 자주 부탁하는 건?', opts:[
+          { l:'"이거 어떻게 추진하지? 총대 좀 매줘!"', k:'drive' },
+          { l:'"내 얘기 좀 들어줄래? 고민 있어"', k:'empathy' },
+          { l:'"새로운 거 뭐 재밌는 거 없을까?"', k:'creative' },
+          { l:'"이거 계산·비교 좀 정확히 봐줘"', k:'detail' }
+        ]},
+        { q:'어려운 과제를 만났을 때 내가 빛나는 순간은?', opts:[
+          { l:'위기 상황에서 빠르게 결단 내릴 때', k:'drive' },
+          { l:'팀이나 가족이 뭉치게 분위기를 모을 때', k:'empathy' },
+          { l:'막힌 문제에 색다른 해법을 찾을 때', k:'creative' },
+          { l:'숨은 오류나 빠진 부분을 찾아낼 때', k:'detail' }
+        ]},
+        { q:'내가 배울 때 가장 빨리 느는 분야는?', opts:[
+          { l:'목표와 보상이 뚜렷한 실전 기술', k:'drive' },
+          { l:'사람과 어울리고 소통하는 활동', k:'empathy' },
+          { l:'만들기·그림·기획 같은 창작 활동', k:'creative' },
+          { l:'규칙·원리·데이터를 다루는 분야', k:'detail' }
+        ]},
+        { q:'여행을 갈 때 내가 자연스럽게 맡는 파트는?', opts:[
+          { l:'동선 리드하고 현장 진행하기', k:'drive' },
+          { l:'다들 불편한 데 없나 컨디션 챙기기', k:'empathy' },
+          { l:'예쁜 사진 포인트·이색 코스 찾기', k:'creative' },
+          { l:'예산·예약·준비물 리스트 완벽 점검', k:'detail' }
+        ]},
+        { q:'10년 뒤 내가 가장 듣고 싶은 평가는?', opts:[
+          { l:'"못 해내는 게 없는 진짜 능력자"', k:'drive' },
+          { l:'"누구나 곁에 두고 싶어 하는 따뜻한 사람"', k:'empathy' },
+          { l:'"늘 새롭고 멋진 걸 만들어 내는 사람"', k:'creative' },
+          { l:'"믿고 맡기면 빈틈이 없는 전문가"', k:'detail' }
+        ]}
+      ],
+      res: {
+        drive:    { badge:'🚀 추진력 대장', d:'목표를 세우면 행동으로 옮겨 결과를 만들어 내는 강력한 실행력의 소유자!' },
+        empathy:  { badge:'🤝 공감 천재', d:'사람의 마음을 읽고 하나로 모으는 따뜻한 리더십과 친화력이 최고의 무기!' },
+        creative: { badge:'🎨 창의력 뱅크', d:'고정관념을 깨고 새로운 재미와 아이디어를 뿜어내는 타고난 크리에이터!' },
+        detail:   { badge:'🔍 꼼꼼 마스터', d:'작은 디테일과 데이터를 놓치지 않고 완성도를 끝까지 끌어올리는 해결사!' }
+      }
     }
   };
 
@@ -350,6 +446,8 @@
         '<button type="button" class="v20-qbtn q-temper" data-test="temper">🔥 기질 테스트</button>' +
         '<button type="button" class="v20-qbtn q-role" data-test="role">🏡 가족역할</button>' +
         '<button type="button" class="v20-qbtn q-mind" data-test="mind">🌤️ 마음날씨</button>' +
+        '<button type="button" class="v20-qbtn q-talk" data-test="talk">💬 소통스타일</button>' +
+        '<button type="button" class="v20-qbtn q-talent" data-test="talent">🎯 강점·재능</button>' +
       '</div>' +
       '<div class="v20-grid">';
 
@@ -378,7 +476,9 @@
       if (ps.temper && ps.temper.badge) traits += '<span class="v20-trait t-temp">' + esc(ps.temper.badge) + '</span>';
       if (ps.role && ps.role.badge) traits += '<span class="v20-trait t-role">' + esc(ps.role.badge) + '</span>';
       if (ps.mind && ps.mind.score != null) traits += '<span class="v20-trait t-mind">' + esc(ps.mind.icon || '🌤️') + ' 마음 ' + esc(ps.mind.score) + '점</span>';
-      if (!traits) traits = '<span class="v20-trait t-empty">✨ 위 심리검사를 눌러 특징을 채워보세요!</span>';
+      if (ps.talk && ps.talk.badge) traits += '<span class="v20-trait t-talk">' + esc(ps.talk.badge) + '</span>';
+      if (ps.talent && ps.talent.badge) traits += '<span class="v20-trait t-talent">' + esc(ps.talent.badge) + '</span>';
+      if (!traits) traits = '<span class="v20-trait t-empty">✨ 위 심리검사 6종으로 내 특징을 채워보세요!</span>';
 
       var bodySpec = [];
       if (p.height) bodySpec.push(esc(p.height) + 'cm');
@@ -447,7 +547,18 @@
     });
   }
 
-  /* ── 모달 유틸 ── */
+  /* ── 모달 유틸 (화면 정중앙 새 창 고정 + 스크롤 잠금) ── */
+  function closeModal() {
+    var m = $('v20Modal');
+    if (m) m.classList.add('hidden');
+    document.body.style.overflow = '';
+  }
+  function openModalBox() {
+    var m = ensureModal();
+    m.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+    return m;
+  }
   function ensureModal() {
     var m = $('v20Modal');
     if (m) return m;
@@ -456,8 +567,8 @@
     m.className = 'v20-modal hidden';
     m.innerHTML = '<div class="v20-modal-box"><div class="v20-modal-hd"><strong id="v20MTitle"></strong><button type="button" id="v20MClose">✕</button></div><div id="v20MBody"></div></div>';
     document.body.appendChild(m);
-    $('v20MClose').onclick = function () { m.classList.add('hidden'); };
-    m.onclick = function (e) { if (e.target === m) m.classList.add('hidden'); };
+    $('v20MClose').onclick = closeModal;
+    m.onclick = function (e) { if (e.target === m) closeModal(); };
     return m;
   }
 
@@ -553,27 +664,38 @@
       p.favSport = ($('v20FavSport').value || '').trim();
       if (newPhotoData) p.photo = newPhotoData; else delete p.photo;
       save();
-      modal.classList.add('hidden');
+      closeModal();
       renderProfileBoard();
       toast(mObj.name + ' 명함이 저장됐어요!');
     };
-    modal.classList.remove('hidden');
+    openModalBox();
   }
 
-  /* ── 4종 심리검사 모달 ── */
+  /* ── 6종 심리검사 모달 (진행 상태 자동 저장 & 중간 이어하기 지원) ── */
   function openPsychModal(kind) {
     var spec = TESTS[kind];
     if (!spec) return;
-    var modal = ensureModal();
+    var cur = me();
+    var progKey = 'sgf_psych_prog_' + (cur ? cur.id : 'guest') + '_' + kind;
+    var modal = openModalBox();
     $('v20MTitle').textContent = spec.title;
     var step = 0;
     var answers = [];
+
+    function saveProg() {
+      try {
+        localStorage.setItem(progKey, JSON.stringify({ step: step, answers: answers, at: Date.now() }));
+      } catch (e) {}
+    }
+    function clearProg() {
+      try { localStorage.removeItem(progKey); } catch (e) {}
+    }
 
     function paintQ() {
       var q = spec.qs[step];
       var pct = Math.round(((step) / spec.qs.length) * 100);
       var h = '<div class="v20-prog"><div style="width:' + pct + '%"></div></div>' +
-        '<div class="v20-qcnt">' + (step + 1) + ' / ' + spec.qs.length + ' · ' + esc(spec.sub) + '</div>' +
+        '<div class="v20-qcnt">' + (step + 1) + ' / ' + spec.qs.length + ' · ' + esc(spec.sub) + ' <span style="color:#0EA5E9">(자동 저장중)</span></div>' +
         '<div class="v20-qtxt">' + esc(q.q) + '</div><div class="v20-opts">';
       if (kind === 'mbti') {
         h += '<button type="button" class="v20-opt" data-v="' + q.a.v + '">' + esc(q.a.l) + '</button>';
@@ -596,12 +718,17 @@
             answers[step] = q.opts[idx];
           }
           step += 1;
-          if (step < spec.qs.length) paintQ();
-          else finishTest();
+          if (step < spec.qs.length) {
+            saveProg();
+            paintQ();
+          } else {
+            clearProg();
+            finishTest();
+          }
         };
       });
       var pb = $('v20PrevQ');
-      if (pb) pb.onclick = function () { step -= 1; paintQ(); };
+      if (pb) pb.onclick = function () { step -= 1; saveProg(); paintQ(); };
     }
 
     function finishTest() {
@@ -626,7 +753,7 @@
           '<p>' + esc(info.d) + '</p>' +
           '<div class="v20-res-tip">💡 <b>가족 소통 팁:</b> ' + esc(info.tip) + '</div>' +
           '</div>';
-      } else if (kind === 'temper' || kind === 'role') {
+      } else if (kind === 'temper' || kind === 'role' || kind === 'talk' || kind === 'talent') {
         var tally = {};
         answers.forEach(function (o) { tally[o.k] = (tally[o.k] || 0) + 1; });
         var best = Object.keys(tally).sort(function (a, b) { return tally[b] - tally[a]; })[0];
@@ -656,11 +783,32 @@
       $('v20MBody').innerHTML = resHtml +
         '<div style="text-align:center;font-size:12.5px;color:#0E9F6E;font-weight:700;margin:8px 0 12px">✅ 내 명함 프로필에 바로 반영되었어요!</div>' +
         '<button type="button" id="v20DoneBtn" class="v20-btn-primary">명함에서 확인하기</button>';
-      $('v20DoneBtn').onclick = function () { modal.classList.add('hidden'); };
+      $('v20DoneBtn').onclick = closeModal;
     }
 
+    /* 저장된 진행 기록 확인 */
+    try {
+      var savedRaw = localStorage.getItem(progKey);
+      if (savedRaw) {
+        var sv = JSON.parse(savedRaw);
+        if (sv && sv.step > 0 && sv.step < spec.qs.length && Array.isArray(sv.answers)) {
+          $('v20MBody').innerHTML = '' +
+            '<div class="v20-res-box" style="margin-bottom:12px">' +
+              '<div style="font-size:15px;font-weight:800;color:#0369A1;margin-bottom:4px">📌 진행 중이던 검사가 있어요!</div>' +
+              '<p style="margin:0">' + sv.step + ' / ' + spec.qs.length + '문항까지 답변이 저장되어 있습니다.</p>' +
+            '</div>' +
+            '<div style="display:flex;gap:8px">' +
+              '<button type="button" id="v20Restart" class="v20-btn-edit" style="padding:11px">처음부터 다시</button>' +
+              '<button type="button" id="v20Resume" class="v20-btn-primary" style="margin-top:0;flex:2">이어서 진행하기 →</button>' +
+            '</div>';
+          $('v20Resume').onclick = function () { step = sv.step; answers = sv.answers; paintQ(); };
+          $('v20Restart').onclick = function () { clearProg(); step = 0; answers = []; paintQ(); };
+          return;
+        }
+      }
+    } catch (e) {}
+
     paintQ();
-    modal.classList.remove('hidden');
   }
 
   function mount(FAM) {
