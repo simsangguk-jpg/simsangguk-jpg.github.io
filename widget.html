@@ -389,7 +389,7 @@
       for (var i = 0; i < base.length; i++) list.push({ l: base[i].l, p: base[i].p || 1, user: false });
       var u = loadUserEvents();
       for (var j = 0; j < u.length; j++) {
-        if (u[j] && u[j].d === k) list.push({ l: u[j].s || u[j].t, t: u[j].t, p: u[j].pri || 3, user: true, id: u[j].id });
+        if (u[j] && u[j].d === k) list.push({ l: u[j].s || u[j].t, t: u[j].t, p: u[j].pri || 3, user: true, id: u[j].k || u[j].id });
       }
       return list;
     }
@@ -595,15 +595,25 @@
     $('wmList').onclick = function (e) {
       var d = e.target.getAttribute ? e.target.getAttribute('data-delid') : '';
       if (!d) return;
-      var u = loadUserEvents().filter(function (x) { return String(x.id) !== String(d); });
+      var u = loadUserEvents().filter(function (x) { return String(x.k || x.id) !== String(d); });
       saveUserEvents(u); renderCalendar(); openDayFolder(activeDayKey);
     };
     $('wmAddBtn').onclick = function () {
       var txt = ($('wmInp').value || '').trim();
       if (!txt || !activeDayKey) return;
       var u = loadUserEvents();
-      u.push({ id: 'w_' + Date.now(), d: activeDayKey, t: txt, s: txt.slice(0, 6), c: 'etc', pri: 3 });
+      u.push({ k: 'u' + Date.now(), d: activeDayKey, t: txt, s: txt.slice(0, 6), tm: '', cat: 'etc', src: '직접 추가', pri: 3, chk: [] });
       saveUserEvents(u);
+      try {
+        if (window.SanggukAndroid && typeof window.SanggukAndroid.addCalendarEvent === 'function') {
+          window.SanggukAndroid.addCalendarEvent(activeDayKey, '', txt, '상국포털 위젯에서 추가한 일정');
+        }
+      } catch (e) {}
+      try {
+        var ob = JSON.parse(localStorage.getItem('sg_cal_outbox_v1') || '[]') || [];
+        ob.push({ d: activeDayKey, tm: '', t: txt, at: Date.now() });
+        localStorage.setItem('sg_cal_outbox_v1', JSON.stringify(ob.slice(-50)));
+      } catch (e) {}
       $('wmInp').value = '';
       renderCalendar(); openDayFolder(activeDayKey);
     };
