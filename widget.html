@@ -547,14 +547,28 @@
       $('wDate').textContent = (n.getMonth() + 1) + '/' + n.getDate() + '(' + DAYS[n.getDay()] + ')';
     }
 
+    function refreshCalWeather() {
+      getJSON('https://api.open-meteo.com/v1/forecast?latitude=37.7599&longitude=126.7801&daily=weather_code&timezone=Asia%2FSeoul&forecast_days=14')
+        .then(function (d) {
+          var day = d && d.daily;
+          if (day && day.time && day.weather_code) {
+            for (var j = 0; j < day.time.length; j++) WX_CAL[day.time[j]] = wxEmoji(day.weather_code[j]);
+            renderCalendar();
+          }
+        })
+        .catch(function () {});
+    }
+
     tickClock();
     renderShift();
     renderCalendar();
+    refreshCalWeather();
 
     setInterval(tickClock, 30000);
     setInterval(function () { renderShift(); }, 5 * 60 * 1000);
+    setInterval(function () { refreshCalWeather(); }, 30 * 60 * 1000);
     document.addEventListener('visibilitychange', function () {
-      if (!document.hidden) { tickClock(); renderShift(); renderCalendar(); }
+      if (!document.hidden) { tickClock(); renderShift(); renderCalendar(); refreshCalWeather(); }
     });
   })();
   </script>
