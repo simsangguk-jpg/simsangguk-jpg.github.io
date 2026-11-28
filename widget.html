@@ -131,23 +131,23 @@
     .cc.sun:not(.work):not(.rest):not(.vac) .cc-d{ color:#E0A0A0; }
     .cc.sat:not(.work):not(.rest):not(.vac) .cc-d{ color:#9AB8DE; }
     .cc-top{ display:flex; align-items:center; justify-content:center; gap:2px; width:100%; flex:0 0 auto; }
-    .cc .cc-d{ font-size:11px; font-weight:800; color:var(--ink); font-variant-numeric:tabular-nums; line-height:1.2; white-space:nowrap; }
+    .cc .cc-d{ font-size:11.5px; font-weight:800; color:var(--ink); font-variant-numeric:tabular-nums; line-height:1.2; white-space:nowrap; }
     .cc.today .cc-d{
       background:var(--gold); color:#0A0B0E; font-weight:900; border-radius:999px;
-      padding:0 4.5px; min-width:16px; text-align:center;
+      padding:0 5px; min-width:17px; text-align:center;
     }
     .cc-bar{
-      width:100%; height:auto !important; text-align:center; font-size:8.5px; font-weight:800; line-height:1.35;
-      border-radius:3px; padding:1px 0 !important; margin:0; white-space:nowrap; overflow:hidden; flex:0 0 auto;
+      width:100%; height:auto !important; text-align:center; font-size:9.5px; font-weight:800; line-height:1.38;
+      border-radius:3px; padding:1.5px 0 !important; margin:0; white-space:nowrap; overflow:hidden; flex:0 0 auto;
     }
-    .cc-bar.wk{ background:rgba(220,38,38,.78); color:#FFFFFF; }
-    .cc-bar.rs{ background:rgba(16,185,129,.72); color:#FFFFFF; }
-    .cc-bar.vc{ background:rgba(139,92,246,.82); color:#FFFFFF; }
-    .cc-wx{ font-size:8.5px; line-height:1; }
+    .cc-bar.wk{ background:rgba(220,38,38,.82); color:#FFFFFF; }
+    .cc-bar.rs{ background:rgba(16,185,129,.76); color:#FFFFFF; }
+    .cc-bar.vc{ background:rgba(139,92,246,.85); color:#FFFFFF; }
+    .cc-wx{ font-size:9px; line-height:1; }
     .cc .cc-l{
-      font-size:8.5px; font-weight:700; color:#F3F4F6; width:100%;
+      font-size:9px; font-weight:700; color:#F3F4F6; width:100%;
       white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
-      letter-spacing:-.04em; text-align:center; line-height:1.15; display:block;
+      letter-spacing:-.04em; text-align:center; line-height:1.25; display:block;
     }
     .cc.today{
       background:rgba(212,175,55,.15); border:1.5px solid var(--gold);
@@ -214,29 +214,7 @@
       </div>
     </section>
 
-    <!-- ② 오늘 날씨 -->
-    <section class="card">
-      <div class="hd">
-        <span class="hd-t">오늘 날씨</span>
-        <span class="pill" id="wxStamp">불러오는 중</span>
-      </div>
-      <div class="wx-2">
-        <div class="wx-c">
-          <div class="wx-n">파주<span id="paSky">—</span></div>
-          <div class="wx-t"><b id="paT">2</b><i>℃</i></div>
-          <div class="wx-r" id="paRange">0 ~ 14℃ · 체감 -2℃</div>
-        </div>
-        <div class="wx-c">
-          <div class="wx-n">연천<span id="ycSky">—</span></div>
-          <div class="wx-t"><b id="ycT">2</b><i>℃</i></div>
-          <div class="wx-r" id="ycRange">-1 ~ 9℃ · 체감 -2℃</div>
-        </div>
-      </div>
-      <div class="wx-l" id="wxRain">☔ 비 올 확률 100% · 습도 77%</div>
-      <div class="wx-l" id="wxPm">🍃 미세먼지 <b>좋음</b> · PM10 30 · PM2.5 22</div>
-    </section>
-
-    <!-- ③ 이번 달 월력표 달력 -->
+    <!-- ③ 이번 달 월력표 달력 (날씨 배너 제거 · 근무표/일정 집중) -->
     <section class="card cal">
       <div class="hd">
         <span class="hd-t" id="calTitle">2026년 11월</span>
@@ -389,9 +367,10 @@
         var label = '';
         var ev = evmap[k];
         if (ev && ev.length) {
-          var best = ev[0];
-          for (var j = 1; j < ev.length; j++) if ((ev[j].p || 0) > (best.p || 0)) best = ev[j];
-          label = '<span class="cc-l">' + best.l + '</span>';
+          var sorted = ev.slice().sort(function (a, b) { return (b.p || 0) - (a.p || 0); });
+          for (var j = 0; j < Math.min(2, sorted.length); j++) {
+            label += '<span class="cc-l">' + sorted[j].l + '</span>';
+          }
         }
 
         html += '<div class="' + cls + '" data-d="' + k + '">' +
@@ -571,15 +550,11 @@
     tickClock();
     renderShift();
     renderCalendar();
-    paintSnap();
-    refreshWeather();
-    refreshAir();
 
     setInterval(tickClock, 30000);
     setInterval(function () { renderShift(); }, 5 * 60 * 1000);
-    setInterval(function () { refreshWeather(); refreshAir(); }, 15 * 60 * 1000);
     document.addEventListener('visibilitychange', function () {
-      if (!document.hidden) { tickClock(); renderShift(); renderCalendar(); refreshWeather(); refreshAir(); }
+      if (!document.hidden) { tickClock(); renderShift(); renderCalendar(); }
     });
   })();
   </script>
