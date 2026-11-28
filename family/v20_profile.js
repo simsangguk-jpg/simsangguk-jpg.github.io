@@ -638,17 +638,21 @@
     }
 
     $('v20SaveBtn').onclick = function () {
-      delete p.height;
-      delete p.weight;
-      p.blood = $('v20B').value;
-      p.mbti = $('v20Mb').value;
-      p.note = ($('v20Note').value || '').trim();
-      p.favFood = ($('v20FavFood').value || '').trim();
-      p.favToy = ($('v20FavToy').value || '').trim();
-      p.favBook = ($('v20FavBook').value || '').trim();
-      p.favHobby = ($('v20FavHobby').value || '').trim();
-      p.favSport = ($('v20FavSport').value || '').trim();
-      if (newPhotoData) p.photo = newPhotoData; else delete p.photo;
+      var curV9 = ensureStore();
+      if (!curV9) return;
+      var curP = curV9.profiles[targetId] || (curV9.profiles[targetId] = {});
+      delete curP.height;
+      delete curP.weight;
+      curP.blood = $('v20B').value;
+      curP.mbti = $('v20Mb').value;
+      curP.note = ($('v20Note').value || '').trim();
+      curP.favFood = ($('v20FavFood').value || '').trim();
+      curP.favToy = ($('v20FavToy').value || '').trim();
+      curP.favBook = ($('v20FavBook').value || '').trim();
+      curP.favHobby = ($('v20FavHobby').value || '').trim();
+      curP.favSport = ($('v20FavSport').value || '').trim();
+      curP.photo = newPhotoData ? newPhotoData : '';
+      curP.at = Date.now();
       save();
       closeModal();
       renderProfileBoard();
@@ -732,7 +736,8 @@
                    (cnt.T >= cnt.F ? 'T' : 'F') + (cnt.J >= cnt.P ? 'J' : 'P');
         var info = MBTI_INFO[code] || { t:'', d:'', tip:'' };
         p.mbti = code;
-        ps.mbti = { code: code, at: todayYmd() };
+        p.at = Date.now();
+        ps.mbti = { code: code, at: Date.now(), ymd: todayYmd() };
         resHtml = '<div class="v20-res-box">' +
           '<div class="v20-res-big">🧩 ' + code + '</div>' +
           '<div class="v20-res-sub">' + esc(info.t) + '</div>' +
@@ -744,7 +749,7 @@
         answers.forEach(function (o) { tally[o.k] = (tally[o.k] || 0) + 1; });
         var best = Object.keys(tally).sort(function (a, b) { return tally[b] - tally[a]; })[0];
         var r = spec.res[best];
-        ps[kind] = { key: best, badge: r.badge, at: todayYmd() };
+        ps[kind] = { key: best, badge: r.badge, at: Date.now(), ymd: todayYmd() };
         resHtml = '<div class="v20-res-box">' +
           '<div class="v20-res-big">' + esc(r.badge) + '</div>' +
           '<p>' + esc(r.d) + '</p>' +
@@ -757,7 +762,7 @@
           ? '마음 컨디션이 최상이에요! 오늘 가족들에게도 좋은 에너지를 나눠주세요.'
           : (total >= 55 ? '무난하고 안정적인 하루예요. 따뜻한 차 한 잔과 함께 여유를 챙겨보세요.'
                          : '마음이 조금 지쳐 있어요. 오늘 하루는 무리하지 말고 가족에게 응원을 요청해 보세요!');
-        ps.mind = { score: total, icon: ico, at: todayYmd() };
+        ps.mind = { score: total, icon: ico, at: Date.now(), ymd: todayYmd() };
         resHtml = '<div class="v20-res-box">' +
           '<div class="v20-res-big">' + ico + ' ' + total + '점</div>' +
           '<p>' + esc(msg) + '</p>' +
