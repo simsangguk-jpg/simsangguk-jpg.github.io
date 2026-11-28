@@ -132,18 +132,12 @@
     if (!D.v9 || typeof D.v9 !== 'object') D.v9 = {};
     if (!D.v9.profiles || typeof D.v9.profiles !== 'object') D.v9.profiles = {};
     if (!D.v9.psych || typeof D.v9.psych !== 'object') D.v9.psych = {};
-    /* 상국 님 기본 신체 정보 초기 시드(비어 있을 때만 1회) */
+    /* 기본 프로필 객체 초기화 */
     try {
       var ms = (F && F.members) ? F.members() : [];
       ms.forEach(function (m) {
         if (!m || !m.id) return;
         if (!D.v9.profiles[m.id]) D.v9.profiles[m.id] = {};
-        var p = D.v9.profiles[m.id];
-        if ((m.role === '아빠' || (m.name && m.name.indexOf('상국') >= 0)) && !p._seeded) {
-          if (!p.height) p.height = '178';
-          if (!p.weight) p.weight = '88.9';
-          p._seeded = 1;
-        }
       });
     } catch (e) {}
     return D.v9;
@@ -480,11 +474,7 @@
       if (ps.talent && ps.talent.badge) traits += '<span class="v20-trait t-talent">' + esc(ps.talent.badge) + '</span>';
       if (!traits) traits = '<span class="v20-trait t-empty">✨ 위 심리검사 6종으로 내 특징을 채워보세요!</span>';
 
-      var bodySpec = [];
-      if (p.height) bodySpec.push(esc(p.height) + 'cm');
-      if (p.weight) bodySpec.push(esc(p.weight) + 'kg');
-      if (p.blood) bodySpec.push(esc(p.blood) + '형');
-      var specText = bodySpec.length ? bodySpec.join(' · ') : '키·몸무게·혈액형 미입력';
+      var specText = p.blood ? (esc(p.blood) + '형') : '미입력';
 
       var favs = '';
       if (p.favFood) favs += '<span class="v20-fav">🍽️ ' + esc(p.favFood) + '</span>';
@@ -515,7 +505,7 @@
           '</div>' +
           '<div class="v20-traits">' + traits + '</div>' +
           '<div class="v20-facts">' +
-            '<div><span>📏 신체·혈액형</span><b>' + specText + '</b></div>' +
+            '<div><span>🩸 혈액형</span><b>' + specText + '</b></div>' +
             (fort ? '<div><span>🔮 오늘 내 운세</span><b>' + esc(fort) + '</b></div>' : '') +
             (p.note ? '<div><span>📝 나의 한줄·기록</span><b>' + esc(p.note) + '</b></div>' : '') +
           '</div>' +
@@ -572,7 +562,7 @@
     return m;
   }
 
-  /* ── 명함 수정 모달 (사진 리사이즈 + MBTI + 혈액형 + 키/몸무게 + 한줄 기록) ── */
+  /* ── 명함 수정 모달 (사진 리사이즈 + MBTI + 혈액형 + 한줄 기록) ── */
   function openEditModal(targetId) {
     var v9 = ensureStore();
     var mObj = F.memOf(targetId);
@@ -595,10 +585,6 @@
         '<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">' +
           '<input type="file" id="v20PhotoFile" accept="image/*" style="flex:1;font-size:13px">' +
           (p.photo ? '<button type="button" id="v20PhotoDel" class="v20-btn-del">사진 지우기</button>' : '') +
-        '</div>' +
-        '<div class="v20-row2">' +
-          '<div><label>📏 키 (cm)</label><input id="v20H" class="field" type="number" step="0.1" value="' + esc(p.height || '') + '" placeholder="예: 178"></div>' +
-          '<div><label>⚖️ 몸무게 (kg)</label><input id="v20W" class="field" type="number" step="0.1" value="' + esc(p.weight || '') + '" placeholder="예: 88.9"></div>' +
         '</div>' +
         '<div class="v20-row2">' +
           '<div><label>🩸 혈액형</label><select id="v20B" class="field">' + bloodOpts + '</select></div>' +
@@ -652,8 +638,8 @@
     }
 
     $('v20SaveBtn').onclick = function () {
-      p.height = ($('v20H').value || '').trim();
-      p.weight = ($('v20W').value || '').trim();
+      delete p.height;
+      delete p.weight;
       p.blood = $('v20B').value;
       p.mbti = $('v20Mb').value;
       p.note = ($('v20Note').value || '').trim();
