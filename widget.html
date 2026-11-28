@@ -137,12 +137,12 @@
       padding:0 4.5px; min-width:16px; text-align:center;
     }
     .cc-bar{
-      width:100%; text-align:center; font-size:8.5px; font-weight:800; line-height:1.35;
-      border-radius:3px; padding:0.5px 0; white-space:nowrap; overflow:hidden; flex:0 0 auto;
+      width:100%; height:auto !important; text-align:center; font-size:8.5px; font-weight:800; line-height:1.35;
+      border-radius:3px; padding:1px 0 !important; margin:0; white-space:nowrap; overflow:hidden; flex:0 0 auto;
     }
-    .cc-bar.w{ background:rgba(220,38,38,.78); color:#FFFFFF; }
-    .cc-bar.r{ background:rgba(16,185,129,.72); color:#FFFFFF; }
-    .cc-bar.v{ background:rgba(139,92,246,.82); color:#FFFFFF; }
+    .cc-bar.wk{ background:rgba(220,38,38,.78); color:#FFFFFF; }
+    .cc-bar.rs{ background:rgba(16,185,129,.72); color:#FFFFFF; }
+    .cc-bar.vc{ background:rgba(139,92,246,.82); color:#FFFFFF; }
     .cc-wx{ font-size:8.5px; line-height:1; }
     .cc .cc-l{
       font-size:8.5px; font-weight:700; color:#F3F4F6; width:100%;
@@ -381,7 +381,7 @@
         var isToday = (d === now.getDate());
         if (isToday) cls += ' today';
 
-        var stCls = st.override === 'vacation' ? 'v' : (st.isWork ? 'w' : 'r');
+        var stCls = st.override === 'vacation' ? 'vc' : (st.isWork ? 'wk' : 'rs');
         var stWord = st.override === 'vacation' ? '휴가' : (st.isWork ? '근무' : '휴식');
         var stBar = '<div class="cc-bar ' + stCls + '">' + stWord + '</div>';
 
