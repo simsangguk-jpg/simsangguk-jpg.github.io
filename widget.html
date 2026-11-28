@@ -130,26 +130,29 @@
     .cc.dim .cc-d{ color:rgba(140,150,168,.45); }
     .cc.sun:not(.work):not(.rest):not(.vac) .cc-d{ color:#E0A0A0; }
     .cc.sat:not(.work):not(.rest):not(.vac) .cc-d{ color:#9AB8DE; }
-    .cc-st{
-      position:absolute; top:2px; right:2px; z-index:2;
-      font-size:8.5px; font-weight:800; line-height:1.1; padding:1px 3px; border-radius:3px;
-      letter-spacing:0; white-space:nowrap; display:inline-block; width:auto !important; height:auto !important;
+    .cc-top{ display:flex; align-items:center; justify-content:center; gap:2px; width:100%; flex:0 0 auto; }
+    .cc .cc-d{ font-size:11px; font-weight:800; color:var(--ink); font-variant-numeric:tabular-nums; line-height:1.2; white-space:nowrap; }
+    .cc.today .cc-d{
+      background:var(--gold); color:#0A0B0E; font-weight:900; border-radius:999px;
+      padding:0 4.5px; min-width:16px; text-align:center;
     }
-    .cc-st.w{ background:rgba(248,113,113,.28); color:#FECACA; border:1px solid rgba(248,113,113,.50); }
-    .cc-st.r{ background:rgba(52,211,153,.24); color:#A7F3D0; border:1px solid rgba(52,211,153,.46); }
-    .cc-st.v{ background:rgba(167,139,250,.28); color:#EDE9FE; border:1px solid rgba(167,139,250,.50); }
-    .cc-wx{ font-size:9px; line-height:1; flex:0 0 auto; }
+    .cc-bar{
+      width:100%; text-align:center; font-size:8.5px; font-weight:800; line-height:1.35;
+      border-radius:3px; padding:0.5px 0; white-space:nowrap; overflow:hidden; flex:0 0 auto;
+    }
+    .cc-bar.w{ background:rgba(220,38,38,.78); color:#FFFFFF; }
+    .cc-bar.r{ background:rgba(16,185,129,.72); color:#FFFFFF; }
+    .cc-bar.v{ background:rgba(139,92,246,.82); color:#FFFFFF; }
+    .cc-wx{ font-size:8.5px; line-height:1; }
     .cc .cc-l{
       font-size:8.5px; font-weight:700; color:#F3F4F6; width:100%;
       white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
-      letter-spacing:-.04em; text-align:left; line-height:1.15; display:block;
+      letter-spacing:-.04em; text-align:center; line-height:1.15; display:block;
     }
     .cc.today{
-      background:rgba(212,175,55,.18); border:1.5px solid var(--gold);
+      background:rgba(212,175,55,.15); border:1.5px solid var(--gold);
       box-shadow:0 0 0 1px rgba(212,175,55,.22) inset;
     }
-    .cc.today .cc-d{ color:var(--gold2); font-weight:800; }
-    .cc-top{ display:block; width:100%; min-width:0; flex:0 0 auto; padding-right:16px; }
     .cc .cc-b{
       flex:0 0 auto; font-size:7.5px; font-weight:800; line-height:1.2; color:#0A0B0E;
       background:var(--gold); border-radius:999px; padding:0 3px;
@@ -379,8 +382,8 @@
         if (isToday) cls += ' today';
 
         var stCls = st.override === 'vacation' ? 'v' : (st.isWork ? 'w' : 'r');
-        var stShort = st.override === 'vacation' ? '휴가' : (st.isWork ? '근' : '휴');
-        var stBadge = '<span class="cc-st ' + stCls + '">' + stShort + '</span>';
+        var stWord = st.override === 'vacation' ? '휴가' : (st.isWork ? '근무' : '휴식');
+        var stBar = '<div class="cc-bar ' + stCls + '">' + stWord + '</div>';
 
         var wxIco = (WX_CAL[k] || '');
         var label = '';
@@ -389,13 +392,11 @@
           var best = ev[0];
           for (var j = 1; j < ev.length; j++) if ((ev[j].p || 0) > (best.p || 0)) best = ev[j];
           label = '<span class="cc-l">' + best.l + '</span>';
-        } else if (wxIco) {
-          label = '<span class="cc-l" style="opacity:.85;">' + wxIco + '</span>';
         }
 
         html += '<div class="' + cls + '" data-d="' + k + '">' +
-                  '<div class="cc-top"><span class="cc-d">' + d + '</span>' + stBadge + '</div>' +
-                  label + '</div>';
+                  '<div class="cc-top"><span class="cc-d">' + d + '</span>' + (wxIco ? '<span class="cc-wx">' + wxIco + '</span>' : '') + '</div>' +
+                  stBar + label + '</div>';
       }
 
       /* 뒷 달 빈칸 */
