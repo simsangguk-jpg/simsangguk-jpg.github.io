@@ -1270,8 +1270,11 @@ body>.auth,body>.app,body>.boot,body>#sheet,body>#v20Modal{position:relative;z-i
 .v20-qbtn.q-mind{background:#EFF6FF;color:#1D4ED8;border-color:#BFDBFE}
 .v20-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
 @media(max-width:640px){.v20-grid{grid-template-columns:1fr}}
-.v20-biz{background:#FFFFFF;border:1.5px solid #E3EAF2;border-radius:16px;padding:13px;display:flex;flex-direction:column;gap:8px;box-shadow:0 3px 10px rgba(20,35,60,.04)}
-.v20-biz.is-me{border-color:#38BDF8;background:linear-gradient(180deg,#F7FBFF,#FFFFFF)}
+.v20-biz{background:#FFFFFF;border:1.5px solid #E3EAF2;border-top:4px solid #60A5FA;border-radius:18px;padding:13px;display:flex;flex-direction:column;gap:8px;box-shadow:0 4px 14px rgba(20,35,60,.05);transition:transform .12s}
+.v20-biz.is-me{border-color:#38BDF8;border-top-color:#0EA5E9;background:linear-gradient(180deg,#F3FAFF,#FFFFFF)}
+.v20-biz:nth-child(2){border-top-color:#F472B6}
+.v20-biz:nth-child(3){border-top-color:#34D399}
+.v20-biz:nth-child(4){border-top-color:#FBBF24}
 .v20-biz-top{display:flex;align-items:center;gap:10px}
 .v20-av-img{width:54px;height:54px;border-radius:16px;object-fit:cover;border:1.5px solid #D8E6F5;flex-shrink:0}
 .v20-av-emo{width:54px;height:54px;border-radius:16px;background:#F0F6FF;border:1.5px solid #D8E6F5;display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0}
