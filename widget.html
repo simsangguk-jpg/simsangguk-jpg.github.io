@@ -383,13 +383,23 @@
     function saveUserEvents(arr) {
       try { localStorage.setItem(USER_EV_KEY, JSON.stringify(arr)); } catch (e) {}
     }
+    function _normW(s) { return String(s || '').toLowerCase().replace(/[\s\[\]()·.,\-_:!?"'~]+/g, ''); }
     function mergedEventsFor(k) {
       var list = [];
       var base = (window.SG_WIDGET_EVENTS || {})[k] || [];
       for (var i = 0; i < base.length; i++) list.push({ l: base[i].l, p: base[i].p || 1, user: false });
       var u = loadUserEvents();
       for (var j = 0; j < u.length; j++) {
-        if (u[j] && u[j].d === k) list.push({ l: u[j].s || u[j].t, t: u[j].t, p: u[j].pri || 3, user: true, id: u[j].k || u[j].id });
+        if (!u[j] || u[j].d !== k) continue;
+        var ul = u[j].s || u[j].t || '';
+        var nu = _normW(u[j].t || ul), dup = false;
+        for (var x = 0; x < list.length; x++) {
+          var nx = _normW(list[x].t || list[x].l);
+          if (nu && nx && (nu === nx || (nu.length >= 4 && nx.length >= 4 && (nu.indexOf(nx) >= 0 || nx.indexOf(nu) >= 0)))) {
+            dup = true; break;
+          }
+        }
+        if (!dup) list.push({ l: ul, t: u[j].t, p: u[j].pri || 3, user: true, id: u[j].k || u[j].id });
       }
       return list;
     }
