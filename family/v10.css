@@ -1252,3 +1252,72 @@ input[type="date"].field,input[type="time"].field,input[type="datetime-local"].f
 .mag9-q{font-size:12px;font-weight:800;color:#1E3A5F;margin-bottom:5px}
 .mag9-qbtn{padding:4px 10px;border-radius:8px;font-size:11px;font-weight:800;background:#E0EEFF;color:#1D4ED8}
 .mag9-a{margin-top:6px;font-size:11.5px;font-weight:700;color:#065F46;background:#ECFDF5;border-radius:8px;padding:6px 8px}
+
+/* ── V20: 매일 구글포토 배경화면 + 가족 명함 + 심리검사 ── */
+#v20BgWrap{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+#v20BgImg{width:100%;height:100%;object-fit:cover;display:block}
+#v20BgVeil{position:absolute;inset:0;background:linear-gradient(180deg,rgba(240,248,255,.80),rgba(245,248,250,.88))}
+body>.auth,body>.app,body>.boot,body>#sheet,body>#v20Modal{position:relative;z-index:1}
+.v20-card{border:1.5px solid #CFE3FA !important;background:linear-gradient(180deg,rgba(255,255,255,.97),rgba(247,251,255,.97)) !important}
+.v20-bg-chip{padding:6px 10px;border-radius:20px;font-size:11.5px;font-weight:800;background:#E6F2FF;color:#0369A1;border:1px solid #BFE0FF;white-space:nowrap}
+.v20-psych-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:10px 0 12px}
+@media(max-width:440px){.v20-psych-bar{grid-template-columns:repeat(2,1fr)}}
+.v20-qbtn{padding:9px 8px;border-radius:12px;font-size:12px;font-weight:800;text-align:center;border:1px solid transparent;transition:transform .12s}
+.v20-qbtn:active{transform:scale(.97)}
+.v20-qbtn.q-mbti{background:#EEF2FF;color:#4338CA;border-color:#C7D2FE}
+.v20-qbtn.q-temper{background:#FFF3E8;color:#C2410C;border-color:#FED7AA}
+.v20-qbtn.q-role{background:#ECFDF5;color:#047857;border-color:#A7F3D0}
+.v20-qbtn.q-mind{background:#EFF6FF;color:#1D4ED8;border-color:#BFDBFE}
+.v20-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+@media(max-width:640px){.v20-grid{grid-template-columns:1fr}}
+.v20-biz{background:#FFFFFF;border:1.5px solid #E3EAF2;border-radius:16px;padding:13px;display:flex;flex-direction:column;gap:8px;box-shadow:0 3px 10px rgba(20,35,60,.04)}
+.v20-biz.is-me{border-color:#38BDF8;background:linear-gradient(180deg,#F7FBFF,#FFFFFF)}
+.v20-biz-top{display:flex;align-items:center;gap:10px}
+.v20-av-img{width:54px;height:54px;border-radius:16px;object-fit:cover;border:1.5px solid #D8E6F5;flex-shrink:0}
+.v20-av-emo{width:54px;height:54px;border-radius:16px;background:#F0F6FF;border:1.5px solid #D8E6F5;display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0}
+.v20-biz-id{min-width:0;flex:1}
+.v20-name-row{display:flex;align-items:center;gap:5px;flex-wrap:wrap}
+.v20-name-row strong{font-size:15.5px;font-weight:800;color:#14181D}
+.v20-role{font-size:11px;font-weight:800;padding:2px 7px;border-radius:10px;background:#E8F4FF;color:#0369A1}
+.v20-dday{font-size:11px;font-weight:800;padding:2px 7px;border-radius:10px;background:#FFF1EE;color:#E11D48;margin-left:auto}
+.v20-subline{font-size:11.5px;color:#5A6572;margin-top:2px;font-weight:600}
+.v20-traits{display:flex;flex-wrap:wrap;gap:5px}
+.v20-trait{font-size:11px;font-weight:800;padding:3px 8px;border-radius:9px}
+.v20-trait.t-mbti{background:#EEF2FF;color:#3730A3}
+.v20-trait.t-temp{background:#FFF3E8;color:#9A3412}
+.v20-trait.t-role{background:#ECFDF5;color:#065F46}
+.v20-trait.t-mind{background:#EFF6FF;color:#1E40AF}
+.v20-trait.t-empty{background:#F3F4F6;color:#6B7280;font-weight:700}
+.v20-facts{background:#F8FAFC;border:1px solid #EAEEF2;border-radius:11px;padding:8px 10px;display:flex;flex-direction:column;gap:4px;font-size:12px}
+.v20-facts>div{display:flex;gap:8px;align-items:flex-start}
+.v20-facts span{color:#64748B;font-weight:700;white-space:nowrap;min-width:86px;font-size:11.5px}
+.v20-facts b{color:#1E293B;font-weight:700;line-height:1.4;word-break:keep-all}
+.v20-favs{display:flex;flex-wrap:wrap;gap:5px}
+.v20-fav{font-size:11px;font-weight:700;padding:3px 8px;border-radius:10px;background:#FFFBEB;color:#92400E;border:1px solid #FDE68A}
+.v20-biz-act{display:flex;gap:6px;margin-top:auto}
+.v20-btn-edit,.v20-btn-test{flex:1;padding:7px 8px;border-radius:10px;font-size:12px;font-weight:800;text-align:center}
+.v20-btn-edit{background:#F1F5F9;color:#334155;border:1px solid #CBD5E1}
+.v20-btn-test{background:#E0F2FE;color:#0369A1;border:1px solid #BAE6FD}
+.v20-modal{position:fixed;inset:0;z-index:120;background:rgba(15,23,42,.55);display:flex;align-items:center;justify-content:center;padding:16px}
+.v20-modal-box{width:100%;max-width:440px;max-height:88vh;overflow-y:auto;background:#FFFFFF;border-radius:20px;padding:18px;box-shadow:0 20px 50px rgba(0,0,0,.22)}
+.v20-modal-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.v20-modal-hd strong{font-size:16px;font-weight:800;color:#0F172A}
+.v20-modal-hd button{font-size:18px;padding:4px 8px;color:#64748B}
+.v20-form label{display:block;font-size:12px;font-weight:800;color:#475569;margin:0 0 4px}
+.v20-row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.v20-btn-primary{width:100%;padding:12px;border-radius:12px;background:#0EA5E9;color:#FFFFFF;font-size:14px;font-weight:800;margin-top:6px}
+.v20-btn-del{padding:6px 10px;border-radius:9px;background:#FEE2E2;color:#B91C1C;font-size:11.5px;font-weight:800}
+.v20-prog{height:6px;background:#E2E8F0;border-radius:99px;overflow:hidden;margin-bottom:8px}
+.v20-prog>div{height:100%;background:#0EA5E9;transition:width .2s}
+.v20-qcnt{font-size:11.5px;font-weight:700;color:#64748B;margin-bottom:6px}
+.v20-qtxt{font-size:15px;font-weight:800;color:#0F172A;margin-bottom:12px;line-height:1.45}
+.v20-opts{display:flex;flex-direction:column;gap:8px}
+.v20-opt{padding:12px 13px;border-radius:12px;background:#F8FAFC;border:1.5px solid #E2E8F0;text-align:left;font-size:13.5px;font-weight:700;color:#1E293B}
+.v20-opt:active{background:#E0F2FE;border-color:#0EA5E9}
+.v20-btn-back{margin-top:10px;font-size:12px;font-weight:700;color:#64748B}
+.v20-res-box{background:#F8FAFC;border:1.5px solid #BAE6FD;border-radius:16px;padding:16px;text-align:center}
+.v20-res-big{font-size:24px;font-weight:900;color:#0369A1;margin-bottom:4px}
+.v20-res-sub{font-size:14px;font-weight:800;color:#1E293B;margin-bottom:8px}
+.v20-res-box p{font-size:13px;color:#334155;line-height:1.55;margin:0 0 10px}
+.v20-res-tip{background:#FFFBEB;border-radius:10px;padding:8px 10px;font-size:12px;color:#78350F;text-align:left}
+
